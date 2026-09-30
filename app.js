@@ -259,7 +259,7 @@ function buildSpec(kind, map) {
   const xy = {
     scatter: [lab(map.v), lab(map.v2)], histogram: [lab(map.v), "Count"],
     line: [lab(map.t), lab(map.v)], stacked_area: [lab(map.t), lab(map.v)], bump: [lab(map.t), "Rank"],
-    heatmap: [lab(map.series), lab(map.cat)], dot_range: [lab(map.v), lab(map.cat)],
+    heatmap: [lab(map.series), lab(map.v)], dot_range: [lab(map.v), lab(map.cat)],
   }[kind] || [lab(map.cat), lab(map.v)];
   const title = nm.title || "";
   const unit = /%|pct|percent/i.test(map.v || "") ? "%" : /\$|usd|dollar/i.test(map.v || "") ? "$" : /€|eur/i.test(map.v || "") ? "€" : (nm.unit || "");
