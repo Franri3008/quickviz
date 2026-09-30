@@ -10,7 +10,8 @@ PORT = int(os.environ.get("PORT", 8799))
 HOST = "0.0.0.0" if "PORT" in os.environ else "127.0.0.1"
 JEV_MODEL = "typesafe/jev-1.13"
 # OpenRouter tries these in order, so a rate-limited model falls through to the next.
-FILL_MODELS = os.environ.get("FILL_MODELS", "qwen/qwen3-8b,mistralai/mistral-small-3.2-24b-instruct,google/gemma-4-26b-a4b-it").split(",")
+# Flash-lite first: about 1 s. Qwen 3 8B was rate-limited upstream on 2026-09-30 and fell through to 4-12 s.
+FILL_MODELS = os.environ.get("FILL_MODELS", "google/gemini-2.5-flash-lite,qwen/qwen3-8b,mistralai/mistral-small-3.2-24b-instruct").split(",")
 
 
 def load_key():
@@ -163,7 +164,7 @@ def fill(text, kind):
     t0 = time.time()
     data, cached = openrouter("/api/v1/chat/completions", {
         "models": FILL_MODELS, "max_tokens": 300, "temperature": 0.3,
-        "reasoning": {"enabled": False},
+        "reasoning": {"enabled": False}, "provider": {"sort": "latency"},
         "messages": [{"role": "system", "content": FILL_PROMPT},
                      {"role": "user", "content": text[:2000]}],
     })
@@ -187,7 +188,7 @@ def chat_json(system, user):
     t0 = time.time()
     data, cached = openrouter("/api/v1/chat/completions", {
         "models": FILL_MODELS, "max_tokens": 400, "temperature": 0.2,
-        "reasoning": {"enabled": False},
+        "reasoning": {"enabled": False}, "provider": {"sort": "latency"},
         "messages": [{"role": "system", "content": system}, {"role": "user", "content": user[:4000]}],
     })
     raw = data["choices"][0]["message"]["content"]

@@ -379,7 +379,7 @@ async function applyWords(promise, my, key) {
     state[key] = w;
     if (w.cached) setCached(true);
     if (key === "fill") drawMock(); else drawData(state.kind);
-    $("meta").insertAdjacentText("beforeend", ` — words by Qwen ${w.ms} ms`);
+    $("meta").insertAdjacentText("beforeend", ` — words by ${(w.model || "LLM").split("/").pop()} ${w.ms} ms`);
   } catch (e) {
     if (e.name !== "AbortError" && my === seq) setErr(/Too many/.test(e.message) ? e.message : "Titles failed, showing column names");
   }
@@ -448,6 +448,12 @@ async function run() {
 $("q").addEventListener("input", e => {
   clearTimeout(timer);
   state.text = e.target.value.trim();
+  // demo data belongs to its demo sentence. Typing something new drops it. Pasted or uploaded data stays.
+  if (state.demo) {
+    state.demo = false;
+    $("csv").value = ""; $("csv").readOnly = false;
+    showData(null); state.kind = null;
+  }
   if (!state.data && state.text.length < 4) return;
   timer = setTimeout(run, 200);
 });
@@ -462,6 +468,7 @@ function loadText(text, name) {
 
 $("csv").addEventListener("input", e => {
   clearTimeout(csvTimer);
+  state.demo = false;
   csvTimer = setTimeout(() => loadText(e.target.value, "pasted"), 300);
 });
 
@@ -472,6 +479,7 @@ $("file").addEventListener("change", async e => {
   const text = await f.text();
   $("csv").value = text.length > 20000 ? text.slice(0, 20000) + "\n…" : text;
   $("csv").readOnly = text.length > 20000;
+  state.demo = false;
   loadText(text, f.name);
   e.target.value = "";
 });
@@ -544,6 +552,7 @@ let t; addEventListener("resize", () => { clearTimeout(t); t = setTimeout(() => 
       state.text = $("q").value.trim();
       $("csv").value = csv; $("csv").readOnly = false;
       loadText(csv, dm.name || "demo");
+      state.demo = !!state.data;
     });
   } catch (e) { /* no demos */ }
 })();
