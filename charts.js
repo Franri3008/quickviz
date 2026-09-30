@@ -1,4 +1,8 @@
 // Chart renderers. Worker 1 converts these to read the spec in SPEC.md.
+const W = 820, H = 420, M = {t: 20, r: 120, b: 40, l: 50};
+const svg = d3.select("#chart");
+const color = d3.scaleOrdinal(d3.schemeTableau10);
+
 // ---------- mock data, seeded so the same labels give the same chart ----------
 function rng(seed) { let s = 0; for (const c of seed) s = (s * 31 + c.charCodeAt(0)) >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 2 ** 32); }
 function labels() {

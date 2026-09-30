@@ -1,7 +1,4 @@
 // Input, Jev calls and state.
-const W = 820, H = 420, M = {t: 20, r: 120, b: 40, l: 50};
-const svg = d3.select("#chart");
-const color = d3.scaleOrdinal(d3.schemeTableau10);
 let seq = 0, timer = null, ctrl = null, state = {kind: null, fill: null, text: ""};
 
 // ---------- input: debounce 200 ms, cancel stale calls, drop out-of-order replies ----------
