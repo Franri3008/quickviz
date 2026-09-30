@@ -152,9 +152,11 @@ def decide(text, columns):
 FILL_PROMPT = """The user describes data they have. Invent plausible names for a sample chart of it.
 Reply with JSON only, no prose, in this shape:
 {{"title": short chart title, "x": x-axis or category label, "y": value label, "unit": unit symbol or "",
-"categories": 4 to 8 short names for the main items (countries, products, months...),
-"series": 2 to 4 short names for sub-groups or stages,
-"range": [typical min value, typical max value]}}"""
+"categories": short names for the main items (countries, products...), as many as the user asks for, else 6, at most 12,
+"series": short names for sub-groups, as many as the user asks for, else 3, at most 8. If several items are tracked over time, they are the series,
+"times": 6 to 12 consecutive time labels at the grain the user describes (e.g. "Jan 2025" for monthly, "2019" for yearly, "2024-Q1" for quarterly),
+"range": [typical min value, typical max value]}}
+Use real, plausible names, never placeholders like "Country A"."""
 
 
 def fill(text, kind):

@@ -793,12 +793,14 @@
       ? uniq(a.map(str).map(s => s.trim()).filter(Boolean)) : null;
     const rg = Array.isArray(f.range) && f.range.length === 2 && Number.isFinite(+f.range[0]) && Number.isFinite(+f.range[1]) && +f.range[1] > +f.range[0]
       ? [+f.range[0], +f.range[1]] : [0, 100];
-    const cats = (list(f.categories, 2) || ["Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot"]).slice(0, 8);
+    const cats = (list(f.categories, 2) || ["Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot"]).slice(0, 12);
     const ser = list(f.series, 2);
-    const series = (ser || ["Group 1", "Group 2", "Group 3"]).slice(0, 4);
+    const series = (ser || ["Group 1", "Group 2", "Group 3"]).slice(0, 8);
     const r = rng([kind, JSON.stringify([f.title, f.x, f.y, f.unit, cats, ser, rg]), seed == null ? "" : String(seed)].join("|"));
     const span = rg[1] - rg[0], within = (a = 0, b = 1) => rg[0] + (a + r() * (b - a)) * span;
-    const years = n => d3.range(n).map(i => String(2025 - n + 1 + i));
+    // Qwen's time labels when it gave enough, so "monthly" gets months; years otherwise
+    const tl = list(f.times, 3);
+    const years = n => tl ? tl.slice(0, 12) : d3.range(n).map(i => String(2025 - n + 1 + i));
     const round = v => (Math.abs(v) >= 100 ? Math.round(v) : Math.abs(v) >= 1 ? Math.round(v * 10) / 10 : Math.round(v * 1000) / 1000);
     let rows = [];
     switch (kind) {
@@ -807,12 +809,13 @@
       case "donut":
         rows = (cats.length <= 5 ? cats : ser && ser.length <= 5 ? ser : cats.slice(0, 4)).map(cat => ({cat, v: round(within(0.2, 1))})); break;
       case "line": {
-        const S = ser ? series.slice(0, 3) : [null];
+        // the items tracked over time are the lines. Qwen usually lists them as categories, so those win
+        const S = list(f.categories, 2) ? cats.slice(0, 8) : ser ? series : [null];
         S.forEach(s => { let v = within(0.3, 0.6); years(8).forEach(t => { v = Math.min(rg[1], Math.max(rg[0], v + (r() - 0.4) * span * 0.12)); rows.push(s ? {t, series: s, v: round(v)} : {t, v: round(v)}); }); });
         break;
       }
       case "stacked_area":
-        series.forEach((s, i) => { let v = within(0.1, 0.3) / series.length * 2; years(8).forEach(t => { v = Math.max(span * 0.02, v * (0.9 + r() * 0.3)); rows.push({t, series: s, v: round(v)}); }); });
+        (list(f.categories, 2) ? cats.slice(0, 8) : series).forEach((s, i, all) => { let v = within(0.1, 0.3) / all.length * 2; years(8).forEach(t => { v = Math.max(span * 0.02, v * (0.9 + r() * 0.3)); rows.push({t, series: s, v: round(v)}); }); });
         break;
       case "stacked_bar": case "sankey":
         (kind === "sankey" ? cats.slice(0, 5) : cats).forEach(cat => series.forEach(s => { if (kind !== "sankey" || r() > 0.2) rows.push({cat, series: s, v: round(within(0.1, 1))}); }));
