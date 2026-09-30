@@ -3,7 +3,7 @@ const $ = id => document.getElementById(id);
 const svgEl = $("chart");
 let seq = 0, timer = null, csvTimer = null, ctrl = null;
 // data: null or {rows, cols, name}. ranked: Jev's kinds, best first.
-let state = {kind: null, ranked: [], fill: null, text: "", data: null, spec: null};
+let state = {kind: null, ranked: [], fill: null, text: "", data: null, spec: null, colRoles: {}};
 
 // ---------- small helpers ----------
 async function post(path, body, signal) {
@@ -29,9 +29,26 @@ const isNum = s => s !== "" && NUM_RE.test(s) && /\d/.test(s) && !isNaN(toNum(s)
 const TIME_NAME = /^(year|yr|date|month|time|quarter|qtr|week|day|period|season|fy|timestamp|datetime|hour)s?$|(_|\b)(year|date|month|quarter|week|day|period|season|time)$/i;
 const DATE_RE = /^(\d{4}([-\/.]\d{1,2}([-\/.]\d{1,2})?)?|\d{4}[- ]?(q|Q)[1-4]|(q|Q)[1-4][- ]?\d{4}|\d{4}[- ]?(w|W)\d{1,2}|\d{1,2}[-\/.]\d{1,2}[-\/.]\d{2,4}|(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?([- ]\d{2,4})?)([ T]\d{1,2}:\d{2}(:\d{2})?)?$/i;
 
+// JSON: an array of objects, an object holding one, or an object of equal-length arrays.
+function parseJSON(text) {
+  let j;
+  try { j = JSON.parse(text); } catch (e) { return null; }
+  if (j && !Array.isArray(j) && typeof j === "object") {
+    const arrs = Object.values(j).filter(Array.isArray);
+    if (arrs.length === 1 && typeof arrs[0][0] === "object") j = arrs[0];
+    else if (arrs.length > 1 && arrs.length === Object.keys(j).length)
+      j = d3.range(d3.max(arrs, a => a.length)).map(i => Object.fromEntries(Object.entries(j).map(([k, a]) => [k, a[i]])));
+  }
+  if (!Array.isArray(j) || !j.length || typeof j[0] !== "object") return null;
+  const names = [...new Set(j.flatMap(r => Object.keys(r || {})))];
+  const rows = j.map(r => Object.fromEntries(names.map(n => [n, r?.[n] == null ? "" : typeof r[n] === "object" ? JSON.stringify(r[n]) : String(r[n]).trim()])));
+  return {rows, cols: names.map(name => colInfo(name, rows.map(r => r[name]).filter(v => v !== "")))};
+}
+
 function parseText(text) {
   text = text.replace(/^﻿/, "").trim();
   if (!text) return null;
+  if (/^[\[{]/.test(text)) return parseJSON(text);
   const head = text.split("\n", 1)[0];
   const n = ch => head.split(ch).length - 1;
   const sep = n("\t") > 0 && n("\t") >= n(",") ? "\t" : n(";") > n(",") ? ";" : ",";
@@ -262,34 +279,38 @@ function drawMock() {
   renderSpec(QV.mock(state.kind, f, state.kind + "|" + (f.title || state.text)));
 }
 
-// Map roles for `kind` with Jev, validate, aggregate and render. Returns false if the kind cannot fit.
-async function drawData(kind, my, signal) {
+// Turn Jev's per-column roles (name / value / time / group / ignore) into hints for this kind's roles.
+function hintsFor(kind, cols) {
+  const byRole = r => cols.filter(c => state.colRoles[c.name]?.role === r)
+    .sort((a, b) => (state.colRoles[b.name].confidence ?? 0) - (state.colRoles[a.name].confidence ?? 0)).map(c => c.name);
+  const names = byRole("name"), values = byRole("value"), times = byRole("time"), groups = byRole("group");
+  const catList = [...names, ...groups], serList = [...groups, ...names, ...times];
+  const h = {v: values[0], v2: values[1], t: times[0]};
+  // only kinds that draw a cat role take a name column for it, otherwise it is free to be the series
+  if ((NEED[kind] || []).includes("cat")) h.cat = catList[0];
+  h.series = serList.find(x => x !== h.cat && x !== h.t);
+  if (kind === "line" && !h.series) h.series = "(none)";
+  // sankey: Jev cannot tell flow direction, so the earlier column is the source
+  const at = n => cols.findIndex(c => c.name === n);
+  if (kind === "sankey" && h.cat && h.series && at(h.series) < at(h.cat)) [h.cat, h.series] = [h.series, h.cat];
+  return h;
+}
+
+// Map roles for `kind` from Jev's column roles, validate, aggregate and render. Returns false if the kind cannot fit.
+function drawData(kind) {
   const d = state.data;
-  const base = heuristicMap(kind, d.cols);
-  if (!base) return false;
-  const need = (NEED[kind] || []).map(r => r.replace("?", ""));
-  const optional = (NEED[kind] || []).filter(r => r.endsWith("?")).map(r => r.replace("?", ""));
-  let jev = {}, note = "roles by rule";
-  if (d.cols.length > 1) {
-    try {
-      const res = await post("/api/roles", {text: state.text, kind, need, optional,
-        columns: d.cols.map(c => ({name: c.name, type: c.type, distinct: c.distinct}))}, signal);
-      if (my !== seq) return true;
-      for (const [r, a] of Object.entries(res.roles || {})) jev[r] = a.choice;
-      note = `roles by Jev ${res.ms} ms`;
-      if (res.cached) setCached(true);
-    } catch (e) {
-      if (e.name === "AbortError" || my !== seq) return true;
-      setErr("Role mapping failed, using simple rules: " + e.message);
-    }
-  }
-  const m = heuristicMap(kind, d.cols, jev) || base;
+  const kept = d.cols.filter(c => state.colRoles[c.name]?.role !== "ignore");
+  const cols = kept.length ? kept : d.cols;
+  const jev = hintsFor(kind, cols);
+  const m = heuristicMap(kind, cols, jev) || heuristicMap(kind, d.cols);
+  if (!m) return false;
   const spec = buildSpec(kind, m.map);
   if (!spec.rows.length) return false;
   renderSpec(spec);
   const roleText = Object.entries(m.map).filter(([k]) => k !== "wide").map(([k, v]) =>
-    `${k}=${v === "(columns)" ? m.map.wide.join("+") : v}${m.how[k] === "guess" && jev[k] ? " (rule)" : ""}`).join(", ");
-  $("roles").textContent = `${note} / ${roleText}`;
+    `${k}=${v === "(columns)" ? m.map.wide.join("+") : v}${m.how[k] === "guess" ? " (rule)" : ""}`).join(", ");
+  const r = $("roles");
+  if (r) r.textContent = roleText;
   return true;
 }
 
@@ -307,8 +328,7 @@ async function switchKind(kind) {
   const prev = state.kind;
   state.kind = kind;
   if (!state.data) { state.fill = null; drawMock(); fillLabels(my, ctrl.signal); showAlts(); return; }
-  const ok = await drawData(kind, my, ctrl.signal);
-  if (my !== seq) return;
+  const ok = drawData(kind);
   if (!ok) { state.kind = prev; setErr(`This data has no columns that fit a ${kind} chart`); }
   showAlts();
   $("meta").querySelector("b") && ($("meta").querySelector("b").textContent = state.kind);
@@ -337,14 +357,15 @@ async function run() {
   ctrl = new AbortController();
   const t0 = performance.now();
   setCached(false);
-  const ask = d ? (text ? text + "\n\nThe data: " : "No description given. Pick from the columns alone. The data: ") + summary(d) : text;
   try {
-    const p = await post("/api/pick", {text: ask}, ctrl.signal);
+    const p = d
+      ? await post("/api/decide", {text, columns: d.cols.map(c => ({name: c.name, type: c.type, distinct: c.distinct, samples: c.samples}))}, ctrl.signal)
+      : await post("/api/pick", {text}, ctrl.signal);
     if (my !== seq) return;
     setErr("");
     if (p.cached) setCached(true);
     const total = Math.round(performance.now() - t0);
-    $("meta").innerHTML = `<b>${esc(p.choice)}</b> — confidence ${(p.confidence ?? 0).toFixed(2)} — Jev ${p.ms} ms, round trip ${total} ms${d ? ' — <span id="roles"></span>' : ""}`;
+    $("meta").innerHTML = `<b>${esc(p.choice)}</b> — confidence ${(p.confidence ?? 0).toFixed(2)} — Jev ${p.ms} ms, round trip ${total} ms${d ? ` — ${Object.keys(p.columns || {}).length} column roles in the same call — <span id="roles"></span>` : ""}`;
     state.ranked = p.ranked || [];
     const kindChanged = p.choice !== state.kind;
     if (!d) {
@@ -354,13 +375,12 @@ async function run() {
       await fillLabels(my, ctrl.signal);
       return;
     }
-    // data: try Jev's pick, then its runner-ups, until one fits the columns
+    // data: Jev's column roles, then its pick or the best runner-up that fits the columns
+    state.colRoles = p.columns || {};
     const order = [p.choice, ...state.ranked.map(r => r[0]).filter(k => k !== p.choice)];
     for (const k of order) {
       state.kind = k;
-      const ok = await drawData(k, my, ctrl.signal);
-      if (my !== seq) return;
-      if (ok) break;
+      if (drawData(k)) break;
     }
     $("meta").querySelector("b").textContent = state.kind + (state.kind !== p.choice ? ` (Jev said ${p.choice}, no fit)` : "");
     showAlts();
@@ -378,7 +398,7 @@ $("q").addEventListener("input", e => {
 
 function loadText(text, name) {
   const d = parseText(text);
-  if (!d) { showData(null); setErr(text.trim() ? "Could not read that as CSV or TSV" : ""); return; }
+  if (!d) { showData(null); setErr(text.trim() ? "Could not read that as CSV, TSV or JSON" : ""); return; }
   setErr("");
   showData(d, name);
   run();

@@ -100,42 +100,53 @@ def pick(text):
     a = data.get("answers", {}).get("answer", {})
     probs = a.get("probabilities") or {}
     ranked = sorted(probs.items(), key=lambda kv: -kv[1])
-    return {"choice": a.get("choice"), "confidence": a.get("confidence"), "ranked": ranked[:3],
+    return {"choice": a.get("choice"), "confidence": a.get("confidence"), "ranked": ranked,
             "ms": round((time.time() - t0) * 1000), "cost": data.get("usage", {}).get("cost"), "cached": cached}
 
 
-ROLE_HELP = {
-    "cat": "the category column, the names of the items being compared",
-    "series": "the sub-group column, which splits each item or time step into groups",
-    "t": "the time column, the steps along the x axis",
-    "v": "the main numeric value column",
-    "v2": "a second numeric column, plotted against the first",
+# What each column can be. Jev answers one choice question per column, in the same call as the kind.
+COLUMN_ROLES = {
+    "name": "names or labels of the items being compared, such as country, product or company",
+    "value": "the numbers to plot, such as amount, rate, count or price",
+    "time": "dates, years, months, quarters or other time steps",
+    "group": "a sub-group that splits the data, such as region, type, gender or scenario",
+    "ignore": "not useful for the chart, such as IDs, codes, notes or free text",
 }
+MAX_COLUMNS = 30
 
 
-def roles(text, kind, need, columns, optional=()):
-    """One Jev call, one choice question per role. columns: [{name, type, distinct}]."""
+def ranked_probs(a):
+    return sorted((a.get("probabilities") or {}).items(), key=lambda kv: -kv[1])
+
+
+def decide(text, columns):
+    """One Jev call: the chart kind plus the role of every column. columns: [{name, type, distinct, samples}]."""
     t0 = time.time()
-    crit = {}
-    for c in columns[:40]:
-        name = str(c.get("name", ""))[:80]
-        if name:
-            crit[name] = f"{c.get('type', '?')} column, {c.get('distinct', '?')} distinct values"
-    if not crit:
-        raise ValueError("no columns")
-    ctx = f"Chart type: {kind}.\n" + (f"The user says: {text[:1000]}\n" if text else "")
-    qs = {}
-    for r in need:
-        if r in ROLE_HELP:
-            c = dict(crit, **({"(none)": "no column fits this role, leave it out"} if r in optional else {}))
-            qs[r] = {"type": "choice", "criteria": c,
-                     "instructions": ctx + f"Which column should be {ROLE_HELP[r]}?"}
+    cols = [c for c in columns if str(c.get("name", "")).strip()][:MAX_COLUMNS]
+    summary = "; ".join(
+        f"{c['name']} ({c.get('type', '?')}, {c.get('distinct', '?')} distinct, e.g. "
+        + ", ".join(str(x)[:20] for x in (c.get("samples") or [])[:3]) + ")" for c in cols)
+    ctx = (f"The user says: {text[:1500]}\n" if text else "") + f"The data has these columns: {summary}.\n"
+    qs = {"kind": {
+        "type": "choice",
+        "instructions": "A user describes the data they have. Pick the chart type that best shows it.\n\n" + ctx,
+        "criteria": {p["id"]: p["description"] for p in PRESETS},
+    }}
+    for i, c in enumerate(cols):
+        qs[f"col{i}"] = {
+            "type": "choice", "criteria": COLUMN_ROLES,
+            "instructions": ctx + f"What role does the column \"{str(c['name'])[:80]}\" play in a chart of this data?",
+        }
     data, cached = openrouter("/api/alpha/decisions", {"model": JEV_MODEL, "state": "", "questions": qs})
     ans = data.get("answers", {})
-    out = {r: {"choice": ans.get(r, {}).get("choice"),
-               "ranked": sorted((ans.get(r, {}).get("probabilities") or {}).items(), key=lambda kv: -kv[1])[:4]}
-           for r in qs}
-    return {"roles": out, "ms": round((time.time() - t0) * 1000), "cached": cached}
+    k = ans.get("kind", {})
+    out_cols = {}
+    for i, c in enumerate(cols):
+        a = ans.get(f"col{i}", {})
+        out_cols[c["name"]] = {"role": a.get("choice"), "confidence": a.get("confidence"), "ranked": ranked_probs(a)}
+    return {"choice": k.get("choice"), "confidence": k.get("confidence"), "ranked": ranked_probs(k),
+            "columns": out_cols, "ms": round((time.time() - t0) * 1000),
+            "cost": data.get("usage", {}).get("cost"), "cached": cached}
 
 
 FILL_PROMPT = """The user describes data they have. Invent plausible names for a sample chart of type "{kind}".
@@ -181,10 +192,10 @@ class H(SimpleHTTPRequestHandler):
                 return self.send(413, {"error": "request too large"})
             body = json.loads(self.rfile.read(n) or b"{}")
             text = (body.get("text") or "").strip()
-            bucket = {"/api/pick": "jev", "/api/roles": "jev", "/api/fill": "fill"}.get(self.path)
+            bucket = {"/api/pick": "jev", "/api/decide": "jev", "/api/fill": "fill"}.get(self.path)
             if not bucket:
                 return self.send(404, {"error": "not found"})
-            if self.path != "/api/roles" and not text:
+            if self.path != "/api/decide" and not text:
                 return self.send(400, {"error": "empty"})
             ok, wait = allow(self.client_ip(), bucket)
             if not ok:
@@ -192,9 +203,10 @@ class H(SimpleHTTPRequestHandler):
                                        "retry_after": wait})
             if self.path == "/api/pick":
                 return self.send(200, pick(text))
-            if self.path == "/api/roles":
-                return self.send(200, roles(text, body.get("kind", ""), body.get("need") or [], body.get("columns") or [],
-                                                 body.get("optional") or []))
+            if self.path == "/api/decide":
+                if not body.get("columns"):
+                    return self.send(400, {"error": "no columns"})
+                return self.send(200, decide(text, body["columns"]))
             return self.send(200, fill(text, body.get("kind", "bar")))
         except urllib.error.HTTPError as e:
             self.send(502, {"error": f"OpenRouter {e.code}: {e.read().decode()[:300]}"})
