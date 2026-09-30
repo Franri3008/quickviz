@@ -1,15 +1,12 @@
-// Input, data parsing, Jev calls and state. Draws only through window.QV (see SPEC.md).
 const $ = id => document.getElementById(id);
 const svgEl = $("chart");
 let seq = 0, timer = null, csvTimer = null, ctrl = null;
-// data: null or {rows, cols, name}. ranked: Jev's kinds, best first.
 let state = {kind: null, ranked: [], fill: null, text: "", data: null, spec: null, colRoles: {}, opts: [], idx: 0, names: null, fixes: {}};
 
-// ---------- small helpers ----------
 async function post(path, body, signal) {
   const r = await fetch(path, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body), signal});
   let j = {};
-  try { j = await r.json(); } catch (e) { /* non-JSON error page */ }
+  try { j = await r.json(); } catch (e) { }
   if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`);
   return j;
 }
@@ -22,14 +19,12 @@ function haveQV() {
   return false;
 }
 
-// ---------- parsing and column types ----------
 const NUM_RE = /^[-+]?[$€£]?\s*(\d{1,3}(,\d{3})+|\d+)?(\.\d+)?([eE][-+]?\d+)?\s*%?$/;
 const toNum = s => +String(s).replace(/[,$€£%\s]/g, "");
 const isNum = s => s !== "" && NUM_RE.test(s) && /\d/.test(s) && !isNaN(toNum(s));
 const TIME_NAME = /^(year|yr|date|month|time|quarter|qtr|week|day|period|season|fy|timestamp|datetime|hour)s?$|(_|\b)(year|date|month|quarter|week|day|period|season|time)$/i;
 const DATE_RE = /^(\d{4}([-\/.]\d{1,2}([-\/.]\d{1,2})?)?|\d{4}[- ]?(q|Q)[1-4]|(q|Q)[1-4][- ]?\d{4}|\d{4}[- ]?(w|W)\d{1,2}|\d{1,2}[-\/.]\d{1,2}[-\/.]\d{2,4}|(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?([- ]\d{2,4})?)([ T]\d{1,2}:\d{2}(:\d{2})?)?$/i;
 
-// JSON: an array of objects, an object holding one, or an object of equal-length arrays.
 function parseJSON(text) {
   let j;
   try { j = JSON.parse(text); } catch (e) { return null; }
@@ -86,7 +81,6 @@ function showData(d, name) {
     d.cols.map(c => `${c.name} ${c.type === "number" ? "#" : c.type === "time" ? "time" : "cat " + c.distinct}`).join(" / ") : "";
 }
 
-// ---------- roles per kind (SPEC.md) ----------
 const NEED = {
   bar: ["cat", "v"], treemap: ["cat", "v"], donut: ["cat", "v"],
   line: ["t", "v", "series?"], stacked_area: ["t", "series", "v"],
@@ -95,17 +89,15 @@ const NEED = {
 };
 const RATE_NAME = /rate|pct|percent|share|avg|average|mean|median|price|score|index|ratio|temp|age|rank|%/i;
 
-// Does column c fit role r for this kind? Simple type rules.
 function fits(r, c, kind) {
   if (!c) return false;
   if (r === "v" || r === "v2") return c.type === "number";
-  if (r === "t") return c.type === "time";  // no time column, no time chart, so the cycle skips it
+  if (r === "t") return c.type === "time";
   if (r === "series") return c.type !== "number" && c.distinct >= 2 && (kind === "dot_range" || c.distinct <= (kind === "sankey" ? 30 : 20));
   if (r === "cat") return c.type !== "number";
   return false;
 }
 
-// Heuristic: best free column for a role.
 function guess(r, cols, used, kind) {
   const free = cols.filter(c => !used.has(c.name) && fits(r, c, kind));
   if (!free.length) return null;
@@ -119,15 +111,12 @@ function guess(r, cols, used, kind) {
   return free.sort((a, b) => score(b) - score(a))[0].name;
 }
 
-// Wide data fallback: several numeric columns become one series each.
 function wideCols(cols, used) { return cols.filter(c => c.type === "number" && !used.has(c.name)).slice(0, 8).map(c => c.name); }
 
-// Full heuristic mapping, or null if this kind cannot be drawn from these columns.
 function heuristicMap(kind, cols, jev = {}) {
   const map = {}, used = new Set(), how = {};
   const need = NEED[kind] || [];
   const byName = Object.fromEntries(cols.map(c => [c.name, c]));
-  // order: time/cat roles first so numbers stay free for v
   for (const spec of need) {
     const r = spec.replace("?", ""), opt = spec.endsWith("?");
     if (r === "v" || r === "v2") continue;
@@ -137,7 +126,7 @@ function heuristicMap(kind, cols, jev = {}) {
     const g = opt ? (r === "series" ? guess(r, cols.filter(c => c.type === "category"), used, kind) : null) : guess(r, cols, used, kind);
     if (g) { map[r] = g; how[r] = "guess"; used.add(g); continue; }
     if (opt) continue;
-    if (r === "series") { map.series = "(columns)"; how.series = "wide"; continue; }  // melt numeric columns later
+    if (r === "series") { map.series = "(columns)"; how.series = "wide"; continue; }
     if (r === "v2") return null;
     return null;
   }
@@ -163,7 +152,6 @@ function heuristicMap(kind, cols, jev = {}) {
   return {map, how};
 }
 
-// ---------- aggregation to the tidy spec ----------
 function timeSorter(vals) {
   if (vals.every(isNum)) return (a, b) => toNum(a) - toNum(b);
   if (vals.every(v => !isNaN(Date.parse(v)))) return (a, b) => Date.parse(a) - Date.parse(b);
@@ -173,7 +161,6 @@ function timeSorter(vals) {
 
 function aggregate(kind, data, map) {
   let rows = data.rows;
-  // wide to long
   if (map.wide) rows = rows.flatMap(r => map.wide.map(w => ({...r, "(columns)": w, "(value)": r[w]})));
   const val = r => map.v === "(count)" ? 1 : toNum(r[map.v]);
   const good = r => map.v === "(count)" || isNum(r[map.v]);
@@ -238,7 +225,7 @@ function aggregate(kind, data, map) {
     case "bump": {
       let a = agg(["t", "cat"]);
       const isRank = /rank|position|place|pos\b/i.test(map.v || "");
-      if (!isRank) {  // turn values into ranks per time step, 1 is the highest value
+      if (!isRank) {
         const byT = d3.group(a, d => d.t);
         a = [...byT.values()].flatMap(g => g.sort((x, y) => y.v - x.v).map((d, i) => ({...d, v: i + 1})));
       }
@@ -253,7 +240,6 @@ function aggregate(kind, data, map) {
 
 const LABEL = {"(count)": "Count", "(value)": "Value", "(columns)": ""};
 function buildSpec(kind, map) {
-  // readable names from Qwen once they arrive, raw column names until then
   const d = state.data, nm = state.names || {}, lab = n => nm.columns?.[n] || (LABEL[n] ?? n ?? "");
   const rows = aggregate(kind, d, map);
   const xy = {
@@ -266,15 +252,13 @@ function buildSpec(kind, map) {
   return {kind, title, xLabel: xy[0], yLabel: xy[1], unit, mock: false, rows};
 }
 
-// ---------- drawing ----------
 function renderSpec(spec) {
   if (!haveQV()) return;
   state.spec = spec;
-  QV.render(svgEl, spec);  // charts.js draws spec.title inside the svg
+  QV.render(svgEl, spec);
   $("png").hidden = $("html").hidden = false;
 }
 
-// Old sample names stay only while the user keeps typing the same sentence, never for a new one.
 function sameThought(a = "", b = "") { a = a.toLowerCase(); b = b.toLowerCase(); return !!a && !!b && (a.startsWith(b) || b.startsWith(a)); }
 
 function drawMock() {
@@ -283,24 +267,20 @@ function drawMock() {
   renderSpec(QV.mock(state.kind, f, state.kind + "|" + (f.title || state.text)));
 }
 
-// Turn Jev's per-column roles (name / value / time / group / ignore) into hints for this kind's roles.
 function hintsFor(kind, cols) {
   const byRole = r => cols.filter(c => state.colRoles[c.name]?.role === r)
     .sort((a, b) => (state.colRoles[b.name].confidence ?? 0) - (state.colRoles[a.name].confidence ?? 0)).map(c => c.name);
   const names = byRole("name"), values = byRole("value"), times = byRole("time"), groups = byRole("group");
   const catList = [...names, ...groups], serList = [...groups, ...names, ...times];
   const h = {v: values[0], v2: values[1], t: times[0]};
-  // only kinds that draw a cat role take a name column for it, otherwise it is free to be the series
   if ((NEED[kind] || []).includes("cat")) h.cat = catList[0];
   h.series = serList.find(x => x !== h.cat && x !== h.t);
   if (kind === "line" && !h.series) h.series = "(none)";
-  // sankey: Jev cannot tell flow direction, so the earlier column is the source
   const at = n => cols.findIndex(c => c.name === n);
   if (kind === "sankey" && h.cat && h.series && at(h.series) < at(h.cat)) [h.cat, h.series] = [h.series, h.cat];
   return h;
 }
 
-// Map roles for `kind` from Jev's column roles, validate, aggregate and render. Returns false if the kind cannot fit.
 function specFor(kind) {
   const d = state.data;
   const kept = d.cols.filter(c => state.colRoles[c.name]?.role !== "ignore");
@@ -323,8 +303,6 @@ function drawData(kind) {
   return true;
 }
 
-// ---------- cycling: every kind Jev ranked, best first, skipping ones the data cannot fill ----------
-// Only kinds Jev gives a real chance. A clear ask ("a treemap of...") leaves just one.
 const MIN_P = 0.05;
 function buildOpts() {
   const ranked = state.ranked.length ? state.ranked.filter(([k, p]) => p >= MIN_P || k === state.kind).map(r => r[0]) : [state.kind];
@@ -376,11 +354,9 @@ async function switchKind(kind) {
   $("meta").querySelector("b") && ($("meta").querySelector("b").textContent = state.kind);
 }
 
-// Qwen's reply: sample labels (no data) or titles and axis names (data). Redraws the current chart.
 async function applyWords(promise, my, key) {
   setPhase("refining");
   try {
-    // never leave the overlay up for long: after 6 s the chart stays as drawn
     const w = await Promise.race([promise, new Promise((_, no) => setTimeout(() => no(new Error("The check took too long, showing the chart as drawn")), 6000))]);
     if (my !== seq) return;
     state[key] = w;
@@ -397,7 +373,6 @@ async function applyWords(promise, my, key) {
   }
 }
 
-// The roles behind the chart on screen, for Gemini to check.
 function currentMap() {
   const d = state.data;
   if (!d) return null;
@@ -407,7 +382,6 @@ function currentMap() {
   return m && m.map;
 }
 
-// ---------- phases: body[data-qv-phase] is "refining" while Gemini works, "empty" when there is nothing to show ----------
 (() => {
   const css = document.createElement("style");
   css.textContent = `
@@ -416,7 +390,7 @@ function currentMap() {
 body[data-qv-phase="refining"] .qv-refining{opacity:1;visibility:visible}
 .qv-refining span{width:34px;height:34px;border-radius:50%;border:3px solid rgba(255,255,255,.25);border-top-color:#fff;animation:qv-spin .8s linear infinite}
 @keyframes qv-spin{to{transform:rotate(360deg)}}`;
-  document.head.prepend(css);  // first, so style.css can override it
+  document.head.prepend(css);
   const ov = document.createElement("div");
   ov.className = "qv-refining";
   ov.innerHTML = "<span></span>";
@@ -450,7 +424,6 @@ async function fillLabels(my, signal) {
   }
 }
 
-// ---------- main flow ----------
 async function run() {
   const text = state.text, d = state.data;
   if (!d && text.length < 4) return;
@@ -476,11 +449,9 @@ async function run() {
     if (!d) {
       state.kind = p.choice;
       buildOpts(); showAlts(); drawMock();
-      // Gemini writes sample names for the kind Jev chose. The last ones stay on screen until they land.
       await applyWords(post("/api/fill", {text, kind: state.kind}, signal), my, "fill");
       return;
     }
-    // data: Jev's column roles, then its pick or the best runner-up that fits the columns
     state.colRoles = p.columns || {};
     const order = [p.choice, ...state.ranked.map(r => r[0]).filter(k => k !== p.choice)];
     for (const k of order) {
@@ -489,7 +460,6 @@ async function run() {
     }
     $("meta").querySelector("b").textContent = state.kind + (state.kind !== p.choice ? ` (Jev said ${p.choice}, no fit)` : "");
     buildOpts(); showAlts();
-    // Gemini checks the chart that is on screen: role fixes, title, axis names
     const roles = Object.fromEntries(Object.entries(currentMap() || {}).filter(([k, v]) => ["cat", "series", "t", "v", "v2"].includes(k) && !v.startsWith("(")));
     await applyWords(post("/api/names", {text, columns, kind: state.kind, roles}, signal), my, "names");
   } catch (e) {
@@ -500,7 +470,6 @@ async function run() {
 $("q").addEventListener("input", e => {
   clearTimeout(timer);
   state.text = e.target.value.trim();
-  // demo data belongs to its demo sentence. Typing something new drops it. Pasted or uploaded data stays.
   if (state.demo) {
     state.demo = false;
     $("csv").value = ""; $("csv").readOnly = false;
@@ -551,7 +520,6 @@ $("png").onclick = () => {
   QV.exportPNG(svgEl, fileName() + ".png");
 };
 
-// One self-contained HTML file per chart: the spec, charts.js inlined, d3 from the CDN.
 $("html").onclick = async () => {
   if (!state.spec) return;
   const code = await (await fetch("charts.js")).text();
@@ -562,16 +530,23 @@ $("html").onclick = async () => {
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap">
 <script src="https://cdn.jsdelivr.net/npm/d3@7"><\/script>
 <script src="https://cdn.jsdelivr.net/npm/d3-sankey@0.12"><\/script>
-<style>body{margin:0;padding:24px;background:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
-#chart{display:block;width:100%;max-width:1100px;height:420px;margin:0 auto;overflow:visible}</style>
+<style>html,body{height:100%;margin:0;background:#fff}
+body{box-sizing:border-box;padding:24px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+#chart{display:block;width:100%;height:100%;overflow:visible}</style>
 </head><body>
 <svg id="chart"></svg>
 <script>${safe(code)}<\/script>
 <script>
 const spec = ${safe(JSON.stringify(state.spec))};
 const el = document.getElementById("chart");
-QV.render(el, spec);
-let t; addEventListener("resize", () => { clearTimeout(t); t = setTimeout(() => QV.render(el, spec), 150); });
+function fit() {
+  const box = document.body.getBoundingClientRect(), pad = 48;
+  const aspect = Math.max(0.6, (box.width - pad) / Math.max(200, box.height - pad));
+  QV.render(el, spec, {width: Math.max(360, 420 * aspect)});
+  el.removeAttribute("width"); el.removeAttribute("height");
+}
+fit();
+let t; addEventListener("resize", () => { clearTimeout(t); t = setTimeout(fit, 150); });
 <\/script>
 </body></html>
 `;
@@ -582,7 +557,6 @@ let t; addEventListener("resize", () => { clearTimeout(t); t = setTimeout(() => 
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 };
 
-// ---------- demo buttons, only if demo/demos.json exists ----------
 (async () => {
   try {
     const r = await fetch("demo/demos.json");
@@ -595,7 +569,7 @@ let t; addEventListener("resize", () => { clearTimeout(t); t = setTimeout(() => 
     box.querySelectorAll("button").forEach(b => b.onclick = async () => {
       const dm = demos[+b.dataset.i];
       let csv = dm.csv || "";
-      if (!csv.includes("\n")) {  // a file name, relative to demo/
+      if (!csv.includes("\n")) {
         const path = /^(demo\/|\/|https?:)/.test(csv) ? csv : "demo/" + csv;
         const res = await fetch(path);
         if (!res.ok) return setErr(`Demo file ${csv} not found`);
@@ -607,5 +581,5 @@ let t; addEventListener("resize", () => { clearTimeout(t); t = setTimeout(() => 
       loadText(csv, dm.name || "demo");
       state.demo = !!state.data;
     });
-  } catch (e) { /* no demos */ }
+  } catch (e) { }
 })();

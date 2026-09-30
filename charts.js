@@ -746,11 +746,13 @@
     return Math.max(320, Math.round(w));
   }
 
-  function render(svgEl, spec) {
+  // opts.width draws at a fixed width and turns off resize redraws. Exported HTML uses it to scale the chart to the window.
+  function render(svgEl, spec, opts) {
     if (!svgEl) return;
     spec = spec || {};
     const st = svgEl.__qv || (svgEl.__qv = {});
-    const W = widthOf(svgEl);
+    st.fixedW = opts && opts.width ? Math.max(320, Math.round(opts.width)) : null;
+    const W = st.fixedW || widthOf(svgEl);
     const changed = st.kind !== spec.kind;
     st.spec = spec; st.kind = spec.kind; st.w = W;
     const svg = d3.select(svgEl).attr("width", W).attr("height", H).attr("viewBox", `0 0 ${W} ${H}`)
@@ -772,7 +774,7 @@
         clearTimeout(timer);
         timer = setTimeout(() => {
           const s = svgEl.__qv;
-          if (s && s.spec && Math.abs(widthOf(svgEl) - s.w) > 1) render(svgEl, s.spec);
+          if (s && s.spec && !s.fixedW && Math.abs(widthOf(svgEl) - s.w) > 1) render(svgEl, s.spec);
         }, 120);
       });
       st.ro.observe(svgEl);
@@ -793,17 +795,15 @@
       ? uniq(a.map(str).map(s => s.trim()).filter(Boolean)) : null;
     const rg = Array.isArray(f.range) && f.range.length === 2 && Number.isFinite(+f.range[0]) && Number.isFinite(+f.range[1]) && +f.range[1] > +f.range[0]
       ? [+f.range[0], +f.range[1]] : [0, 100];
-    // Qwen sometimes puts the years in categories and the items in series. Swap them back.
     const timeish = a => a && a.every(x => /^(\d{4}([-\/]\d{2,4})?|(19|20)\d{2}[- ]?q[1-4]|(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?( \d{4})?)$/i.test(x));
     let catList = list(f.categories, 2), ser = list(f.series, 2);
     if (timeish(catList) && ser && !timeish(ser)) [catList, ser] = [ser, null];
-    if (!catList && ser && !timeish(ser)) catList = ser;  // sometimes the items only come back as series
+    if (!catList && ser && !timeish(ser)) catList = ser;
     f.categories = catList;
     const cats = (catList || ["Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot"]).slice(0, 12);
     const series = (ser || ["Group 1", "Group 2", "Group 3"]).slice(0, 8);
     const r = rng([kind, JSON.stringify([f.title, f.x, f.y, f.unit, cats, ser, rg]), seed == null ? "" : String(seed)].join("|"));
     const span = rg[1] - rg[0], within = (a = 0, b = 1) => rg[0] + (a + r() * (b - a)) * span;
-    // Qwen's time labels when it gave enough, so "monthly" gets months; years otherwise
     const tl = list(f.times, 3);
     const years = n => tl ? tl.slice(0, 12) : d3.range(n).map(i => String(2025 - n + 1 + i));
     const round = v => (Math.abs(v) >= 100 ? Math.round(v) : Math.abs(v) >= 1 ? Math.round(v * 10) / 10 : Math.round(v * 1000) / 1000);
@@ -814,7 +814,6 @@
       case "donut":
         rows = (cats.length <= 5 ? cats : ser && ser.length <= 5 ? ser : cats.slice(0, 4)).map(cat => ({cat, v: round(within(0.2, 1))})); break;
       case "line": {
-        // the items tracked over time are the lines. Qwen usually lists them as categories, so those win
         const S = list(f.categories, 2) ? cats.slice(0, 8) : ser ? series : [null];
         S.forEach(s => { let v = within(0.3, 0.6); years(8).forEach(t => { v = Math.min(rg[1], Math.max(rg[0], v + (r() - 0.4) * span * 0.12)); rows.push(s ? {t, series: s, v: round(v)} : {t, v: round(v)}); }); });
         break;
@@ -823,7 +822,6 @@
         (list(f.categories, 2) ? cats.slice(0, 8) : series).forEach((s, i, all) => { let v = within(0.1, 0.3) / all.length * 2; years(8).forEach(t => { v = Math.max(span * 0.02, v * (0.9 + r() * 0.3)); rows.push({t, series: s, v: round(v)}); }); });
         break;
       case "stacked_bar": case "sankey": {
-        // Gemini names the two sides of a flow when the chart is a sankey
         const src = kind === "sankey" && list(f.sources, 2), dst = kind === "sankey" && list(f.targets, 2);
         const L = src && dst ? src.slice(0, 6) : kind === "sankey" ? cats.slice(0, 5) : cats, R = src && dst ? dst.slice(0, 6) : series;
         L.forEach(cat => R.forEach(s => { if (kind !== "sankey" || r() > 0.2) rows.push({cat, series: s, v: round(within(0.1, 1))}); }));
