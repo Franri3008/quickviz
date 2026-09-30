@@ -321,8 +321,10 @@ function drawData(kind) {
 }
 
 // ---------- cycling: every kind Jev ranked, best first, skipping ones the data cannot fill ----------
+// Only kinds Jev gives a real chance. A clear ask ("a treemap of...") leaves just one.
+const MIN_P = 0.05;
 function buildOpts() {
-  const ranked = state.ranked.length ? state.ranked.map(r => r[0]) : [state.kind];
+  const ranked = state.ranked.length ? state.ranked.filter(([k, p]) => p >= MIN_P || k === state.kind).map(r => r[0]) : [state.kind];
   state.opts = state.data ? ranked.filter(k => k === state.kind || specFor(k)) : ranked;
   state.idx = Math.max(0, state.opts.indexOf(state.kind));
 }
@@ -350,7 +352,7 @@ document.addEventListener("keydown", e => {
 });
 
 function showAlts() {
-  $("alts").innerHTML = state.ranked.filter(([k]) => k !== state.kind).slice(0, 2).map(([k, v]) =>
+  $("alts").innerHTML = state.ranked.filter(([k]) => k !== state.kind && state.opts.includes(k)).slice(0, 2).map(([k, v]) =>
     `<span data-k="${esc(k)}">${esc(k)} ${v.toFixed(2)}</span>`).join("");
   document.querySelectorAll("#alts span").forEach(s => s.onclick = () => switchKind(s.dataset.k));
   state.idx = Math.max(0, state.opts.indexOf(state.kind));
