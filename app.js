@@ -271,7 +271,7 @@ function renderSpec(spec) {
   if (!haveQV()) return;
   state.spec = spec;
   QV.render(svgEl, spec);  // charts.js draws spec.title inside the svg
-  $("png").hidden = false;
+  $("png").hidden = $("html").hidden = false;
 }
 
 function drawMock() {
@@ -481,10 +481,43 @@ $("clear").onclick = () => {
   if (state.text.length >= 4) run();
 };
 
+const fileName = () => ((state.spec && state.spec.title) || state.kind || "chart").toLowerCase()
+  .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "chart";
+
 $("png").onclick = () => {
   if (!haveQV() || !QV.exportPNG) return;
-  const name = ((state.spec && state.spec.title) || state.kind || "chart").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "chart";
-  QV.exportPNG(svgEl, name + ".png");
+  QV.exportPNG(svgEl, fileName() + ".png");
+};
+
+// One self-contained HTML file per chart: the spec, charts.js inlined, d3 from the CDN.
+$("html").onclick = async () => {
+  if (!state.spec) return;
+  const code = await (await fetch("charts.js")).text();
+  const safe = t => t.replace(/<\/(script)/gi, "<\\/$1");
+  const page = `<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${esc(state.spec.title || "Chart")}</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/d3@7"><\/script>
+<script src="https://cdn.jsdelivr.net/npm/d3-sankey@0.12"><\/script>
+<style>body{margin:0;padding:24px;background:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+#chart{display:block;width:100%;max-width:1100px;height:420px;margin:0 auto;overflow:visible}</style>
+</head><body>
+<svg id="chart"></svg>
+<script>${safe(code)}<\/script>
+<script>
+const spec = ${safe(JSON.stringify(state.spec))};
+const el = document.getElementById("chart");
+QV.render(el, spec);
+let t; addEventListener("resize", () => { clearTimeout(t); t = setTimeout(() => QV.render(el, spec), 150); });
+<\/script>
+</body></html>
+`;
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([page], {type: "text/html"}));
+  a.download = fileName() + ".html";
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 };
 
 // ---------- demo buttons, only if demo/demos.json exists ----------
