@@ -95,8 +95,9 @@ def pick(text):
             },
             "chartable": {
                 "type": "noul",
-                "instructions": "Does this text describe data, numbers or a topic that could be shown as a chart? "
-                                "Gibberish, greetings or a single vague word are not.\n\nText: " + text[:2000],
+                "instructions": "Could someone want a chart about this text? Any real-world topic, place, product, "
+                                "organisation, market or quantity counts, even a single word such as bitcoin or coffee. "
+                                "Only gibberish, greetings, thanks, filler words or small talk do not.\n\nText: " + text[:2000],
             },
         },
     })
