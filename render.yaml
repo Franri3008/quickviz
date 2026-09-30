@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: quickviz
+    runtime: python
+    plan: free
+    buildCommand: "true"
+    startCommand: python server.py
+    envVars:
+      - key: OPENROUTER_API_KEY
+        sync: false
