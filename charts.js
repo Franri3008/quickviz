@@ -793,8 +793,12 @@
       ? uniq(a.map(str).map(s => s.trim()).filter(Boolean)) : null;
     const rg = Array.isArray(f.range) && f.range.length === 2 && Number.isFinite(+f.range[0]) && Number.isFinite(+f.range[1]) && +f.range[1] > +f.range[0]
       ? [+f.range[0], +f.range[1]] : [0, 100];
-    const cats = (list(f.categories, 2) || ["Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot"]).slice(0, 12);
-    const ser = list(f.series, 2);
+    // Qwen sometimes puts the years in categories and the items in series. Swap them back.
+    const timeish = a => a && a.every(x => /^(\d{4}([-\/]\d{2,4})?|(19|20)\d{2}[- ]?q[1-4]|(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?( \d{4})?)$/i.test(x));
+    let catList = list(f.categories, 2), ser = list(f.series, 2);
+    if (timeish(catList) && ser && !timeish(ser)) [catList, ser] = [ser, null];
+    f.categories = catList;
+    const cats = (catList || ["Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot"]).slice(0, 12);
     const series = (ser || ["Group 1", "Group 2", "Group 3"]).slice(0, 8);
     const r = rng([kind, JSON.stringify([f.title, f.x, f.y, f.unit, cats, ser, rg]), seed == null ? "" : String(seed)].join("|"));
     const span = rg[1] - rg[0], within = (a = 0, b = 1) => rg[0] + (a + r() * (b - a)) * span;

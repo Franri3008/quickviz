@@ -67,7 +67,7 @@ def openrouter(path, body, timeout=20):
 
 
 # ---------- per-visitor rate limit, in memory ----------
-LIMITS = {"jev": int(os.environ.get("RATE_JEV", 60)), "fill": int(os.environ.get("RATE_FILL", 20))}
+LIMITS = {"jev": int(os.environ.get("RATE_JEV", 60)), "fill": int(os.environ.get("RATE_FILL", 60))}
 _hits = defaultdict(deque)
 _hits_lock = threading.Lock()
 

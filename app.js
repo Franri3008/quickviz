@@ -414,7 +414,8 @@ async function run() {
     // Qwen starts at the same moment as Jev, so its words arrive about as soon as possible
     const words = post(d ? "/api/names" : "/api/fill", d ? {text, columns} : {text}, signal);
     words.catch(() => {});
-    if (d) state.names = null; else state.fill = null;
+    // keep the last words until the new ones land, so names never fall back to placeholders mid-typing
+    if (d) state.names = null;
     const p = d ? await post("/api/decide", {text, columns}, signal) : await post("/api/pick", {text}, signal);
     if (my !== seq) return;
     setErr("");
