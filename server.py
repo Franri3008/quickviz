@@ -6,12 +6,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent
 PORT = int(os.environ.get("PORT", 8799))
-# Render sets PORT and needs 0.0.0.0. Locally we stay on 127.0.0.1.
 HOST = "0.0.0.0" if "PORT" in os.environ else "127.0.0.1"
 JEV_MODEL = "typesafe/jev-1.13"
-# OpenRouter tries these in order, so a rate-limited model falls through to the next.
-# Gemini 3.8 Flash writes the words and checks the chart, about 1.8 s. Its thinking cannot be switched off,
-# so it runs at the lowest effort. 2.5 Flash Lite is the fallback.
 FILL_MODELS = os.environ.get("FILL_MODELS", "google/gemini-3.8-flash,google/gemini-2.5-flash-lite").split(",")
 REASONING = {"effort": "minimal"}
 
@@ -19,7 +15,6 @@ REASONING = {"effort": "minimal"}
 def load_key():
     if os.environ.get("OPENROUTER_API_KEY"):
         return os.environ["OPENROUTER_API_KEY"]
-    # Local only. On Render the key comes from the environment.
     for p in [ROOT / ".env", Path.home() / "Documents/github/observatory-site/.env"]:
         if p.exists():
             for line in p.read_text().splitlines():
@@ -32,7 +27,6 @@ KEY = load_key()
 PRESETS = json.loads((ROOT / "presets.json").read_text())
 
 
-# ---------- demo cache: record with CACHE_RECORD=1, replay when OpenRouter fails ----------
 CACHE_PATH = ROOT / "demo" / "cache.json"
 CACHE_RECORD = os.environ.get("CACHE_RECORD") == "1"
 _cache_lock = threading.Lock()
@@ -69,7 +63,6 @@ def openrouter(path, body, timeout=20):
     return data, False
 
 
-# ---------- per-visitor rate limit, in memory ----------
 LIMITS = {"jev": int(os.environ.get("RATE_JEV", 60)), "fill": int(os.environ.get("RATE_FILL", 60))}
 _hits = defaultdict(deque)
 _hits_lock = threading.Lock()
@@ -84,7 +77,7 @@ def allow(ip, bucket):
         if len(q) >= LIMITS[bucket]:
             return False, int(61 - (now - q[0]))
         q.append(now)
-        if len(_hits) > 5000:  # drop idle visitors so memory stays small
+        if len(_hits) > 5000:
             for k in [k for k, v in _hits.items() if not v or v[-1] < now - 60]:
                 del _hits[k]
         return True, 0
@@ -100,7 +93,6 @@ def pick(text):
                 "instructions": "A user describes the data they have. Pick the chart type that best shows it.\n\n" + text[:2000],
                 "criteria": {p["id"]: p["description"] for p in PRESETS},
             },
-            # same call, no extra wait: is there anything to chart at all?
             "chartable": {
                 "type": "noul",
                 "instructions": "Does this text describe data, numbers or a topic that could be shown as a chart? "
@@ -116,7 +108,6 @@ def pick(text):
             "ms": round((time.time() - t0) * 1000), "cost": data.get("usage", {}).get("cost"), "cached": cached}
 
 
-# What each column can be. Jev answers one choice question per column, in the same call as the kind.
 COLUMN_ROLES = {
     "name": "names or labels of the items being compared, such as country, product or company",
     "value": "the numbers to plot, such as amount, rate, count or price",

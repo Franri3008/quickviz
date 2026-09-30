@@ -5,7 +5,7 @@ import csv, json, re, sys
 from pathlib import Path
 sys.argv, runs = sys.argv[:1], int(sys.argv[1]) if len(sys.argv) > 1 else 3
 sys.path.insert(0, str(Path(__file__).parent))
-from eval import pick, ROOT  # noqa: E402
+from eval import pick, ROOT
 
 WANT = {"youth_unemployment.csv": "line", "eu_gas_imports.csv": "sankey", "rd_vs_patents.csv": "scatter"}
 TIME_NAME = re.compile(r"^(year|yr|date|month|time|quarter|qtr|week|day|period|season|fy|timestamp|datetime|hour)s?$|(_|\b)(year|date|month|quarter|week|day|period|season|time)$", re.I)

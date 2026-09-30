@@ -1,0 +1,92 @@
+order_batch_id,weekday,hour,orders,revenue_eur,staff_note
+1000,Monday,07:00,26,111.73,
+1001,Monday,08:00,91,389.74,
+1002,Monday,09:00,61,251.24,
+1003,Monday,10:00,17,71.75,
+1004,Monday,11:00,16,72.21,
+1005,Monday,12:00,33,145.71,
+1006,Monday,13:00,55,241.37,
+1007,Monday,14:00,18,74.22,
+1008,Monday,15:00,24,103.43,busy
+1009,Monday,16:00,35,153.3,busy
+1010,Monday,17:00,23,100.99,
+1011,Monday,18:00,16,66.38,oat milk ran out
+1012,Monday,19:00,16,70.55,
+1013,Tuesday,07:00,27,121.19,new barista
+1014,Tuesday,08:00,99,423.8,
+1015,Tuesday,09:00,64,284.77,
+1016,Tuesday,10:00,17,74.16,busy
+1017,Tuesday,11:00,17,72.15,
+1018,Tuesday,12:00,39,169.88,
+1019,Tuesday,13:00,50,208.8,oat milk ran out
+1020,Tuesday,14:00,19,87.04,
+1021,Tuesday,15:00,20,85.4,oat milk ran out
+1022,Tuesday,16:00,34,149.26,
+1023,Tuesday,17:00,22,100.59,
+1024,Tuesday,18:00,15,61.96,
+1025,Tuesday,19:00,16,67.88,
+1026,Wednesday,07:00,26,106.89,oat milk ran out
+1027,Wednesday,08:00,99,436.14,
+1028,Wednesday,09:00,67,300.44,
+1029,Wednesday,10:00,16,68.78,
+1030,Wednesday,11:00,17,70.38,
+1031,Wednesday,12:00,36,163.5,busy
+1032,Wednesday,13:00,58,258.29,busy
+1033,Wednesday,14:00,20,91.58,new barista
+1034,Wednesday,15:00,21,87.69,
+1035,Wednesday,16:00,36,156.33,
+1036,Wednesday,17:00,23,97.54,busy
+1037,Wednesday,18:00,14,61.67,oat milk ran out
+1038,Wednesday,19:00,14,62.23,
+1039,Thursday,07:00,27,116.86,
+1040,Thursday,08:00,107,460.0,new barista
+1041,Thursday,09:00,65,287.11,
+1042,Thursday,10:00,16,73.48,
+1043,Thursday,11:00,15,64.05,
+1044,Thursday,12:00,33,144.65,
+1045,Thursday,13:00,54,237.97,oat milk ran out
+1046,Thursday,14:00,17,74.92,
+1047,Thursday,15:00,21,96.13,busy
+1048,Thursday,16:00,36,149.81,
+1049,Thursday,17:00,24,104.16,
+1050,Thursday,18:00,15,62.27,
+1051,Thursday,19:00,15,65.09,busy
+1052,Friday,07:00,31,130.28,
+1053,Friday,08:00,120,500.8,oat milk ran out
+1054,Friday,09:00,74,331.45,
+1055,Friday,10:00,19,84.51,
+1056,Friday,11:00,16,72.87,oat milk ran out
+1057,Friday,12:00,38,165.92,
+1058,Friday,13:00,63,278.35,oat milk ran out
+1059,Friday,14:00,21,94.56,
+1060,Friday,15:00,26,109.2,
+1061,Friday,16:00,38,174.6,
+1062,Friday,17:00,26,109.97,
+1063,Friday,18:00,18,77.83,oat milk ran out
+1064,Friday,19:00,18,82.4,oat milk ran out
+1065,Saturday,07:00,26,107.93,
+1066,Saturday,08:00,34,142.87,oat milk ran out
+1067,Saturday,09:00,56,243.03,
+1068,Saturday,10:00,83,374.94,
+1069,Saturday,11:00,74,332.35,new barista
+1070,Saturday,12:00,58,263.58,
+1071,Saturday,13:00,37,153.3,oat milk ran out
+1072,Saturday,14:00,46,199.25,new barista
+1073,Saturday,15:00,53,236.51,
+1074,Saturday,16:00,38,156.32,
+1075,Saturday,17:00,30,135.1,
+1076,Saturday,18:00,24,106.29,
+1077,Saturday,19:00,24,98.66,
+1078,Sunday,07:00,28,122.17,
+1079,Sunday,08:00,37,169.95,new barista
+1080,Sunday,09:00,52,213.93,
+1081,Sunday,10:00,76,340.62,
+1082,Sunday,11:00,78,352.33,new barista
+1083,Sunday,12:00,51,231.99,oat milk ran out
+1084,Sunday,13:00,39,176.03,new barista
+1085,Sunday,14:00,46,200.83,
+1086,Sunday,15:00,50,226.82,
+1087,Sunday,16:00,43,192.98,
+1088,Sunday,17:00,27,117.09,
+1089,Sunday,18:00,27,115.1,
+1090,Sunday,19:00,25,112.3,

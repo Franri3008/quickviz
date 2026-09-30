@@ -59,7 +59,6 @@ def main():
             hits = [r["choice"] in c["ok"] for c, r in zip(cases, res)]
             ms = [r["ms"] for r in res if r["ms"]]
             total_cost += sum(r["cost"] for r in res)
-            # p_ok: probability mass Jev puts on the acceptable answers. Higher = less likely to flip.
             p_ok = [sum(r["probs"].get(k, 0) for k in c["ok"]) for c, r in zip(cases, res)]
             print(f"run {run} [{s}] accuracy {sum(hits)}/{len(cases)} = {sum(hits)/len(cases):.0%}"
                   f"  mean p_ok {sum(p_ok)/len(p_ok):.2f}  mean latency {sum(ms)/max(len(ms),1):.0f} ms")

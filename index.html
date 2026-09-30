@@ -1,24 +1,196 @@
 <!doctype html>
-<html><head><meta charset="utf-8"><title>QuickViz</title>
-<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-<script src="https://cdn.jsdelivr.net/npm/d3-sankey@0.12"></script>
-<link rel="stylesheet" href="style.css">
-</head><body>
-<h1>QuickViz</h1>
-<div id="demos" hidden></div>
-<input id="q" placeholder="Describe your data… e.g. monthly sales per region since 2020" autofocus>
-<div id="data">
-  <textarea id="csv" rows="3" placeholder="…or paste CSV / TSV here, with a header row"></textarea>
-  <div id="datactl">
-    <label id="filebtn">Upload .csv<input id="file" type="file" accept=".csv,.tsv,.txt,text/csv" hidden></label>
-    <button id="clear" type="button" hidden>Clear data</button>
-    <span id="colsum"></span>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0d0d">
+  <meta name="description" content="Turn a question or a dataset into a chart in seconds.">
+  <title>QuickViz</title>
+  <script>try { document.documentElement.dataset.theme = localStorage.getItem("quickviz-theme") === "light" ? "light" : "dark"; } catch (e) { document.documentElement.dataset.theme = "dark"; }</script>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/d3@7" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3-sankey@0.12" defer></script>
+  <script src="charts.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to light mode" title="Switch to light mode">
+      <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path></svg>
+      <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.4A8.5 8.5 0 0 1 9.6 3.5 8.5 8.5 0 1 0 20.5 14.4Z"></path></svg>
+    </button>
+    <main class="work-view">
+      <div class="page-heading">
+        <h1 class="page-title">Describe what you want to see</h1>
+        <p class="page-subtitle">then add your data if you have it.</p>
+      </div>
+
+      <section class="composer" aria-label="Create a chart">
+        <label class="field-label" for="q">WHAT WOULD YOU LIKE TO VISUALIZE?</label>
+        <input id="q" type="text" placeholder="e.g. monthly sales by region since 2020" autocomplete="off" autofocus>
+        <div class="composer-footer">
+          <div id="data" class="data-controls">
+            <div id="datactl">
+              <button id="filebtn" class="add-data-button" type="button"><span aria-hidden="true">＋</span> Upload data</button>
+              <button id="clear" class="control-button" type="button" hidden>Clear data</button>
+            </div>
+            <input id="file" type="file" accept=".csv,.tsv,.txt,.json,text/csv,application/json" hidden>
+            <textarea id="csv" aria-label="Uploaded data" hidden></textarea>
+            <span id="colsum" class="sr-only" aria-live="polite"></span>
+          </div>
+          <span class="composer-activity" aria-hidden="true">
+            <span class="composer-spark">✦</span>
+            <span class="composer-spinner"></span>
+          </span>
+        </div>
+      </section>
+
+      <div id="demos" hidden></div>
+      <section class="preview-panel" aria-label="Chart preview">
+        <div class="result-context">
+          <span id="cached" hidden>Cached result</span>
+          <div id="meta" aria-live="polite"></div>
+          <div id="alts"></div>
+          <div id="err" role="alert"></div>
+        </div>
+        <div class="chart-stage">
+          <div class="chart-frame">
+            <svg id="chart" width="820" height="420" role="img" aria-label="Generated chart"></svg>
+            <div class="title-loading" aria-hidden="true"><span class="skeleton"></span></div>
+          </div>
+          <div id="chart-tabs" role="tablist" aria-label="Chart options" hidden></div>
+        </div>
+        <div class="preview-footer">
+          <div id="cycle"><button id="prev" type="button" aria-label="Previous chart" hidden>&larr;</button><span id="optcount"></span><button id="next" type="button" aria-label="Next chart" hidden>&rarr;</button></div>
+          <div id="actions"><button id="png" class="control-button" type="button" hidden>Download PNG</button><button id="html" class="control-button" type="button" hidden>Download HTML</button></div>
+        </div>
+      </section>
+      <span id="loading-status" class="sr-only" role="status" aria-live="polite"></span>
+    </main>
   </div>
-</div>
-<div id="meta"></div><div id="alts"></div><div id="err"></div><div id="cached" hidden>cached</div>
-<svg id="chart" width="820" height="420"></svg>
-<div id="cycle"><button id="prev" type="button" hidden>&larr;</button><span id="optcount"></span><button id="next" type="button" hidden>&rarr;</button></div>
-<div id="actions"><button id="png" type="button" hidden>Download PNG</button><button id="html" type="button" hidden>Download HTML</button></div>
-<script src="charts.js"></script>
-<script src="app.js"></script>
-</body></html>
+  <script>
+    (() => {
+      const panel = document.querySelector(".preview-panel");
+      const status = document.getElementById("loading-status");
+      const meta = document.getElementById("meta");
+      const err = document.getElementById("err");
+      const chart = document.getElementById("chart");
+      const q = document.getElementById("q");
+      const csv = document.getElementById("csv");
+      const themeToggle = document.getElementById("theme-toggle");
+      const tabs = document.getElementById("chart-tabs");
+      const optcount = document.getElementById("optcount");
+      const demos = document.getElementById("demos");
+      const clear = document.getElementById("clear");
+      const colsum = document.getElementById("colsum");
+      let tabOrder = [];
+      let tabSignature = "";
+      let waitingForOptions = false;
+
+      function resetTabs() {
+        waitingForOptions = true;
+        tabSignature = "";
+        tabOrder = [];
+        tabs.hidden = true;
+      }
+
+      function syncTabs() {
+        if (waitingForOptions || !chart.children.length || typeof state === "undefined" || !state.opts?.length) {
+          tabs.hidden = true;
+          return;
+        }
+        const options = [...new Set(state.opts.filter(Boolean))];
+        const signature = options.join("|");
+        if (signature !== tabSignature) {
+          tabOrder = [state.kind, ...options.filter(kind => kind !== state.kind)];
+          tabSignature = signature;
+          tabs.replaceChildren(...tabOrder.map(kind => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.role = "tab";
+            button.dataset.kind = kind;
+            button.textContent = kind.replaceAll("_", " ").replace(/^./, first => first.toUpperCase());
+            button.addEventListener("click", () => switchKind(kind));
+            return button;
+          }));
+        }
+        for (const button of tabs.children) {
+          const active = button.dataset.kind === state.kind;
+          button.classList.toggle("active", active);
+          button.setAttribute("aria-selected", String(active));
+          button.tabIndex = active ? 0 : -1;
+        }
+        tabs.hidden = false;
+      }
+
+      tabs.addEventListener("keydown", event => {
+        const buttons = [...tabs.querySelectorAll("button")];
+        const current = buttons.indexOf(document.activeElement);
+        const direction = {ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1}[event.key];
+        const next = event.key === "Home" ? 0 : event.key === "End" ? buttons.length - 1 : direction ? (current + direction + buttons.length) % buttons.length : -1;
+        if (next < 0 || !buttons.length) return;
+        event.preventDefault();
+        event.stopPropagation();
+        buttons[next].focus();
+        buttons[next].click();
+      });
+
+      function setTheme(theme) {
+        document.documentElement.dataset.theme = theme;
+        const label = theme === "dark" ? "Switch to light mode" : "Switch to dark mode";
+        themeToggle.setAttribute("aria-label", label);
+        themeToggle.title = label;
+        document.querySelector('meta[name="theme-color"]').content = theme === "dark" ? "#0b0d0d" : "#f6f7f5";
+        try { localStorage.setItem("quickviz-theme", theme); } catch (e) {}
+      }
+
+      setTheme(document.documentElement.dataset.theme === "light" ? "light" : "dark");
+      themeToggle.addEventListener("click", () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
+
+      function setLoading(phase) {
+        if (phase) panel.dataset.loading = phase;
+        else delete panel.dataset.loading;
+        panel.setAttribute("aria-busy", phase ? "true" : "false");
+        status.textContent = phase === "chart" ? "Building chart…" : phase === "title" ? "Refining chart title…" : "";
+      }
+
+      function updateLoading() {
+        if (!panel.dataset.loading) return;
+        if (err.textContent.trim() || /words by Qwen|labels \d+ ms/.test(meta.textContent)) {
+          setLoading("");
+        } else if (chart.children.length && meta.textContent.trim()) {
+          setLoading(chart.querySelector(".qv-title")?.textContent.trim() ? "" : "title");
+        }
+      }
+
+      function syncDemoUI() {
+        document.body.classList.toggle("using-demo", typeof state !== "undefined" && !!state.demo);
+      }
+
+      function shortenDemoNames() {
+        for (const button of demos.querySelectorAll("button")) {
+          const shortName = button.textContent.replace(/\s*\(illustrative data\)\s*$/i, "");
+          if (button.textContent !== shortName) button.textContent = shortName;
+        }
+      }
+
+      new MutationObserver(updateLoading).observe(meta, {childList: true, characterData: true, subtree: true});
+      new MutationObserver(updateLoading).observe(err, {childList: true, characterData: true, subtree: true});
+      new MutationObserver(updateLoading).observe(chart, {childList: true, subtree: true});
+      new MutationObserver(syncTabs).observe(chart, {childList: true, subtree: true});
+      new MutationObserver(() => { waitingForOptions = false; syncTabs(); }).observe(optcount, {childList: true, characterData: true, subtree: true});
+      new MutationObserver(shortenDemoNames).observe(demos, {childList: true, characterData: true, subtree: true});
+      new MutationObserver(syncDemoUI).observe(colsum, {childList: true, characterData: true, subtree: true});
+      new MutationObserver(syncDemoUI).observe(clear, {attributes: true, attributeFilter: ["hidden"]});
+      new MutationObserver(syncDemoUI).observe(err, {childList: true, characterData: true, subtree: true});
+
+      document.getElementById("filebtn").addEventListener("click", () => document.getElementById("file").click());
+      q.addEventListener("input", () => { resetTabs(); setLoading(q.value.trim().length >= 4 || colsum.textContent ? "chart" : ""); });
+      csv.addEventListener("input", () => { resetTabs(); setLoading(csv.value.trim() ? "chart" : ""); });
+      document.getElementById("file").addEventListener("change", e => { if (e.target.files.length) { resetTabs(); setLoading("chart"); } });
+      demos.addEventListener("click", e => { if (e.target.closest("button")) { document.body.classList.add("using-demo"); resetTabs(); setLoading("chart"); } });
+      document.getElementById("clear").addEventListener("click", () => { resetTabs(); setLoading(q.value.trim().length >= 4 ? "chart" : ""); });
+    })();
+  </script>
+</body>
+</html>
