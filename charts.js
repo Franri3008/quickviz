@@ -545,7 +545,7 @@
           .text(clip(e.data.cat, w - 12, fs, 700));
         if (h > fs * 2 + 18) g.append("text").attr("x", 7).attr("y", 11 + fs * 2.1).attr("font-size", fs * 0.82).attr("font-weight", 500)
           .attr("fill", "#fff").attr("fill-opacity", 0.9).attr("font-family", SANS)
-          .text(clip(`${fmtShort(e.value, spec.unit)} / ${d3.format(".0%")(e.value / total)}`, w - 12, fs * 0.82, 500));
+          .text(clip(spec.unit === "%" ? fmtShort(e.value, "%") : `${fmtShort(e.value, spec.unit)} / ${d3.format(".0%")(e.value / total)}`, w - 12, fs * 0.82, 500));
       });
       if (C.anim) n.attr("opacity", 0).transition().duration(450).delay((e, i) => i * 30).attr("opacity", 1);
     },
@@ -566,10 +566,14 @@
       const paths = c.selectAll("path").data(arcs).join("path").attr("fill", a => color(a.data.cat)).attr("d", arc);
       paths.each(function (a) { title(d3.select(this), `${a.data.cat}: ${fmtFull(a.data.v, spec.unit)} (${d3.format(".1%")(a.data.v / total)})`); });
       if (C.anim) paths.transition().duration(700).ease(d3.easeCubicOut).attrTween("d", a => { const i = d3.interpolate({startAngle: a.startAngle, endAngle: a.startAngle}, a); return t => arc(i(t)); });
-      c.append("text").attr("text-anchor", "middle").attr("dy", "0.1em").attr("font-family", SERIF).attr("font-size", Math.max(16, rad * 0.26))
-        .attr("font-weight", 700).attr("fill", INK).text(fmtShort(total, spec.unit));
-      c.append("text").attr("text-anchor", "middle").attr("dy", "1.9em").attr("font-size", 11.5).attr("font-weight", 600).attr("fill", TICK)
-        .attr("font-family", SANS).text(clip(spec.yLabel ? "Total " + spec.yLabel : "Total", rad * 1.1, 11.5));
+      // values in % are already shares: show 100% when they add up to it, and no total when they do not
+      const pct = spec.unit === "%", whole = pct && Math.abs(total - 100) < 0.6;
+      if (!pct || whole) {
+        c.append("text").attr("text-anchor", "middle").attr("dy", "0.1em").attr("font-family", SERIF).attr("font-size", Math.max(16, rad * 0.26))
+          .attr("font-weight", 700).attr("fill", INK).text(whole ? "100%" : fmtShort(total, spec.unit));
+        c.append("text").attr("text-anchor", "middle").attr("dy", "1.9em").attr("font-size", 11.5).attr("font-weight", 600).attr("fill", TICK)
+          .attr("font-family", SANS).text(clip(spec.yLabel ? "Total " + spec.yLabel : "Total", rad * 1.1, 11.5));
+      }
       const lx = cx + rad + 40, rowH = Math.min(44, b.ih / d.length);
       const lwAvail = b.iw - lx - 10;
       const lg = b.g.append("g").attr("transform", `translate(${lx},${cy - (rowH * d.length) / 2})`);
@@ -580,7 +584,7 @@
         it.append("text").attr("x", 20).attr("y", 15).attr("font-size", 13).attr("font-weight", 600).attr("fill", "#333").attr("font-family", SANS)
           .text(clip(e.cat, lwAvail - 20, 13));
         it.append("text").attr("x", 20).attr("y", 31).attr("font-size", 12).attr("fill", TICK).attr("font-family", SANS)
-          .text(`${d3.format(".1%")(e.v / total)} / ${fmtShort(e.v, spec.unit)}`);
+          .text(pct ? fmtShort(e.v, "%") : `${d3.format(".1%")(e.v / total)} / ${fmtShort(e.v, spec.unit)}`);
       });
     },
 
@@ -809,10 +813,15 @@
     const round = v => (Math.abs(v) >= 100 ? Math.round(v) : Math.abs(v) >= 1 ? Math.round(v * 10) / 10 : Math.round(v * 1000) / 1000);
     let rows = [];
     switch (kind) {
-      case "bar": case "treemap":
+      case "bar":
         rows = cats.map(cat => ({cat, v: round(within(0.15, 1))})); break;
-      case "donut":
-        rows = (cats.length <= 5 ? cats : ser && ser.length <= 5 ? ser : cats.slice(0, 4)).map(cat => ({cat, v: round(within(0.2, 1))})); break;
+      case "treemap": case "donut": {
+        const parts = kind === "treemap" ? cats : cats.length <= 5 ? cats : ser && ser.length <= 5 ? ser : cats.slice(0, 4);
+        rows = parts.map(cat => ({cat, v: round(within(kind === "treemap" ? 0.15 : 0.2, 1))}));
+        // parts of a whole in % must add up to 100
+        if (str(f.unit) === "%") { const t = d3.sum(rows, e => e.v); rows.forEach(e => e.v = Math.round(e.v / t * 1000) / 10); }
+        break;
+      }
       case "line": {
         const S = list(f.categories, 2) ? cats.slice(0, 8) : ser ? series : [null];
         S.forEach(s => { let v = within(0.3, 0.6); years(8).forEach(t => { v = Math.min(rg[1], Math.max(rg[0], v + (r() - 0.4) * span * 0.12)); rows.push(s ? {t, series: s, v: round(v)} : {t, v: round(v)}); }); });
