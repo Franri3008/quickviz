@@ -10,8 +10,10 @@ PORT = int(os.environ.get("PORT", 8799))
 HOST = "0.0.0.0" if "PORT" in os.environ else "127.0.0.1"
 JEV_MODEL = "typesafe/jev-1.13"
 # OpenRouter tries these in order, so a rate-limited model falls through to the next.
-# Flash-lite first: about 1 s. Qwen 3 8B was rate-limited upstream on 2026-09-30 and fell through to 4-12 s.
-FILL_MODELS = os.environ.get("FILL_MODELS", "google/gemini-2.5-flash-lite,qwen/qwen3-8b,mistralai/mistral-small-3.2-24b-instruct").split(",")
+# Gemini 3.8 Flash writes the words and checks the chart, about 1.8 s. Its thinking cannot be switched off,
+# so it runs at the lowest effort. 2.5 Flash Lite is the fallback.
+FILL_MODELS = os.environ.get("FILL_MODELS", "google/gemini-3.8-flash,google/gemini-2.5-flash-lite").split(",")
+REASONING = {"effort": "minimal"}
 
 
 def load_key():
@@ -92,16 +94,25 @@ def pick(text):
     t0 = time.time()
     data, cached = openrouter("/api/alpha/decisions", {
         "model": JEV_MODEL, "state": "",
-        "questions": {"answer": {
-            "type": "choice",
-            "instructions": "A user describes the data they have. Pick the chart type that best shows it.\n\n" + text[:2000],
-            "criteria": {p["id"]: p["description"] for p in PRESETS},
-        }},
+        "questions": {
+            "answer": {
+                "type": "choice",
+                "instructions": "A user describes the data they have. Pick the chart type that best shows it.\n\n" + text[:2000],
+                "criteria": {p["id"]: p["description"] for p in PRESETS},
+            },
+            # same call, no extra wait: is there anything to chart at all?
+            "chartable": {
+                "type": "noul",
+                "instructions": "Does this text describe data, numbers or a topic that could be shown as a chart? "
+                                "Gibberish, greetings or a single vague word are not.\n\nText: " + text[:2000],
+            },
+        },
     })
     a = data.get("answers", {}).get("answer", {})
+    chartable = data.get("answers", {}).get("chartable", {}).get("noul")
     probs = a.get("probabilities") or {}
     ranked = sorted(probs.items(), key=lambda kv: -kv[1])
-    return {"choice": a.get("choice"), "confidence": a.get("confidence"), "ranked": ranked,
+    return {"choice": a.get("choice"), "confidence": a.get("confidence"), "ranked": ranked, "chartable": chartable,
             "ms": round((time.time() - t0) * 1000), "cost": data.get("usage", {}).get("cost"), "cached": cached}
 
 
@@ -150,36 +161,31 @@ def decide(text, columns):
             "cost": data.get("usage", {}).get("cost"), "cached": cached}
 
 
-FILL_PROMPT = """The user describes data they have. Invent plausible names for a sample chart of it.
+FILL_PROMPT = """The user describes data they have. It will be drawn as a {kind} chart. Invent plausible names for a sample chart of it.
 Reply with JSON only, no prose, in this shape:
 {{"title": short chart title, "x": x-axis or category label, "y": value label, "unit": unit symbol or "",
 "categories": short names for the main items (countries, products...), as many as the user asks for, else 6, at most 12,
 "series": short names for sub-groups, as many as the user asks for, else 3, at most 8. If several items are tracked over time, they are the series,
 "times": 6 to 12 consecutive time labels at the grain the user describes (e.g. "Jan 2025" for monthly, "2019" for yearly, "2024-Q1" for quarterly),
-"range": [typical min value, typical max value]}}
+"range": [typical min value, typical max value],
+"sources": for a sankey only, the names things flow from,
+"targets": for a sankey only, the names things flow to}}
 Use real, plausible names, never placeholders like "Country A"."""
 
 
 def fill(text, kind):
-    t0 = time.time()
-    data, cached = openrouter("/api/v1/chat/completions", {
-        "models": FILL_MODELS, "max_tokens": 300, "temperature": 0.3,
-        "reasoning": {"enabled": False}, "provider": {"sort": "latency"},
-        "messages": [{"role": "system", "content": FILL_PROMPT},
-                     {"role": "user", "content": text[:2000]}],
-    })
-    raw = data["choices"][0]["message"]["content"]
-    m = re.search(r"\{.*\}", raw, re.S)
-    out = json.loads(m.group(0)) if m else {}
-    out["model"] = data.get("model")
-    out["ms"] = round((time.time() - t0) * 1000)
-    out["cached"] = cached
-    return out
+    """Sample-chart words, written for the kind Jev picked."""
+    return chat_json(FILL_PROMPT.replace("{{", "{").replace("}}", "}").replace("{kind}", kind or "chart"), text[:2000])
 
 
-NAME_PROMPT = """You name the parts of a chart. The user describes their data, and you get its columns with sample values.
+NAME_PROMPT = """You check a chart before it is shown. The user describes their data. You get the chart type,
+which column fills each role, and every column with sample values.
+Roles: cat = the items compared or the source of a flow, series = the sub-groups or the target of a flow,
+t = time on the x axis, v = the main number, v2 = the second number of a scatter.
+Fix the role mapping if it is wrong, e.g. a flow drawn backwards or the wrong number chosen. Leave it out if it is right.
 Reply with JSON only, no prose, in this shape:
-{"title": a short chart title, at most 8 words, no final period,
+{"roles": only the roles you would change, as {"<role>": "<exact column name>"}, or {},
+"title": a short chart title, at most 8 words, no final period,
 "unit": the unit symbol of the main numeric value, such as "%", "$", "€" or "bcm", or "",
 "columns": {"<each exact column name>": a short readable label, at most 4 words, with the unit in brackets only if it has one, never the column type}}"""
 
@@ -187,8 +193,8 @@ Reply with JSON only, no prose, in this shape:
 def chat_json(system, user):
     t0 = time.time()
     data, cached = openrouter("/api/v1/chat/completions", {
-        "models": FILL_MODELS, "max_tokens": 400, "temperature": 0.2,
-        "reasoning": {"enabled": False}, "provider": {"sort": "latency"},
+        "models": FILL_MODELS, "max_tokens": 800, "temperature": 0.2,
+        "reasoning": REASONING, "provider": {"sort": "latency"},
         "messages": [{"role": "system", "content": system}, {"role": "user", "content": user[:4000]}],
     })
     raw = data["choices"][0]["message"]["content"]
@@ -198,13 +204,16 @@ def chat_json(system, user):
     return out
 
 
-def names(text, columns):
-    """Titles and readable axis names for real data. Qwen does the wording Jev cannot."""
+def names(text, columns, kind="", roles=None):
+    """Checks the drawn chart: fixes roles, writes the title and readable axis names. Gemini does what Jev cannot."""
     cols = [c for c in columns if str(c.get("name", "")).strip()][:MAX_COLUMNS]
     lines = "\n".join(f"- {c['name']} ({c.get('type', '?')}), e.g. " + ", ".join(str(x)[:30] for x in (c.get("samples") or [])[:3])
                       for c in cols)
-    out = chat_json(NAME_PROMPT, (f"The user says: {text}\n" if text else "") + "Columns:\n" + lines)
+    drawn = ", ".join(f"{r}={c}" for r, c in (roles or {}).items())
+    out = chat_json(NAME_PROMPT, (f"The user says: {text}\n" if text else "") + f"Chart type: {kind}\nRoles now: {drawn}\n"
+                    + "Columns:\n" + lines)
     known = {c["name"] for c in cols}
+    out["roles"] = {r: c for r, c in (out.get("roles") or {}).items() if r in ("cat", "series", "t", "v", "v2") and c in known}
     out["columns"] = {k: str(v)[:40] for k, v in (out.get("columns") or {}).items() if k in known}
     out["title"] = str(out.get("title") or "")[:90]
     out["unit"] = str(out.get("unit") or "")[:8]
@@ -241,7 +250,7 @@ class H(SimpleHTTPRequestHandler):
             if self.path == "/api/pick":
                 return self.send(200, pick(text))
             if self.path == "/api/names":
-                return self.send(200, names(text, body.get("columns") or []))
+                return self.send(200, names(text, body.get("columns") or [], body.get("kind", ""), body.get("roles") or {}))
             if self.path == "/api/decide":
                 if not body.get("columns"):
                     return self.send(400, {"error": "no columns"})

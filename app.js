@@ -3,7 +3,7 @@ const $ = id => document.getElementById(id);
 const svgEl = $("chart");
 let seq = 0, timer = null, csvTimer = null, ctrl = null;
 // data: null or {rows, cols, name}. ranked: Jev's kinds, best first.
-let state = {kind: null, ranked: [], fill: null, text: "", data: null, spec: null, colRoles: {}, opts: [], idx: 0, names: null};
+let state = {kind: null, ranked: [], fill: null, text: "", data: null, spec: null, colRoles: {}, opts: [], idx: 0, names: null, fixes: {}};
 
 // ---------- small helpers ----------
 async function post(path, body, signal) {
@@ -274,9 +274,12 @@ function renderSpec(spec) {
   $("png").hidden = $("html").hidden = false;
 }
 
+// Old sample names stay only while the user keeps typing the same sentence, never for a new one.
+function sameThought(a = "", b = "") { a = a.toLowerCase(); b = b.toLowerCase(); return !!a && !!b && (a.startsWith(b) || b.startsWith(a)); }
+
 function drawMock() {
   if (!haveQV() || !state.kind) return;
-  const f = state.fill || {};
+  const f = state.fill && sameThought(state.text, state.fillText) ? state.fill : {};
   renderSpec(QV.mock(state.kind, f, state.kind + "|" + (f.title || state.text)));
 }
 
@@ -302,7 +305,7 @@ function specFor(kind) {
   const d = state.data;
   const kept = d.cols.filter(c => state.colRoles[c.name]?.role !== "ignore");
   const cols = kept.length ? kept : d.cols;
-  const m = heuristicMap(kind, cols, hintsFor(kind, cols)) || heuristicMap(kind, d.cols);
+  const m = heuristicMap(kind, cols, {...hintsFor(kind, cols), ...(state.fixes[kind] || {})}) || heuristicMap(kind, d.cols);
   if (!m) return null;
   const spec = buildSpec(kind, m.map);
   return spec.rows.length ? {spec, m} : null;
@@ -375,16 +378,62 @@ async function switchKind(kind) {
 
 // Qwen's reply: sample labels (no data) or titles and axis names (data). Redraws the current chart.
 async function applyWords(promise, my, key) {
+  setPhase("refining");
   try {
-    const w = await promise;
+    // never leave the overlay up for long: after 6 s the chart stays as drawn
+    const w = await Promise.race([promise, new Promise((_, no) => setTimeout(() => no(new Error("The check took too long, showing the chart as drawn")), 6000))]);
     if (my !== seq) return;
     state[key] = w;
+    if (key === "fill") state.fillText = state.text;
+    if (key === "names" && w.roles && Object.keys(w.roles).length) state.fixes[state.kind] = w.roles;
     if (w.cached) setCached(true);
     if (key === "fill") drawMock(); else drawData(state.kind);
-    $("meta").insertAdjacentText("beforeend", ` — words by ${(w.model || "LLM").split("/").pop()} ${w.ms} ms`);
+    const fixed = key === "names" && w.roles && Object.keys(w.roles).length ? `, fixed ${Object.keys(w.roles).join(" and ")}` : "";
+    $("meta").insertAdjacentText("beforeend", ` — checked by ${(w.model || "LLM").split("/").pop()} ${w.ms} ms${fixed}`);
   } catch (e) {
-    if (e.name !== "AbortError" && my === seq) setErr(/Too many/.test(e.message) ? e.message : "Titles failed, showing column names");
+    if (e.name !== "AbortError" && my === seq && !/too long/.test(e.message)) setErr(/Too many/.test(e.message) ? e.message : "The check failed, showing the chart as drawn");
+  } finally {
+    if (my === seq) setPhase("");
   }
+}
+
+// The roles behind the chart on screen, for Gemini to check.
+function currentMap() {
+  const d = state.data;
+  if (!d) return null;
+  const kept = d.cols.filter(c => state.colRoles[c.name]?.role !== "ignore");
+  const cols = kept.length ? kept : d.cols;
+  const m = heuristicMap(state.kind, cols, {...hintsFor(state.kind, cols), ...(state.fixes[state.kind] || {})}) || heuristicMap(state.kind, d.cols);
+  return m && m.map;
+}
+
+// ---------- phases: body[data-qv-phase] is "refining" while Gemini works, "empty" when there is nothing to show ----------
+(() => {
+  const css = document.createElement("style");
+  css.textContent = `
+.qv-refining{position:absolute;inset:0;z-index:3;pointer-events:none;display:flex;align-items:center;justify-content:center;
+  background:rgba(12,14,14,.55);opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s}
+body[data-qv-phase="refining"] .qv-refining{opacity:1;visibility:visible}
+.qv-refining span{width:34px;height:34px;border-radius:50%;border:3px solid rgba(255,255,255,.25);border-top-color:#fff;animation:qv-spin .8s linear infinite}
+@keyframes qv-spin{to{transform:rotate(360deg)}}`;
+  document.head.prepend(css);  // first, so style.css can override it
+  const ov = document.createElement("div");
+  ov.className = "qv-refining";
+  ov.innerHTML = "<span></span>";
+  ov.setAttribute("aria-hidden", "true");
+  (svgEl.parentNode || document.body).appendChild(ov);
+})();
+function setPhase(p) { if (p) document.body.dataset.qvPhase = p; else delete document.body.dataset.qvPhase; }
+
+function showEmpty() {
+  seq++;
+  if (ctrl) ctrl.abort();
+  state.kind = null; state.spec = null; state.opts = []; state.ranked = [];
+  svgEl.innerHTML = "";
+  $("meta").textContent = "There's no graph to show";
+  $("alts").innerHTML = ""; $("optcount").textContent = "";
+  $("prev").hidden = $("next").hidden = $("png").hidden = $("html").hidden = true;
+  setPhase("empty");
 }
 
 async function fillLabels(my, signal) {
@@ -413,12 +462,10 @@ async function run() {
   try {
     const signal = ctrl.signal;
     const columns = d && d.cols.map(c => ({name: c.name, type: c.type, distinct: c.distinct, samples: c.samples}));
-    // Qwen starts at the same moment as Jev, so its words arrive about as soon as possible
-    const words = post(d ? "/api/names" : "/api/fill", d ? {text, columns} : {text}, signal);
-    words.catch(() => {});
-    // keep the last words until the new ones land, so names never fall back to placeholders mid-typing
-    if (d) state.names = null;
+    if (d) { state.names = null; state.fixes = {}; }
     const p = d ? await post("/api/decide", {text, columns}, signal) : await post("/api/pick", {text}, signal);
+    if (my !== seq) return;
+    if (!d && p.chartable != null && p.chartable < 0.5) return showEmpty();
     if (my !== seq) return;
     setErr("");
     if (p.cached) setCached(true);
@@ -429,7 +476,8 @@ async function run() {
     if (!d) {
       state.kind = p.choice;
       buildOpts(); showAlts(); drawMock();
-      await applyWords(words, my, "fill");
+      // Gemini writes sample names for the kind Jev chose. The last ones stay on screen until they land.
+      await applyWords(post("/api/fill", {text, kind: state.kind}, signal), my, "fill");
       return;
     }
     // data: Jev's column roles, then its pick or the best runner-up that fits the columns
@@ -441,7 +489,9 @@ async function run() {
     }
     $("meta").querySelector("b").textContent = state.kind + (state.kind !== p.choice ? ` (Jev said ${p.choice}, no fit)` : "");
     buildOpts(); showAlts();
-    await applyWords(words, my, "names");
+    // Gemini checks the chart that is on screen: role fixes, title, axis names
+    const roles = Object.fromEntries(Object.entries(currentMap() || {}).filter(([k, v]) => ["cat", "series", "t", "v", "v2"].includes(k) && !v.startsWith("(")));
+    await applyWords(post("/api/names", {text, columns, kind: state.kind, roles}, signal), my, "names");
   } catch (e) {
     if (e.name !== "AbortError" && my === seq) setErr(e.message);
   }
@@ -456,7 +506,8 @@ $("q").addEventListener("input", e => {
     $("csv").value = ""; $("csv").readOnly = false;
     showData(null); state.kind = null;
   }
-  if (!state.data && state.text.length < 4) return;
+  if (!state.data && state.text.length < 4) return showEmpty();
+  if (document.body.dataset.qvPhase === "empty") setPhase("");
   timer = setTimeout(run, 200);
 });
 

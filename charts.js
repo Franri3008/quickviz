@@ -797,6 +797,7 @@
     const timeish = a => a && a.every(x => /^(\d{4}([-\/]\d{2,4})?|(19|20)\d{2}[- ]?q[1-4]|(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?( \d{4})?)$/i.test(x));
     let catList = list(f.categories, 2), ser = list(f.series, 2);
     if (timeish(catList) && ser && !timeish(ser)) [catList, ser] = [ser, null];
+    if (!catList && ser && !timeish(ser)) catList = ser;  // sometimes the items only come back as series
     f.categories = catList;
     const cats = (catList || ["Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot"]).slice(0, 12);
     const series = (ser || ["Group 1", "Group 2", "Group 3"]).slice(0, 8);
@@ -821,9 +822,13 @@
       case "stacked_area":
         (list(f.categories, 2) ? cats.slice(0, 8) : series).forEach((s, i, all) => { let v = within(0.1, 0.3) / all.length * 2; years(8).forEach(t => { v = Math.max(span * 0.02, v * (0.9 + r() * 0.3)); rows.push({t, series: s, v: round(v)}); }); });
         break;
-      case "stacked_bar": case "sankey":
-        (kind === "sankey" ? cats.slice(0, 5) : cats).forEach(cat => series.forEach(s => { if (kind !== "sankey" || r() > 0.2) rows.push({cat, series: s, v: round(within(0.1, 1))}); }));
+      case "stacked_bar": case "sankey": {
+        // Gemini names the two sides of a flow when the chart is a sankey
+        const src = kind === "sankey" && list(f.sources, 2), dst = kind === "sankey" && list(f.targets, 2);
+        const L = src && dst ? src.slice(0, 6) : kind === "sankey" ? cats.slice(0, 5) : cats, R = src && dst ? dst.slice(0, 6) : series;
+        L.forEach(cat => R.forEach(s => { if (kind !== "sankey" || r() > 0.2) rows.push({cat, series: s, v: round(within(0.1, 1))}); }));
         break;
+      }
       case "heatmap": {
         const cols = ser && ser.length >= 3 ? series : years(6);
         cats.forEach((cat, i) => { const base = r(); cols.forEach((s, j) => rows.push({cat, series: s, v: round(rg[0] + Math.min(1, Math.max(0, base * 0.6 + r() * 0.4 + j * 0.03)) * span)})); });
