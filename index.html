@@ -3,15 +3,7 @@
 <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3-sankey@0.12"></script>
 <link rel="stylesheet" href="style.css">
-<style>
-#demos{margin:0 0 10px;font-size:13px;color:#666}
-#demos button,#datactl button,#filebtn,#png{font:inherit;font-size:12px;padding:3px 10px;margin-right:6px;border:1px solid #bbb;border-radius:12px;background:#fff;cursor:pointer;color:#222}
-#csv{width:100%;box-sizing:border-box;margin-top:8px;font-size:12px;padding:8px;border:1px solid #ccc;border-radius:8px;resize:vertical}
-#datactl{font-size:12px;color:#666;margin-top:4px;display:flex;align-items:center;flex-wrap:wrap;gap:4px}
-#cached{display:inline-block;font-size:11px;color:#8a6d00;background:#fff6d6;border-radius:6px;padding:0 6px}
-#cached[hidden]{display:none}
-#actions{margin-top:8px}
-</style></head><body>
+</head><body>
 <h1>QuickViz</h1>
 <div id="demos" hidden></div>
 <input id="q" placeholder="Describe your data… e.g. monthly sales per region since 2020" autofocus>
@@ -25,7 +17,8 @@
 </div>
 <div id="meta"></div><div id="alts"></div><div id="err"></div><div id="cached" hidden>cached</div>
 <svg id="chart" width="820" height="420"></svg>
-<div id="actions"><button id="png" type="button" hidden>Download PNG</button></div>
+<div id="cycle"><button id="prev" type="button" hidden>&larr;</button><span id="optcount"></span><button id="next" type="button" hidden>&rarr;</button></div>
+<div id="actions"><button id="png" type="button" hidden>Download PNG</button><button id="html" type="button" hidden>Download HTML</button></div>
 <script src="charts.js"></script>
 <script src="app.js"></script>
 </body></html>

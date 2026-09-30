@@ -11,3 +11,13 @@ h1{font-family:"Libre Baskerville","Bodoni 72",Didot,serif;font-size:24px;font-w
 #title:empty{display:none}
 #err{color:#b00;font-size:13px}
 #chart,svg.qv-chart{display:block;width:100%;height:420px;margin-top:12px;background:#fff;overflow:visible}
+
+/* moved from index.html */
+#demos{margin:0 0 10px;font-size:13px;color:#666}
+#demos button,#datactl button,#filebtn,#png,#html,#prev,#next{font:inherit;font-size:12px;padding:3px 10px;margin-right:6px;border:1px solid #bbb;border-radius:12px;background:#fff;cursor:pointer;color:#222}
+#csv{width:100%;box-sizing:border-box;margin-top:8px;font-size:12px;padding:8px;border:1px solid #ccc;border-radius:8px;resize:vertical}
+#datactl{font-size:12px;color:#666;margin-top:4px;display:flex;align-items:center;flex-wrap:wrap;gap:4px}
+#cached{display:inline-block;font-size:11px;color:#8a6d00;background:#fff6d6;border-radius:6px;padding:0 6px}
+#cached[hidden]{display:none}
+#actions{margin-top:8px}
+#cycle{margin-top:8px;font-size:13px;color:#666;display:flex;align-items:center;gap:8px}
