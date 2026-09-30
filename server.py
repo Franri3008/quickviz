@@ -149,7 +149,7 @@ def decide(text, columns):
             "cost": data.get("usage", {}).get("cost"), "cached": cached}
 
 
-FILL_PROMPT = """The user describes data they have. Invent plausible names for a sample chart of type "{kind}".
+FILL_PROMPT = """The user describes data they have. Invent plausible names for a sample chart of it.
 Reply with JSON only, no prose, in this shape:
 {{"title": short chart title, "x": x-axis or category label, "y": value label, "unit": unit symbol or "",
 "categories": 4 to 8 short names for the main items (countries, products, months...),
@@ -162,7 +162,7 @@ def fill(text, kind):
     data, cached = openrouter("/api/v1/chat/completions", {
         "models": FILL_MODELS, "max_tokens": 300, "temperature": 0.3,
         "reasoning": {"enabled": False},
-        "messages": [{"role": "system", "content": FILL_PROMPT.format(kind=kind)},
+        "messages": [{"role": "system", "content": FILL_PROMPT},
                      {"role": "user", "content": text[:2000]}],
     })
     raw = data["choices"][0]["message"]["content"]
@@ -171,6 +171,40 @@ def fill(text, kind):
     out["model"] = data.get("model")
     out["ms"] = round((time.time() - t0) * 1000)
     out["cached"] = cached
+    return out
+
+
+NAME_PROMPT = """You name the parts of a chart. The user describes their data, and you get its columns with sample values.
+Reply with JSON only, no prose, in this shape:
+{"title": a short chart title, at most 8 words, no final period,
+"unit": the unit symbol of the main numeric value, such as "%", "$", "€" or "bcm", or "",
+"columns": {"<each exact column name>": a short readable label, at most 4 words, with the unit in brackets only if it has one, never the column type}}"""
+
+
+def chat_json(system, user):
+    t0 = time.time()
+    data, cached = openrouter("/api/v1/chat/completions", {
+        "models": FILL_MODELS, "max_tokens": 400, "temperature": 0.2,
+        "reasoning": {"enabled": False},
+        "messages": [{"role": "system", "content": system}, {"role": "user", "content": user[:4000]}],
+    })
+    raw = data["choices"][0]["message"]["content"]
+    m = re.search(r"\{.*\}", raw, re.S)
+    out = json.loads(m.group(0)) if m else {}
+    out.update(model=data.get("model"), ms=round((time.time() - t0) * 1000), cached=cached)
+    return out
+
+
+def names(text, columns):
+    """Titles and readable axis names for real data. Qwen does the wording Jev cannot."""
+    cols = [c for c in columns if str(c.get("name", "")).strip()][:MAX_COLUMNS]
+    lines = "\n".join(f"- {c['name']} ({c.get('type', '?')}), e.g. " + ", ".join(str(x)[:30] for x in (c.get("samples") or [])[:3])
+                      for c in cols)
+    out = chat_json(NAME_PROMPT, (f"The user says: {text}\n" if text else "") + "Columns:\n" + lines)
+    known = {c["name"] for c in cols}
+    out["columns"] = {k: str(v)[:40] for k, v in (out.get("columns") or {}).items() if k in known}
+    out["title"] = str(out.get("title") or "")[:90]
+    out["unit"] = str(out.get("unit") or "")[:8]
     return out
 
 
@@ -192,10 +226,10 @@ class H(SimpleHTTPRequestHandler):
                 return self.send(413, {"error": "request too large"})
             body = json.loads(self.rfile.read(n) or b"{}")
             text = (body.get("text") or "").strip()
-            bucket = {"/api/pick": "jev", "/api/decide": "jev", "/api/fill": "fill"}.get(self.path)
+            bucket = {"/api/pick": "jev", "/api/decide": "jev", "/api/fill": "fill", "/api/names": "fill"}.get(self.path)
             if not bucket:
                 return self.send(404, {"error": "not found"})
-            if self.path != "/api/decide" and not text:
+            if self.path not in ("/api/decide", "/api/names") and not text:
                 return self.send(400, {"error": "empty"})
             ok, wait = allow(self.client_ip(), bucket)
             if not ok:
@@ -203,6 +237,8 @@ class H(SimpleHTTPRequestHandler):
                                        "retry_after": wait})
             if self.path == "/api/pick":
                 return self.send(200, pick(text))
+            if self.path == "/api/names":
+                return self.send(200, names(text, body.get("columns") or []))
             if self.path == "/api/decide":
                 if not body.get("columns"):
                     return self.send(400, {"error": "no columns"})

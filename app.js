@@ -3,7 +3,7 @@ const $ = id => document.getElementById(id);
 const svgEl = $("chart");
 let seq = 0, timer = null, csvTimer = null, ctrl = null;
 // data: null or {rows, cols, name}. ranked: Jev's kinds, best first.
-let state = {kind: null, ranked: [], fill: null, text: "", data: null, spec: null, colRoles: {}, opts: [], idx: 0};
+let state = {kind: null, ranked: [], fill: null, text: "", data: null, spec: null, colRoles: {}, opts: [], idx: 0, names: null};
 
 // ---------- small helpers ----------
 async function post(path, body, signal) {
@@ -253,15 +253,16 @@ function aggregate(kind, data, map) {
 
 const LABEL = {"(count)": "Count", "(value)": "Value", "(columns)": ""};
 function buildSpec(kind, map) {
-  const d = state.data, lab = n => LABEL[n] ?? n ?? "";
+  // readable names from Qwen once they arrive, raw column names until then
+  const d = state.data, nm = state.names || {}, lab = n => nm.columns?.[n] || (LABEL[n] ?? n ?? "");
   const rows = aggregate(kind, d, map);
   const xy = {
     scatter: [lab(map.v), lab(map.v2)], histogram: [lab(map.v), "Count"],
     line: [lab(map.t), lab(map.v)], stacked_area: [lab(map.t), lab(map.v)], bump: [lab(map.t), "Rank"],
     heatmap: [lab(map.series), lab(map.cat)], dot_range: [lab(map.v), lab(map.cat)],
   }[kind] || [lab(map.cat), lab(map.v)];
-  const title = state.text ? state.text.slice(0, 90) : (d.name || "Your data").replace(/\.[a-z]+$/i, "");
-  const unit = /%|pct|percent/i.test(map.v || "") ? "%" : /\$|usd|dollar/i.test(map.v || "") ? "$" : /€|eur/i.test(map.v || "") ? "€" : "";
+  const title = nm.title || "";
+  const unit = /%|pct|percent/i.test(map.v || "") ? "%" : /\$|usd|dollar/i.test(map.v || "") ? "$" : /€|eur/i.test(map.v || "") ? "€" : (nm.unit || "");
   return {kind, title, xLabel: xy[0], yLabel: xy[1], unit, mock: false, rows};
 }
 
@@ -370,6 +371,20 @@ async function switchKind(kind) {
   $("meta").querySelector("b") && ($("meta").querySelector("b").textContent = state.kind);
 }
 
+// Qwen's reply: sample labels (no data) or titles and axis names (data). Redraws the current chart.
+async function applyWords(promise, my, key) {
+  try {
+    const w = await promise;
+    if (my !== seq) return;
+    state[key] = w;
+    if (w.cached) setCached(true);
+    if (key === "fill") drawMock(); else drawData(state.kind);
+    $("meta").insertAdjacentText("beforeend", ` — words by Qwen ${w.ms} ms`);
+  } catch (e) {
+    if (e.name !== "AbortError" && my === seq) setErr(/Too many/.test(e.message) ? e.message : "Titles failed, showing column names");
+  }
+}
+
 async function fillLabels(my, signal) {
   const text = state.text;
   if (!text) return;
@@ -394,9 +409,13 @@ async function run() {
   const t0 = performance.now();
   setCached(false);
   try {
-    const p = d
-      ? await post("/api/decide", {text, columns: d.cols.map(c => ({name: c.name, type: c.type, distinct: c.distinct, samples: c.samples}))}, ctrl.signal)
-      : await post("/api/pick", {text}, ctrl.signal);
+    const signal = ctrl.signal;
+    const columns = d && d.cols.map(c => ({name: c.name, type: c.type, distinct: c.distinct, samples: c.samples}));
+    // Qwen starts at the same moment as Jev, so its words arrive about as soon as possible
+    const words = post(d ? "/api/names" : "/api/fill", d ? {text, columns} : {text}, signal);
+    words.catch(() => {});
+    if (d) state.names = null; else state.fill = null;
+    const p = d ? await post("/api/decide", {text, columns}, signal) : await post("/api/pick", {text}, signal);
     if (my !== seq) return;
     setErr("");
     if (p.cached) setCached(true);
@@ -406,9 +425,8 @@ async function run() {
     const kindChanged = p.choice !== state.kind;
     if (!d) {
       state.kind = p.choice;
-      if (kindChanged) state.fill = null;
       buildOpts(); showAlts(); drawMock();
-      await fillLabels(my, ctrl.signal);
+      await applyWords(words, my, "fill");
       return;
     }
     // data: Jev's column roles, then its pick or the best runner-up that fits the columns
@@ -420,6 +438,7 @@ async function run() {
     }
     $("meta").querySelector("b").textContent = state.kind + (state.kind !== p.choice ? ` (Jev said ${p.choice}, no fit)` : "");
     buildOpts(); showAlts();
+    await applyWords(words, my, "names");
   } catch (e) {
     if (e.name !== "AbortError" && my === seq) setErr(e.message);
   }
