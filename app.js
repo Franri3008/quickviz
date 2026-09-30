@@ -3,7 +3,7 @@ const $ = id => document.getElementById(id);
 const svgEl = $("chart");
 let seq = 0, timer = null, csvTimer = null, ctrl = null;
 // data: null or {rows, cols, name}. ranked: Jev's kinds, best first.
-let state = {kind: null, ranked: [], fill: null, text: "", data: null, spec: null, colRoles: {}};
+let state = {kind: null, ranked: [], fill: null, text: "", data: null, spec: null, colRoles: {}, opts: [], idx: 0};
 
 // ---------- small helpers ----------
 async function post(path, body, signal) {
@@ -99,7 +99,7 @@ const RATE_NAME = /rate|pct|percent|share|avg|average|mean|median|price|score|in
 function fits(r, c, kind) {
   if (!c) return false;
   if (r === "v" || r === "v2") return c.type === "number";
-  if (r === "t") return c.type === "time" || (c.type === "category" && c.distinct <= 60);
+  if (r === "t") return c.type === "time";  // no time column, no time chart, so the cycle skips it
   if (r === "series") return c.type !== "number" && c.distinct >= 2 && (kind === "dot_range" || c.distinct <= (kind === "sankey" ? 30 : 20));
   if (r === "cat") return c.type !== "number";
   return false;
@@ -297,15 +297,20 @@ function hintsFor(kind, cols) {
 }
 
 // Map roles for `kind` from Jev's column roles, validate, aggregate and render. Returns false if the kind cannot fit.
-function drawData(kind) {
+function specFor(kind) {
   const d = state.data;
   const kept = d.cols.filter(c => state.colRoles[c.name]?.role !== "ignore");
   const cols = kept.length ? kept : d.cols;
-  const jev = hintsFor(kind, cols);
-  const m = heuristicMap(kind, cols, jev) || heuristicMap(kind, d.cols);
-  if (!m) return false;
+  const m = heuristicMap(kind, cols, hintsFor(kind, cols)) || heuristicMap(kind, d.cols);
+  if (!m) return null;
   const spec = buildSpec(kind, m.map);
-  if (!spec.rows.length) return false;
+  return spec.rows.length ? {spec, m} : null;
+}
+
+function drawData(kind) {
+  const f = specFor(kind);
+  if (!f) return false;
+  const {spec, m} = f;
   renderSpec(spec);
   const roleText = Object.entries(m.map).filter(([k]) => k !== "wide").map(([k, v]) =>
     `${k}=${v === "(columns)" ? m.map.wide.join("+") : v}${m.how[k] === "guess" ? " (rule)" : ""}`).join(", ");
@@ -314,10 +319,41 @@ function drawData(kind) {
   return true;
 }
 
+// ---------- cycling: every kind Jev ranked, best first, skipping ones the data cannot fill ----------
+function buildOpts() {
+  const ranked = state.ranked.length ? state.ranked.map(r => r[0]) : [state.kind];
+  state.opts = state.data ? ranked.filter(k => k === state.kind || specFor(k)) : ranked;
+  state.idx = Math.max(0, state.opts.indexOf(state.kind));
+}
+
+function showCycle() {
+  const n = state.opts.length, k = state.opts[state.idx];
+  const p = (state.ranked.find(r => r[0] === k) || [])[1];
+  $("prev").hidden = $("next").hidden = n < 2;
+  $("optcount").textContent = n ? `${state.idx + 1} of ${n}${p != null ? ` — ${k} ${p.toFixed(2)}` : ""}` : "";
+}
+
+function step(delta) {
+  const n = state.opts.length;
+  if (n < 2) return;
+  switchKind(state.opts[(state.idx + delta + n) % n]);
+}
+
+$("prev").onclick = () => step(-1);
+$("next").onclick = () => step(1);
+document.addEventListener("keydown", e => {
+  const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName);
+  if (typing || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === "ArrowRight") { step(1); e.preventDefault(); }
+  if (e.key === "ArrowLeft") { step(-1); e.preventDefault(); }
+});
+
 function showAlts() {
   $("alts").innerHTML = state.ranked.filter(([k]) => k !== state.kind).slice(0, 2).map(([k, v]) =>
     `<span data-k="${esc(k)}">${esc(k)} ${v.toFixed(2)}</span>`).join("");
   document.querySelectorAll("#alts span").forEach(s => s.onclick = () => switchKind(s.dataset.k));
+  state.idx = Math.max(0, state.opts.indexOf(state.kind));
+  showCycle();
 }
 
 async function switchKind(kind) {
@@ -327,7 +363,7 @@ async function switchKind(kind) {
   setErr("");
   const prev = state.kind;
   state.kind = kind;
-  if (!state.data) { state.fill = null; drawMock(); fillLabels(my, ctrl.signal); showAlts(); return; }
+  if (!state.data) { drawMock(); if (!state.fill) fillLabels(my, ctrl.signal); showAlts(); return; }
   const ok = drawData(kind);
   if (!ok) { state.kind = prev; setErr(`This data has no columns that fit a ${kind} chart`); }
   showAlts();
@@ -371,7 +407,7 @@ async function run() {
     if (!d) {
       state.kind = p.choice;
       if (kindChanged) state.fill = null;
-      showAlts(); drawMock();
+      buildOpts(); showAlts(); drawMock();
       await fillLabels(my, ctrl.signal);
       return;
     }
@@ -383,7 +419,7 @@ async function run() {
       if (drawData(k)) break;
     }
     $("meta").querySelector("b").textContent = state.kind + (state.kind !== p.choice ? ` (Jev said ${p.choice}, no fit)` : "");
-    showAlts();
+    buildOpts(); showAlts();
   } catch (e) {
     if (e.name !== "AbortError" && my === seq) setErr(e.message);
   }
