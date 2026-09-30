@@ -1,9 +1,13 @@
+@import url("https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap");
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;max-width:860px;margin:40px auto;padding:0 16px;color:#222}
-h1{font-size:22px;margin:0 0 12px}
-#q{width:100%;font-size:18px;padding:12px;border:1px solid #bbb;border-radius:8px;box-sizing:border-box}
+h1{font-family:"Libre Baskerville","Bodoni 72",Didot,serif;font-size:24px;font-weight:700;margin:0 0 14px;color:#0f172a}
+#q{width:100%;font-size:18px;padding:12px;border:1px solid #bbb;border-radius:8px;box-sizing:border-box;font-family:inherit}
+#q:focus{outline:none;border-color:#2756d3;box-shadow:0 0 0 3px rgba(39,86,211,.15)}
 #meta{font-size:13px;color:#666;margin:8px 0;min-height:18px}
 #meta b{color:#222}
-#alts span{display:inline-block;margin-right:8px;padding:2px 8px;border:1px solid #ccc;border-radius:10px;cursor:pointer;font-size:12px}
-#title{font-size:16px;font-weight:600;margin:12px 0 4px;min-height:20px}
-svg text{font-size:11px;fill:#444}
+#alts span{display:inline-block;margin:0 8px 4px 0;padding:2px 8px;border:1px solid #ccc;border-radius:10px;cursor:pointer;font-size:12px}
+#alts span:hover{border-color:#2756d3;color:#2756d3}
+#title{font-family:"Libre Baskerville","Bodoni 72",Didot,serif;font-size:18px;font-weight:700;margin:12px 0 4px}
+#title:empty{display:none}
 #err{color:#b00;font-size:13px}
+#chart,svg.qv-chart{display:block;width:100%;height:420px;margin-top:12px;background:#fff;overflow:visible}

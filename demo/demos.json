@@ -1,0 +1,20 @@
+[
+ {
+  "name": "Youth unemployment (illustrative data)",
+  "description": "youth unemployment rate each quarter since 2015 for spain, italy, france, germany and the eu average",
+  "csv": "youth_unemployment.csv",
+  "note": "Illustrative numbers, shaped like Eurostat trends but not real data."
+ },
+ {
+  "name": "EU gas imports (illustrative data)",
+  "description": "how the EU's natural gas flows from each supplier into member states, bcm imported in 2024",
+  "csv": "eu_gas_imports.csv",
+  "note": "Illustrative numbers, not real data."
+ },
+ {
+  "name": "R&D vs patents (illustrative data)",
+  "description": "R&D spending as % of GDP against patents per million people, for 46 countries",
+  "csv": "rd_vs_patents.csv",
+  "note": "Illustrative numbers, not real data."
+ }
+]

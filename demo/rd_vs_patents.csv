@@ -1,0 +1,47 @@
+country,region,rd_spending_pct_gdp,patents_per_million_people
+Israel,Asia,5.96,798.4
+South Korea,Asia,4.76,264.0
+Sweden,Europe,3.32,491.9
+Belgium,Europe,3.43,358.7
+United States,Americas,3.42,210.0
+Japan,Asia,3.54,682.2
+Switzerland,Europe,3.25,290.5
+Austria,Europe,3.33,286.9
+Germany,Europe,3.08,739.8
+Finland,Europe,3.01,343.3
+Denmark,Europe,2.91,677.3
+Iceland,Europe,2.52,153.2
+China,Asia,2.38,84.7
+Netherlands,Europe,2.29,204.0
+France,Europe,2.25,80.2
+Norway,Europe,1.9,73.7
+Slovenia,Europe,2.11,108.1
+Czechia,Europe,1.91,69.4
+United Kingdom,Europe,2.73,147.9
+Australia,Oceania,1.7,147.0
+Canada,Americas,1.61,65.8
+Estonia,Europe,1.79,28.0
+Singapore,Asia,2.22,66.4
+Hungary,Europe,1.43,48.4
+Portugal,Europe,1.69,41.0
+Italy,Europe,1.46,46.1
+Poland,Europe,1.53,120.8
+Spain,Europe,1.37,21.4
+Ireland,Europe,1.01,57.1
+New Zealand,Oceania,1.45,37.5
+Greece,Europe,1.44,42.5
+Turkey,Asia,1.27,41.9
+Lithuania,Europe,0.96,15.8
+Croatia,Europe,1.35,22.2
+Slovakia,Europe,0.97,20.5
+India,Asia,0.68,3.8
+Brazil,Americas,1.14,26.2
+South Africa,Africa,0.63,9.7
+Mexico,Americas,0.3,0.7
+Chile,Americas,0.41,5.1
+Argentina,Americas,0.48,3.8
+Romania,Europe,0.49,8.1
+Bulgaria,Europe,0.78,11.5
+Egypt,Africa,0.86,36.1
+Kenya,Africa,0.4,4.0
+Indonesia,Asia,0.29,2.5

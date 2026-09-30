@@ -1,0 +1,33 @@
+supplier,importing_country,gas_imports_bcm
+Norway,Germany,42.3
+Norway,France,13.9
+Norway,Netherlands,17.7
+Norway,Belgium,8.3
+Norway,Poland,4.7
+United States (LNG),Germany,12.7
+United States (LNG),Italy,6.4
+United States (LNG),France,13.3
+United States (LNG),Netherlands,11.3
+United States (LNG),Spain,10.0
+United States (LNG),Poland,2.8
+Russia (pipeline + LNG),Germany,0.7
+Russia (pipeline + LNG),Italy,3.3
+Russia (pipeline + LNG),France,10.7
+Russia (pipeline + LNG),Netherlands,3.9
+Russia (pipeline + LNG),Spain,6.6
+Russia (pipeline + LNG),Belgium,6.8
+Algeria,Italy,20.2
+Algeria,France,1.7
+Algeria,Spain,10.5
+Qatar (LNG),Italy,8.9
+Qatar (LNG),France,1.9
+Qatar (LNG),Belgium,3.3
+Qatar (LNG),Poland,1.8
+Azerbaijan,Germany,0.8
+Azerbaijan,Italy,11.2
+UK,Germany,1.6
+UK,Netherlands,3.5
+UK,Belgium,2.6
+Nigeria (LNG),France,2.4
+Nigeria (LNG),Spain,2.6
+Libya,Italy,3.2

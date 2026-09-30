@@ -1,0 +1,26 @@
+{
+ "tune": [
+  {"text": "sal", "ok": ["bar", "line"]},
+  {"text": "how many ppl in each", "ok": ["bar"]},
+  {"text": "tokens per model, 30 models from 8 labs", "ok": ["bar", "treemap"]},
+  {"text": "csv w/ date, temp", "ok": ["line"]},
+  {"text": "car sales per year by fuel type petrol diesel ev", "ok": ["stacked_area", "stacked_bar"]},
+  {"text": "time spent by activity per weekday", "ok": ["stacked_bar", "heatmap"]},
+  {"text": "crime rate vs police spending per city", "ok": ["scatter"]},
+  {"text": "number of employees at each firm, 20k firms", "ok": ["histogram"]},
+  {"text": "correlation matrix of 12 indicators", "ok": ["heatmap"]},
+  {"text": "app store revenue by category and app, ~200 apps", "ok": ["treemap"]},
+  {"text": "yes no", "ok": ["donut"]},
+  {"text": "customer journey visit > signup > trial > paid, dropoffs", "ok": ["sankey"]},
+  {"text": "fifa ranking", "ok": ["bump"]},
+  {"text": "vaccination % per age band in 2021 and in 2023", "ok": ["dot_range"]},
+  {"text": "market share of browsers 2010-2024", "ok": ["stacked_area", "bump", "line"]}
+ ],
+ "heldout": [
+  {"text": "gdp and population by country", "ok": ["scatter", "treemap", "bar"]},
+  {"text": "pension spending 2000 vs 2020 per member state", "ok": ["dot_range"]},
+  {"text": "which party led the polls each wee", "ok": ["bump", "line"]},
+  {"text": "ticket prices for 900 flights", "ok": ["histogram"]},
+  {"text": "refugees from syria afghanistan ukraine to host countries", "ok": ["sankey", "heatmap"]}
+ ]
+}
