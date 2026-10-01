@@ -974,7 +974,7 @@
       case "bar":
         rows = cats.map(cat => ({cat, v: round(within(0.15, 1))})); break;
       case "map": {
-        // only real countries can be drawn, so fall back to a European sample if the names are not countries
+        // only real countries can be drawn, so fall back to a world sample if the names are not countries
         // countries, or regions of the one country Gemini names in f.country. A world sample only if neither fits.
         const named = (catList || []).filter(n => countryId(n));
         const regional = /^[A-Z]{3}$/.test(str(f.country)) && catList && catList.length >= 2 && named.length < catList.length / 2;
