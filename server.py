@@ -24,6 +24,8 @@ def load_key():
 
 
 KEY = load_key()
+# One place for the version: VERSION. The server writes it into index.html, so the asset URLs change on every release.
+VERSION = (ROOT / "VERSION").read_text().strip() if (ROOT / "VERSION").exists() else "dev"
 PRESETS = json.loads((ROOT / "presets.json").read_text())
 
 
@@ -216,6 +218,26 @@ def names(text, columns, kind="", roles=None):
 class H(SimpleHTTPRequestHandler):
     def __init__(self, *a, **k):
         super().__init__(*a, directory=str(ROOT), **k)
+
+    def end_headers(self):
+        # browsers must check back before reusing the page or its code, so a deploy is never half seen
+        if self.command in ("GET", "HEAD") and not self.path.startswith("/geo/"):
+            self.send_header("Cache-Control", "no-cache")
+        if self.path.startswith("/geo/"):  # downloaded HTML charts fetch their outlines from here
+            self.send_header("Access-Control-Allow-Origin", "*")
+        super().end_headers()
+
+    def do_GET(self):
+        if self.path.split("?")[0] in ("/", "/index.html"):
+            b = (ROOT / "index.html").read_text().replace("__VERSION__", VERSION).encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(b)))
+            self.end_headers()
+            return self.wfile.write(b)
+        if self.path == "/api/version":
+            return self.send(200, {"version": VERSION})
+        return super().do_GET()
 
     def log_message(self, fmt, *args):
         pass

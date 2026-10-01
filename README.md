@@ -26,3 +26,7 @@ The server needs `OPENROUTER_API_KEY`. It reads the environment first, then `.en
 | `charts.js` | The renderers |
 | `SPEC.md` | The chart spec that joins the two |
 | `render.yaml` | Render config, unused until we deploy |
+
+## Version
+
+The version lives in `VERSION`. The server writes it into `index.html`, shows it in the page corner and at `/api/version`, and adds it to the script and style URLs so a new release is never served from a stale browser cache. Bump it on every release.

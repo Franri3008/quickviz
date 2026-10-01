@@ -546,7 +546,8 @@
       if (geo) {
         const topo = geoJSON(GEO_BASE + "geo/regions/" + geo + ".json", C.svgEl);
         if (topo === undefined) return empty(C, "Loading map…");
-        if (!topo || !window.topojson) { if (!window.topojson) loadGeo(); return empty(C, topo === null ? "No region outlines for this country" : "Loading map…"); }
+        if (!topo) return empty(C, "No region outlines for this country");
+        if (!window.topojson) { geoWaiting.add(C.svgEl); loadGeo(); return empty(C, "Loading map…"); }
         // "units" is admin-1, "groups" the coarser level where one exists. Use whichever matches more names.
         let best = null;
         for (const key of Object.keys(topo.objects)) {

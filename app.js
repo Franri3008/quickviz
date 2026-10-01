@@ -597,3 +597,15 @@ let t; addEventListener("resize", () => { clearTimeout(t); t = setTimeout(fit, 1
     });
   } catch (e) { }
 })();
+
+// ---------- version, from the qv-version meta tag the server fills in ----------
+(() => {
+  const v = document.querySelector('meta[name="qv-version"]')?.content;
+  if (!v || v.includes("__")) return;
+  window.QV_VERSION = v;
+  const el = document.createElement("div");
+  el.id = "qv-version";
+  el.textContent = "v" + v;
+  el.style.cssText = "position:fixed;right:12px;bottom:10px;font:500 11px -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;opacity:.45;pointer-events:none";
+  document.body.appendChild(el);
+})();
