@@ -975,10 +975,11 @@
         rows = cats.map(cat => ({cat, v: round(within(0.15, 1))})); break;
       case "map": {
         // only real countries can be drawn, so fall back to a European sample if the names are not countries
-        // countries, or regions of the one country Gemini names in f.country. A European sample only if neither fits.
+        // countries, or regions of the one country Gemini names in f.country. A world sample only if neither fits.
         const named = (catList || []).filter(n => countryId(n));
         const regional = /^[A-Z]{3}$/.test(str(f.country)) && catList && catList.length >= 2 && named.length < catList.length / 2;
-        const places = regional ? catList : named.length >= 2 ? named : ["Germany", "France", "Italy", "Spain", "Poland", "Netherlands", "Sweden", "Portugal"];
+        // until Gemini names the places, a world sample: it never suggests a region the user did not ask for
+        const places = regional ? catList : named.length >= 2 ? named : ["United States", "Brazil", "China", "India", "Germany", "Nigeria", "Australia", "Canada", "Russia", "Mexico", "Indonesia", "South Africa", "Argentina", "France", "Japan", "Egypt"];
         if (regional) mapGeo = str(f.country);
         rows = places.slice(0, 60).map(cat => ({cat, v: round(within(0.1, 1))}));
         break;
