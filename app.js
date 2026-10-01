@@ -82,7 +82,7 @@ function showData(d, name) {
 }
 
 const NEED = {
-  bar: ["cat", "v"], treemap: ["cat", "v"], donut: ["cat", "v"],
+  bar: ["cat", "v"], treemap: ["cat", "v"], donut: ["cat", "v"], map: ["cat", "v"],
   line: ["t", "v", "series?"], stacked_area: ["t", "series", "v"],
   stacked_bar: ["cat", "series", "v"], heatmap: ["cat", "series", "v"], sankey: ["cat", "series", "v"],
   dot_range: ["cat", "series", "v"], scatter: ["v", "v2", "series?"], histogram: ["v"], bump: ["t", "cat", "v"],
@@ -188,6 +188,8 @@ function aggregate(kind, data, map) {
   const sortT = out => { const s = timeSorter([...new Set(out.map(d => d.t))]); return out.sort((a, b) => s(a.t, b.t)); };
   let out;
   switch (kind) {
+    case "map":
+      out = agg(["cat"]); break;
     case "bar": case "treemap":
       out = agg(["cat"]).sort((a, b) => b.v - a.v).slice(0, kind === "bar" ? 25 : 60); break;
     case "donut": {
@@ -281,12 +283,19 @@ function hintsFor(kind, cols) {
   return h;
 }
 
+function countryShare(rows, col) {
+  const vals = [...new Set(rows.map(r => r[col]).filter(Boolean))];
+  return vals.length ? vals.filter(v => QV.countryId(v)).length / vals.length : 0;
+}
+
 function specFor(kind) {
   const d = state.data;
   const kept = d.cols.filter(c => state.colRoles[c.name]?.role !== "ignore");
   const cols = kept.length ? kept : d.cols;
   const m = heuristicMap(kind, cols, {...hintsFor(kind, cols), ...(state.fixes[kind] || {})}) || heuristicMap(kind, d.cols);
   if (!m) return null;
+  // a map needs a column of real country names
+  if (kind === "map" && !(QV.countryId && countryShare(d.rows, m.map.cat) >= 0.5)) return null;
   const spec = buildSpec(kind, m.map);
   return spec.rows.length ? {spec, m} : null;
 }

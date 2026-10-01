@@ -1,14 +1,54 @@
 [
- {"id": "bar", "description": "Compare one number across named categories or items, e.g. sales by country, count per product."},
- {"id": "line", "description": "One or a few numbers changing over time, e.g. monthly revenue, yearly GDP, daily users."},
- {"id": "stacked_area", "description": "How a total over time splits into parts, e.g. energy mix per year, traffic by source per month."},
- {"id": "stacked_bar", "description": "Composition or breakdown of each category into parts or shares, e.g. budget by department and cost type, survey answers per group."},
- {"id": "scatter", "description": "Relationship between two numeric variables across many items, e.g. price vs rating, GDP vs life expectancy, correlation."},
- {"id": "histogram", "description": "Distribution of one numeric variable over many unnamed observations, binned, e.g. spread of salaries, ages, response times."},
- {"id": "heatmap", "description": "A value for every combination of two categorical dimensions laid out as a grid, e.g. activity by weekday and hour, matrix of countries by sector."},
- {"id": "treemap", "description": "Share of a whole across many items, optionally nested in groups, e.g. market share, budget split, portfolio composition."},
- {"id": "donut", "description": "Share of a whole across very few parts (2 to 5), e.g. percent yes/no, gender split."},
- {"id": "sankey", "description": "Flows from sources to destinations, e.g. migration between regions, funnel of users between steps, money flowing from A to B."},
- {"id": "bump", "description": "Rankings, positions or places of items and how they change over time, e.g. league table positions per season, top models by rank each month."},
- {"id": "dot_range", "description": "Before vs after or two values per category, gaps, e.g. 2020 vs 2025 per country, men vs women pay gap."}
+ {
+  "id": "bar",
+  "description": "Compare one number across named categories or items, e.g. sales by country, count per product."
+ },
+ {
+  "id": "line",
+  "description": "One or a few numbers changing over time, e.g. monthly revenue, yearly GDP, daily users."
+ },
+ {
+  "id": "stacked_area",
+  "description": "How a total over time splits into parts, e.g. energy mix per year, traffic by source per month."
+ },
+ {
+  "id": "stacked_bar",
+  "description": "Composition or breakdown of each category into parts or shares, e.g. budget by department and cost type, survey answers per group."
+ },
+ {
+  "id": "scatter",
+  "description": "Relationship between two numeric variables across many items, e.g. price vs rating, GDP vs life expectancy, correlation."
+ },
+ {
+  "id": "histogram",
+  "description": "Distribution of one numeric variable over many unnamed observations, binned, e.g. spread of salaries, ages, response times."
+ },
+ {
+  "id": "heatmap",
+  "description": "A value for every combination of two categorical dimensions laid out as a grid, e.g. activity by weekday and hour, matrix of countries by sector."
+ },
+ {
+  "id": "treemap",
+  "description": "Share of a whole across many items, optionally nested in groups, e.g. market share, budget split, portfolio composition."
+ },
+ {
+  "id": "donut",
+  "description": "Share of a whole across very few parts (2 to 5), e.g. percent yes/no, gender split."
+ },
+ {
+  "id": "sankey",
+  "description": "Flows from sources to destinations, e.g. migration between regions, funnel of users between steps, money flowing from A to B."
+ },
+ {
+  "id": "bump",
+  "description": "Rankings, positions or places of items and how they change over time, e.g. league table positions per season, top models by rank each month."
+ },
+ {
+  "id": "dot_range",
+  "description": "Before vs after or two values per category, gaps, e.g. 2020 vs 2025 per country, men vs women pay gap."
+ },
+ {
+  "id": "map",
+  "description": "A value for each country shown on a world or regional map, e.g. GDP by country, unemployment per EU member state, where something is highest geographically."
+ }
 ]

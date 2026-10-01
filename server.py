@@ -162,7 +162,7 @@ Reply with JSON only, no prose, in this shape:
 "range": [typical min value, typical max value],
 "sources": for a sankey only, the names things flow from,
 "targets": for a sankey only, the names things flow to}}
-Use real, plausible names, never placeholders like "Country A"."""
+Use real, plausible names, never placeholders like "Country A". For a map, categories are real country names."""
 
 
 def fill(text, kind):
