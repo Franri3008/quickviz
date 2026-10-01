@@ -110,8 +110,9 @@ body.using-demo #clear { display: none !important; }
 .result-context:has(#cached:not([hidden]), #err:not(:empty)) + .chart-stage,
 .preview-panel:has(#chart:empty) .result-context:has(#meta:not(:empty), #alts:not(:empty)) + .chart-stage { margin-top: 10px; }
 .title-loading { display: none; }
-.preview-panel[data-loading="chart"] .chart-frame { border-style: dashed; background: var(--surface-2); }
-.preview-panel[data-loading="chart"] #chart { visibility: hidden; }
+/* while a new chart loads, the old one stays on screen, faded, so the chart visibly changes as you type */
+.preview-panel[data-loading="chart"] .chart-frame:has(#chart:empty) { border-style: dashed; background: var(--surface-2); }
+.preview-panel[data-loading="chart"] #chart { opacity: .55; transition: opacity .2s; }
 .skeleton { display: block; border-radius: 5px; background: linear-gradient(90deg, #e9eeec 25%, #f5f7f6 48%, #e9eeec 72%); background-size: 220% 100%; animation: shimmer 1.6s ease-in-out infinite; }
 .preview-panel[data-loading="title"] .chart-frame:not(:has(.qv-title:not(:empty))) #chart:not(:empty) ~ .title-loading { position: absolute; top: 9px; left: 10px; z-index: 1; display: flex; width: min(46%, 330px); height: 27px; align-items: center; padding: 3px 7px; background: #fff; }
 .title-loading .skeleton { width: 100%; height: 17px; }
