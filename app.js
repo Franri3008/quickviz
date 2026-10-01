@@ -295,7 +295,9 @@ function specFor(kind) {
   const m = heuristicMap(kind, cols, {...hintsFor(kind, cols), ...(state.fixes[kind] || {})}) || heuristicMap(kind, d.cols);
   if (!m) return null;
   // a map needs a column of real country names
-  if (kind === "map" && !(QV.countryId && countryShare(d.rows, m.map.cat) >= 0.5)) return null;
+  // a map needs a column of real countries, or of regions of one country
+  if (kind === "map" && !(QV.countryId && (countryShare(d.rows, m.map.cat) >= 0.5 ||
+      QV.regionCountry([...new Set(d.rows.map(r => r[m.map.cat]).filter(Boolean))])))) return null;
   const spec = buildSpec(kind, m.map);
   return spec.rows.length ? {spec, m} : null;
 }
@@ -492,6 +494,8 @@ $("q").addEventListener("input", e => {
 function loadText(text, name) {
   const d = parseText(text);
   if (!d) { showData(null); setErr(text.trim() ? "Could not read that as CSV, TSV or JSON" : ""); return; }
+  // region names (Chilean regions, US states) need the region index before a map can be offered
+  if (QV.loadRegionIndex) QV.loadRegionIndex().then(() => { if (state.data === d || state.data?.rows === d.rows) { buildOpts(); showAlts(); } });
   setErr("");
   showData(d, name);
   run();
@@ -544,6 +548,7 @@ body{box-sizing:border-box;padding:24px;font-family:-apple-system,BlinkMacSystem
 #chart{display:block;width:100%;height:100%;overflow:visible}</style>
 </head><body>
 <svg id="chart"></svg>
+<script>window.QV_GEO_BASE = ${JSON.stringify(new URL(".", location.href).href)};<\/script>
 <script>${safe(code)}<\/script>
 <script>
 const spec = ${safe(JSON.stringify(state.spec))};

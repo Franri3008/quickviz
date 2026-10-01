@@ -274,6 +274,46 @@
     return {type: "Feature", geometry: {type: "MultiPolygon", coordinates: polys.filter(e => e.a >= big * 0.25).map(e => e.p)}};
   }
 
+  // ---------- regions inside one country: Natural Earth 10m admin-1, one TopoJSON per country in geo/regions/ ----------
+  const GEO_BASE = window.QV_GEO_BASE || (document.currentScript && document.currentScript.src
+    ? new URL(".", document.currentScript.src).href : "https://quickviz.franri.dev/");
+  // must match the name cleaning in geo/build_regions.py
+  const normRegion = s => normName(s).replace(/^(region de la|region del|region de|region|provincia de|province of|state of|estado de|community of|comunidad de|comunitat) |( community)$/g, "");
+  const geoCache = new Map(), geoWait = new Map();
+  // Returns the data if loaded. Otherwise starts loading, redraws svgEl when it lands, and returns undefined (null on failure).
+  function geoJSON(url, svgEl) {
+    if (geoCache.has(url)) return geoCache.get(url);
+    if (svgEl) { if (!geoWait.has(url)) geoWait.set(url, new Set()); geoWait.get(url).add(svgEl); }
+    if (!geoWait.get(url)?.loading) {
+      const w = geoWait.get(url) || new Set(); w.loading = true; geoWait.set(url, w);
+      fetch(url).then(r => (r.ok ? r.json() : null)).catch(() => null).then(j => {
+        geoCache.set(url, j);
+        const els = geoWait.get(url); geoWait.delete(url);
+        els && els.forEach(el => { const s = el.__qv; if (s && s.spec && s.spec.kind === "map") render(el, s.spec, s.fixedW ? {width: s.fixedW} : undefined); });
+        if (url.endsWith("index.json")) indexReady.forEach(f => f()), indexReady.length = 0;
+      });
+    }
+    return undefined;
+  }
+  const indexReady = [];
+  const INDEX_URL = () => GEO_BASE + "geo/regions/index.json";
+  function loadRegionIndex() {
+    const have = geoJSON(INDEX_URL());
+    return have !== undefined ? Promise.resolve(have) : new Promise(ok => indexReady.push(() => ok(geoCache.get(INDEX_URL()))));
+  }
+  // Which country's regions are these names? Needs the index loaded, otherwise null.
+  function regionCountry(names) { const m = regionMatch(names); return m ? m.a3 : null; }
+  // The country whose regions match the most names, with how many matched.
+  function regionMatch(names) {
+    const idx = geoCache.get(INDEX_URL());
+    if (!idx || !names.length) return null;
+    const votes = {};
+    names.forEach(n => { const hit = idx[normRegion(n)]; if (hit) [].concat(hit).forEach(a => votes[a] = (votes[a] || 0) + 1); });
+    const best = Object.entries(votes).sort((a, b) => b[1] - a[1])[0];
+    return best && best[1] >= Math.max(2, names.length * 0.5) ? {a3: best[0], n: best[1]} : null;
+  }
+  const countryShareOf = names => names.length ? names.filter(n => countryId(n)).length / names.length : 0;
+
   const R = {
     bar(C) {
       const {spec} = C;
@@ -490,16 +530,47 @@
 
     map(C) {
       const {spec} = C;
-      if (!geoFeatures) {
-        geoWaiting.add(C.svgEl);
-        loadGeo().catch(() => empty(C, "Could not load the map outlines"));
-        return empty(C, "Loading map…");
-      }
       const d = catValues(C.rows, 100000, false);
-      if (!d.length) return empty(C, "Maps need a country column and numbers");
+      if (!d.length) return empty(C, "Maps need a place column and numbers");
+      // countries, or the regions of one country (spec.geo is its ISO alpha-3 code)
+      let geo = spec.geo && spec.geo !== "world" ? spec.geo : null;
+      // regions win when they match more names than countries do: "CA, TX, PA" are states, not Canada and Panama
+      const names = d.map(e => e.cat), share = countryShareOf(names);
+      if (!geo && spec.geo !== "world" && share < 1) {
+        const idx = geoJSON(INDEX_URL(), C.svgEl);
+        if (idx === undefined) return empty(C, "Loading map…");
+        const rm = regionMatch(names);
+        if (rm && rm.n > share * names.length) geo = rm.a3;
+      }
+      let features, idOf, mercator = false;
+      if (geo) {
+        const topo = geoJSON(GEO_BASE + "geo/regions/" + geo + ".json", C.svgEl);
+        if (topo === undefined) return empty(C, "Loading map…");
+        if (!topo || !window.topojson) { if (!window.topojson) loadGeo(); return empty(C, topo === null ? "No region outlines for this country" : "Loading map…"); }
+        // "units" is admin-1, "groups" the coarser level where one exists. Use whichever matches more names.
+        let best = null;
+        for (const key of Object.keys(topo.objects)) {
+          const fs = topojson.feature(topo, topo.objects[key]).features;
+          fs.forEach((f, i) => f.id = key + i);
+          const byAlias = new Map();
+          fs.forEach(f => (f.properties.aliases || []).concat(normRegion(f.properties.name)).forEach(a => byAlias.set(a, f.id)));
+          const n = d.filter(e => byAlias.has(normRegion(e.cat))).length;
+          if (!best || n > best.n) best = {fs, byAlias, n};
+        }
+        features = best.fs;
+        idOf = n => best.byAlias.get(normRegion(n)) || null;
+        mercator = true;
+      } else {
+        if (!geoFeatures) {
+          geoWaiting.add(C.svgEl);
+          loadGeo().catch(() => empty(C, "Could not load the map outlines"));
+          return empty(C, "Loading map…");
+        }
+        features = geoFeatures; idOf = countryId;
+      }
       const byId = new Map(), missing = [];
-      d.forEach(e => { const id = countryId(e.cat); if (id) byId.set(id, {cat: e.cat, v: (byId.get(id)?.v || 0) + e.v}); else missing.push(e.cat); });
-      if (!byId.size) return empty(C, "No country names found in this data");
+      d.forEach(e => { const id = idOf(e.cat); if (id) byId.set(id, {cat: e.cat, v: (byId.get(id)?.v || 0) + e.v}); else missing.push(e.cat); });
+      if (!byId.size) return empty(C, geo ? "No region names matched" : "No country or region names found in this data");
       if (missing.length) C.note = `Not on the map: ${missing.slice(0, 3).join(", ")}${missing.length > 3 ? ` +${missing.length - 3}` : ""}`;
       const vs = [...byId.values()].map(e => e.v);
       const [mn, mx] = d3.extent(vs);
@@ -521,13 +592,21 @@
       if (label) lg.append("text").attr("x", gradW + 10).attr("y", 9.5).attr("font-size", 11).attr("font-weight", 600).attr("fill", "#333")
         .attr("font-family", SANS).text(clip(label, C.W - gradW - 60, 11));
       const b = box(C, legY + 34, {left: PAD, bottom: PAD, right: PAD});
-      const hit = geoFeatures.filter(f => byId.has(f.id));
-      const proj = d3.geoNaturalEarth1().fitExtent([[4, 4], [b.iw - 4, b.ih - 4]], {type: "FeatureCollection", features: hit.map(mainland)});
+      // regions: fit the whole country, so unmatched regions still show in grey
+      let hit = geo ? features : features.filter(f => byId.has(f.id));
+      // overseas parts (French Guiana, Reunion, Canaries) would shrink the mainland to a dot, so fit to the main cluster only
+      if (geo && hit.length > 3) {
+        const cs = hit.map(f => d3.geoCentroid(f)), mx0 = d3.median(cs, c => c[0]), my0 = d3.median(cs, c => c[1]);
+        const near = hit.filter((f, i) => Math.hypot(cs[i][0] - mx0, cs[i][1] - my0) < 25);
+        if (near.length >= hit.length * 0.6) hit = near;
+      }
+      const base = geo === "USA" ? d3.geoAlbersUsa() : mercator ? d3.geoMercator() : d3.geoNaturalEarth1();
+      const proj = base.fitExtent([[4, 4], [b.iw - 4, b.ih - 4]], {type: "FeatureCollection", features: geo === "USA" ? features : hit.map(mainland)});
       const path = d3.geoPath(proj);
       const cid = "qvclip" + Math.random().toString(36).slice(2, 8);
       C.root.append("defs").append("clipPath").attr("id", cid).append("rect").attr("width", b.iw).attr("height", b.ih);
       const g = b.g.append("g").attr("clip-path", `url(#${cid})`);
-      const shapes = g.selectAll("path").data(geoFeatures.filter(f => f.id !== "010" || byId.has(f.id))).join("path")
+      const shapes = g.selectAll("path").data(features.filter(f => f.id !== "010" || byId.has(f.id))).join("path")
         .attr("d", path).attr("stroke", "#fff").attr("stroke-width", 0.6)
         .attr("fill", f => (byId.has(f.id) ? scale(byId.get(f.id).v) : "#e9ecef"));
       shapes.filter(f => byId.has(f.id)).each(function (f) { const e = byId.get(f.id); title(d3.select(this), `${e.cat}: ${fmtFull(e.v, spec.unit)}`); });
@@ -889,14 +968,17 @@
     const tl = list(f.times, 3);
     const years = n => tl ? tl.slice(0, 12) : d3.range(n).map(i => String(2025 - n + 1 + i));
     const round = v => (Math.abs(v) >= 100 ? Math.round(v) : Math.abs(v) >= 1 ? Math.round(v * 10) / 10 : Math.round(v * 1000) / 1000);
-    let rows = [];
+    let rows = [], mapGeo = null;
     switch (kind) {
       case "bar":
         rows = cats.map(cat => ({cat, v: round(within(0.15, 1))})); break;
       case "map": {
         // only real countries can be drawn, so fall back to a European sample if the names are not countries
+        // countries, or regions of the one country Gemini names in f.country. A European sample only if neither fits.
         const named = (catList || []).filter(n => countryId(n));
-        const places = named.length >= 2 ? named : ["Germany", "France", "Italy", "Spain", "Poland", "Netherlands", "Sweden", "Portugal"];
+        const regional = /^[A-Z]{3}$/.test(str(f.country)) && catList && catList.length >= 2 && named.length < catList.length / 2;
+        const places = regional ? catList : named.length >= 2 ? named : ["Germany", "France", "Italy", "Spain", "Poland", "Netherlands", "Sweden", "Portugal"];
+        if (regional) mapGeo = str(f.country);
         rows = places.slice(0, 60).map(cat => ({cat, v: round(within(0.1, 1))}));
         break;
       }
@@ -949,7 +1031,7 @@
     }
     const xLabel = kind === "histogram" ? str(f.y || f.x) : kind === "scatter" ? str(f.x) : ["stacked_bar", "dot_range", "heatmap"].includes(kind) ? str(f.x) : str(f.x);
     const yLabel = kind === "histogram" ? "Count" : kind === "bump" ? "Rank" : ["treemap", "donut", "sankey"].includes(kind) ? str(f.y) : str(f.y || "Value");
-    return {kind, title: str(f.title), xLabel, yLabel, unit: kind === "bump" ? "" : str(f.unit), mock: true, rows};
+    return {kind, title: str(f.title), xLabel, yLabel, unit: kind === "bump" ? "" : str(f.unit), mock: true, rows, ...(mapGeo ? {geo: mapGeo} : {})};
   }
 
   let fontCss = null;
@@ -1021,7 +1103,7 @@
     return blob;
   }
 
-  window.QV = {render, mock, exportPNG, countryId, kinds: Object.keys(R)};
+  window.QV = {render, mock, exportPNG, countryId, regionCountry, loadRegionIndex, kinds: Object.keys(R)};
 })();
 
 function draw() {
