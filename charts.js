@@ -139,7 +139,11 @@
     return {g, iw, ih, left, top, right, bottom};
   }
 
+  // true while drawing a chart whose numbers are all whole, so no axis shows 0.5 of a count
+  let WHOLE = false;
+  const dropFractionTicks = sel => { if (WHOLE) sel.selectAll(".tick").filter(d => typeof d === "number" && !Number.isInteger(d)).remove(); };
   function styleAxis(sel, font = 11) {
+    dropFractionTicks(sel);
     sel.attr("class", "axis").selectAll("path,line").attr("stroke", AXIS);
     sel.selectAll("text").attr("fill", TICK).attr("font-weight", 600).attr("font-size", font).attr("font-family", SANS);
     return sel;
@@ -149,6 +153,7 @@
     const gl = g.append("g").attr("class", "grid-lines");
     if (dir === "x") gl.attr("transform", `translate(0,${ih})`);
     gl.call(ax);
+    dropFractionTicks(gl);
     gl.select(".domain").remove();
     gl.selectAll("line").attr("stroke", GRID).attr("stroke-dasharray", "2,3");
     return gl;
@@ -924,6 +929,7 @@
     const root = svg.append("g").attr("class", "qv-root");
     root.append("rect").attr("class", "qv-bg").attr("width", W).attr("height", H).attr("fill", "#fff");
     const C = {root, spec, rows: cleanRows(spec.rows), W, anim: changed, note: "", svgEl};
+    WHOLE = C.rows.length > 0 && C.rows.every(r => ["v", "v2"].every(k => r[k] == null || Number.isInteger(+r[k])));
     header(C);
     if (!R[spec.kind]) empty(C, spec.kind ? `Unknown chart type "${spec.kind}"` : "Describe your data to see a chart");
     else {
@@ -968,7 +974,11 @@
     const span = rg[1] - rg[0], within = (a = 0, b = 1) => rg[0] + (a + r() * (b - a)) * span;
     const tl = list(f.times, 3);
     const years = n => tl ? tl.slice(0, 12) : d3.range(n).map(i => String(2025 - n + 1 + i));
-    const round = v => (Math.abs(v) >= 100 ? Math.round(v) : Math.abs(v) >= 1 ? Math.round(v * 10) / 10 : Math.round(v * 1000) / 1000);
+    // counts are whole numbers, percentages keep one decimal, anything else keeps what its size needs
+    if (f.number === "percent" && !str(f.unit)) f.unit = "%";
+    const round = f.number === "integer" ? v => Math.max(0, Math.round(v))
+      : f.number === "percent" ? v => Math.round(v * 10) / 10
+      : v => (Math.abs(v) >= 100 ? Math.round(v) : Math.abs(v) >= 1 ? Math.round(v * 10) / 10 : Math.round(v * 1000) / 1000);
     let rows = [], mapGeo = null;
     switch (kind) {
       case "bar":

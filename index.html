@@ -36,6 +36,11 @@
             <div id="datactl">
               <button id="filebtn" class="add-data-button" type="button"><span aria-hidden="true">＋</span> Upload data</button>
               <button id="clear" class="control-button" type="button" hidden>Clear data</button>
+              <span class="web-option-wrap">
+                <label class="web-option"><input id="webdata" type="checkbox" disabled><span>Use web data</span></label>
+                <span class="web-help" tabindex="0" aria-label="About web data" aria-describedby="web-help-text">?</span>
+                <span id="web-help-text" class="web-tooltip" role="tooltip">Available when this request is likely to have public data. Web search takes longer and removes the Sample data badge.</span>
+              </span>
             </div>
             <input id="file" type="file" accept=".csv,.tsv,.txt,.json,text/csv,application/json" hidden>
             <textarea id="csv" aria-label="Uploaded data" hidden></textarea>
@@ -52,7 +57,7 @@
       <section class="preview-panel" aria-label="Chart preview">
         <div class="result-context">
           <span id="cached" hidden>Cached result</span>
-          <div id="meta" aria-live="polite"></div>
+          <div id="meta" hidden></div>
           <div id="alts"></div>
           <div id="err" role="alert"></div>
         </div>
@@ -60,9 +65,14 @@
           <div class="chart-frame">
             <svg id="chart" width="820" height="420" role="img" aria-label="Generated chart"></svg>
             <div class="title-loading" aria-hidden="true"><span class="skeleton"></span></div>
+            <div class="web-loading" aria-hidden="true">
+              <span class="web-loading-title skeleton"></span>
+              <div class="web-loading-plot"><span class="skeleton"></span><span class="skeleton"></span><span class="skeleton"></span><span class="skeleton"></span><span class="skeleton"></span><span class="skeleton"></span></div>
+            </div>
           </div>
           <div id="chart-tabs" role="tablist" aria-label="Chart options" hidden></div>
         </div>
+        <div id="web-sources" class="web-sources" hidden></div>
         <div class="preview-footer">
           <div id="cycle"><button id="prev" type="button" aria-label="Previous chart" hidden>&larr;</button><span id="optcount"></span><button id="next" type="button" aria-label="Next chart" hidden>&rarr;</button></div>
           <div id="actions"><button id="png" class="control-button" type="button" hidden>Download PNG</button><button id="html" class="control-button" type="button" hidden>Download HTML</button></div>
@@ -86,6 +96,7 @@
       const demos = document.getElementById("demos");
       const clear = document.getElementById("clear");
       const colsum = document.getElementById("colsum");
+      const webdata = document.getElementById("webdata");
       let tabOrder = [];
       let tabSignature = "";
       let waitingForOptions = false;
@@ -154,11 +165,11 @@
         if (phase) panel.dataset.loading = phase;
         else delete panel.dataset.loading;
         panel.setAttribute("aria-busy", phase ? "true" : "false");
-        status.textContent = phase === "chart" ? "Building chart…" : phase === "title" ? "Refining chart title…" : "";
+        status.textContent = phase === "web" ? "Searching the web for chart data…" : phase === "chart" ? "Building chart…" : phase === "title" ? "Refining chart title…" : "";
       }
 
       function updateLoading() {
-        if (!panel.dataset.loading) return;
+        if (!panel.dataset.loading || panel.dataset.loading === "web") return;
         if (err.textContent.trim() || /words by Qwen|labels \d+ ms/.test(meta.textContent)) {
           setLoading("");
         } else if (chart.children.length && meta.textContent.trim()) {
@@ -188,7 +199,9 @@
       new MutationObserver(syncDemoUI).observe(err, {childList: true, characterData: true, subtree: true});
 
       document.getElementById("filebtn").addEventListener("click", () => document.getElementById("file").click());
-      q.addEventListener("input", () => { resetTabs(); setLoading(q.value.trim().length >= 4 || colsum.textContent ? "chart" : ""); });
+      q.addEventListener("input", () => { resetTabs(); setLoading(q.value.trim().length >= 4 || colsum.textContent ? webdata.checked ? "web" : "chart" : ""); });
+      webdata.addEventListener("change", () => { resetTabs(); setLoading(q.value.trim().length >= 4 ? webdata.checked ? "web" : "chart" : ""); });
+      addEventListener("qv:web-state", event => setLoading(event.detail === "loading" ? "web" : ""));
       csv.addEventListener("input", () => { resetTabs(); setLoading(csv.value.trim() ? "chart" : ""); });
       document.getElementById("file").addEventListener("change", e => { if (e.target.files.length) { resetTabs(); setLoading("chart"); } });
       demos.addEventListener("click", e => { if (e.target.closest("button")) { document.body.classList.add("using-demo"); resetTabs(); setLoading("chart"); } });

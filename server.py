@@ -3,6 +3,7 @@ import json, os, re, threading, time, urllib.request, urllib.error
 from collections import defaultdict, deque
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
+from web_data import web_chart
 
 ROOT = Path(__file__).parent
 PORT = int(os.environ.get("PORT", 8799))
@@ -32,6 +33,8 @@ PRESETS = json.loads((ROOT / "presets.json").read_text())
 CACHE_PATH = ROOT / "demo" / "cache.json"
 CACHE_RECORD = os.environ.get("CACHE_RECORD") == "1"
 _cache_lock = threading.Lock()
+_web_cache = {}
+_web_cache_lock = threading.Lock()
 try:
     CACHE = json.loads(CACHE_PATH.read_text()) if CACHE_PATH.exists() else {}
 except Exception:
@@ -40,6 +43,21 @@ except Exception:
 
 def cache_key(path, body):
     return path + " " + json.dumps(body, sort_keys=True)
+
+
+def sourced_chart(text, kind):
+    model = os.environ.get("WEB_MODEL", FILL_MODELS[0])
+    key = (text.strip().casefold(), kind, model)
+    with _web_cache_lock:
+        hit = _web_cache.get(key)
+        if hit and hit[0] > time.time() - 3600:
+            return {**hit[1], "cached": True}
+    result = web_chart(text, kind, openrouter, model)
+    with _web_cache_lock:
+        if len(_web_cache) >= 128:
+            _web_cache.pop(next(iter(_web_cache)))
+        _web_cache[key] = (time.time(), result)
+    return result
 
 
 def openrouter(path, body, timeout=20):
@@ -65,7 +83,8 @@ def openrouter(path, body, timeout=20):
     return data, False
 
 
-LIMITS = {"jev": int(os.environ.get("RATE_JEV", 60)), "fill": int(os.environ.get("RATE_FILL", 60))}
+LIMITS = {"jev": int(os.environ.get("RATE_JEV", 60)), "fill": int(os.environ.get("RATE_FILL", 60)),
+          "web": int(os.environ.get("RATE_WEB", 12))}
 _hits = defaultdict(deque)
 _hits_lock = threading.Lock()
 
@@ -101,13 +120,25 @@ def pick(text):
                                 "organisation, market or quantity counts, even a single word such as bitcoin or coffee. "
                                 "Only gibberish, greetings, thanks, filler words or small talk do not.\n\nText: " + text[:2000],
             },
+            "web_data": {
+                "type": "noul",
+                "instructions": "Would a public online source likely contain enough exact numeric observations to answer this "
+                                "chart request without inventing or estimating values? Answer yes only if the measure "
+                                "and scope are specific enough to identify a real public record or dataset. "
+                                "For example, historical World Cup wins by country since 1950 are recorded online. "
+                                "A bare request for coffee prices since 2015 is too vague without a market or price "
+                                "benchmark. Private sales, personal activity and imagined scenarios are not public data."
+                                "\n\nText: " + text[:2000],
+            },
         },
     })
     a = data.get("answers", {}).get("answer", {})
     chartable = data.get("answers", {}).get("chartable", {}).get("noul")
+    web_data = data.get("answers", {}).get("web_data", {}).get("noul")
     probs = a.get("probabilities") or {}
     ranked = sorted(probs.items(), key=lambda kv: -kv[1])
-    return {"choice": a.get("choice"), "confidence": a.get("confidence"), "ranked": ranked, "chartable": chartable,
+    return {"choice": a.get("choice"), "confidence": a.get("confidence"), "ranked": ranked,
+            "chartable": chartable, "web_data": web_data,
             "ms": round((time.time() - t0) * 1000), "cost": data.get("usage", {}).get("cost"), "cached": cached}
 
 
@@ -162,6 +193,7 @@ Reply with JSON only, no prose, in this shape:
 "series": short names for sub-groups, as many as the user asks for, else 3, at most 8. If several items are tracked over time, they are the series,
 "times": 6 to 12 consecutive time labels at the grain the user describes (e.g. "Jan 2025" for monthly, "2019" for yearly, "2024-Q1" for quarterly),
 "range": [typical min value, typical max value],
+"number": "integer" when the value is a count that cannot be fractional (titles won, people, cars sold), "percent" for shares and rates, else "decimal",
 "sources": for a sankey only, the names things flow from,
 "targets": for a sankey only, the names things flow to}}
 Use real, plausible names, never placeholders like "Country A". For a map, categories are real country names, or the real region names of one country, and then also
@@ -253,7 +285,8 @@ class H(SimpleHTTPRequestHandler):
                 return self.send(413, {"error": "request too large"})
             body = json.loads(self.rfile.read(n) or b"{}")
             text = (body.get("text") or "").strip()
-            bucket = {"/api/pick": "jev", "/api/decide": "jev", "/api/fill": "fill", "/api/names": "fill"}.get(self.path)
+            bucket = {"/api/pick": "jev", "/api/decide": "jev", "/api/fill": "fill", "/api/names": "fill",
+                      "/api/web-data": "web"}.get(self.path)
             if not bucket:
                 return self.send(404, {"error": "not found"})
             if self.path not in ("/api/decide", "/api/names") and not text:
@@ -264,6 +297,8 @@ class H(SimpleHTTPRequestHandler):
                                        "retry_after": wait})
             if self.path == "/api/pick":
                 return self.send(200, pick(text))
+            if self.path == "/api/web-data":
+                return self.send(200, sourced_chart(text, body.get("kind", "")))
             if self.path == "/api/names":
                 return self.send(200, names(text, body.get("columns") or [], body.get("kind", ""), body.get("roles") or {}))
             if self.path == "/api/decide":
@@ -273,6 +308,8 @@ class H(SimpleHTTPRequestHandler):
             return self.send(200, fill(text, body.get("kind", "bar")))
         except urllib.error.HTTPError as e:
             self.send(502, {"error": f"OpenRouter {e.code}: {e.read().decode()[:300]}"})
+        except ValueError as e:
+            self.send(422, {"error": str(e)})
         except Exception as e:
             self.send(500, {"error": f"{type(e).__name__}: {e}"})
 

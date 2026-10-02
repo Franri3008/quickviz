@@ -1,7 +1,10 @@
 const $ = id => document.getElementById(id);
 const svgEl = $("chart");
+const webdataEl = $("webdata");
+const webSourcesEl = $("web-sources");
 let seq = 0, timer = null, csvTimer = null, ctrl = null;
-let state = {kind: null, ranked: [], fill: null, text: "", data: null, spec: null, colRoles: {}, opts: [], idx: 0, names: null, fixes: {}};
+let state = {kind: null, ranked: [], fill: null, text: "", data: null, spec: null, colRoles: {}, opts: [], idx: 0, names: null, fixes: {}, webEligible: false, webSpecs: null};
+let lastPick = null;
 
 async function post(path, body, signal) {
   const r = await fetch(path, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body), signal});
@@ -76,6 +79,9 @@ function summary(d) {
 
 function showData(d, name) {
   state.data = d ? {...d, name} : null;
+  if (d) state.webSpecs = null;
+  if (d) { webdataEl.checked = false; state.webEligible = false; }
+  webdataEl.disabled = !!d || !state.webEligible;
   $("clear").hidden = !d;
   $("colsum").textContent = d ? `${name ? name + " / " : ""}${d.rows.length} rows / ` +
     d.cols.map(c => `${c.name} ${c.type === "number" ? "#" : c.type === "time" ? "time" : "cat " + c.distinct}`).join(" / ") : "";
@@ -358,6 +364,7 @@ async function switchKind(kind) {
   setErr("");
   const prev = state.kind;
   state.kind = kind;
+  if (state.webSpecs?.[kind]) { renderSpec(state.webSpecs[kind]); showAlts(); return; }
   if (!state.data) { drawMock(); if (!state.fill) fillLabels(my, ctrl.signal); showAlts(); return; }
   const ok = drawData(kind);
   if (!ok) { state.kind = prev; setErr(`This data has no columns that fit a ${kind} chart`); }
@@ -413,12 +420,34 @@ function setPhase(p) { if (p) document.body.dataset.qvPhase = p; else delete doc
 function showEmpty() {
   seq++;
   if (ctrl) ctrl.abort();
-  state.kind = null; state.spec = null; state.opts = []; state.ranked = [];
+  state.kind = null; state.spec = null; state.opts = []; state.ranked = []; state.webSpecs = null;
   svgEl.innerHTML = "";
   $("meta").textContent = "There's no graph to show";
   $("alts").innerHTML = ""; $("optcount").textContent = "";
   $("prev").hidden = $("next").hidden = $("png").hidden = $("html").hidden = true;
+  state.webEligible = false;
+  webdataEl.checked = false;
+  webdataEl.disabled = true;
+  webSourcesEl.hidden = true;
+  dispatchEvent(new CustomEvent("qv:web-state", {detail: "done"}));
   setPhase("empty");
+}
+
+function showWebSources(sources) {
+  webSourcesEl.replaceChildren();
+  if (!sources?.length) { webSourcesEl.hidden = true; return; }
+  const label = document.createElement("span");
+  label.textContent = "Sources:";
+  webSourcesEl.append(label);
+  for (const source of sources) {
+    const link = document.createElement("a");
+    link.href = source.url;
+    link.textContent = source.title;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    webSourcesEl.append(link);
+  }
+  webSourcesEl.hidden = false;
 }
 
 async function fillLabels(my, signal) {
@@ -438,17 +467,39 @@ async function fillLabels(my, signal) {
 async function run() {
   const text = state.text, d = state.data;
   if (!d && text.length < 4) return;
+  let useWeb = !d && webdataEl.checked;
   const my = ++seq;
   if (ctrl) ctrl.abort();
   ctrl = new AbortController();
   const t0 = performance.now();
   setCached(false);
+  showWebSources([]);
+  state.webSpecs = null;
+  if (useWeb) {
+    state.spec = null;
+    state.opts = [];
+    svgEl.replaceChildren();
+    $("png").hidden = $("html").hidden = true;
+    $("optcount").textContent = "";
+    dispatchEvent(new CustomEvent("qv:web-state", {detail: "loading"}));
+  }
   try {
     const signal = ctrl.signal;
     const columns = d && d.cols.map(c => ({name: c.name, type: c.type, distinct: c.distinct, samples: c.samples}));
     if (d) { state.names = null; state.fixes = {}; }
-    const p = d ? await post("/api/decide", {text, columns}, signal) : await post("/api/pick", {text}, signal);
+    const p = d ? await post("/api/decide", {text, columns}, signal)
+      : lastPick?.text === text ? lastPick.result : await post("/api/pick", {text}, signal);
     if (my !== seq) return;
+    if (!d) {
+      lastPick = {text, result: p};
+      state.webEligible = Number(p.web_data) >= 0.7;
+      webdataEl.disabled = !state.webEligible;
+      if (!state.webEligible && useWeb) {
+        useWeb = false;
+        webdataEl.checked = false;
+        dispatchEvent(new CustomEvent("qv:web-state", {detail: "done"}));
+      }
+    }
     if (!d && p.chartable != null && p.chartable < 0.5) return showEmpty();
     if (my !== seq) return;
     setErr("");
@@ -457,6 +508,21 @@ async function run() {
     $("meta").innerHTML = `<b>${esc(p.choice)}</b> — confidence ${(p.confidence ?? 0).toFixed(2)} — Jev ${p.ms} ms, round trip ${total} ms${d ? ` — ${Object.keys(p.columns || {}).length} column roles in the same call — <span id="roles"></span>` : ""}`;
     state.ranked = p.ranked || [];
     const kindChanged = p.choice !== state.kind;
+    if (useWeb) {
+      state.kind = p.choice;
+      state.fill = null;
+      state.opts = [state.kind];
+      showAlts();
+      const found = await post("/api/web-data", {text, kind: state.kind}, signal);
+      if (my !== seq) return;
+      state.webSpecs = {[found.spec.kind]: found.spec, ...(found.alternatives || {})};
+      state.opts = Object.keys(state.webSpecs);
+      renderSpec(found.spec);
+      showCycle();
+      if (found.cached) setCached(true);
+      showWebSources(found.sources);
+      return;
+    }
     if (!d) {
       state.kind = p.choice;
       buildOpts(); showAlts(); drawMock();
@@ -475,12 +541,32 @@ async function run() {
     await applyWords(post("/api/names", {text, columns, kind: state.kind, roles}, signal), my, "names");
   } catch (e) {
     if (e.name !== "AbortError" && my === seq) setErr(e.message);
+  } finally {
+    if (useWeb && my === seq) dispatchEvent(new CustomEvent("qv:web-state", {detail: "done"}));
   }
 }
 
+webdataEl.addEventListener("change", () => {
+  if (state.data || !state.webEligible) { webdataEl.checked = false; return; }
+  state.fill = null;
+  state.kind = null;
+  clearTimeout(timer);
+  if (state.text.length >= 4) run();
+  else showEmpty();
+});
+
 $("q").addEventListener("input", e => {
   clearTimeout(timer);
+  const previousText = state.text;
   state.text = e.target.value.trim();
+  if (state.text !== previousText) {
+    lastPick = null;
+    seq++;
+    if (ctrl) ctrl.abort();
+    setPhase("");
+    state.webEligible = false;
+    webdataEl.disabled = true;
+  }
   if (state.demo) {
     state.demo = false;
     $("csv").value = ""; $("csv").readOnly = false;
@@ -488,7 +574,7 @@ $("q").addEventListener("input", e => {
   }
   if (!state.data && state.text.length < 4) return showEmpty();
   if (document.body.dataset.qvPhase === "empty") setPhase("");
-  timer = setTimeout(run, 200);
+  timer = setTimeout(run, webdataEl.checked ? 700 : 200);
 });
 
 function loadText(text, name) {

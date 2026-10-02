@@ -80,7 +80,17 @@ body:has(.preview-panel[data-loading]) .composer-spinner { display: block; }
 @keyframes composer-spin { to { transform: rotate(360deg); } }
 
 .preview-panel { display: flex; min-height: 0; flex: 1; flex-direction: column; margin-top: 14px; }
-#datactl { display: flex; align-items: center; gap: 8px; }
+#datactl { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.web-option-wrap { position: relative; display: inline-flex; align-items: center; gap: 5px; margin-left: 7px; }
+.web-option { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); cursor: pointer; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.web-option input { width: 14px; height: 14px; margin: 0; accent-color: var(--accent-strong); cursor: pointer; }
+.web-option-wrap:has(input:disabled) .web-option,
+.web-option-wrap:has(input:disabled) .web-help { opacity: .45; }
+.web-option:has(input:disabled) { cursor: not-allowed; }
+.web-help { display: inline-grid; width: 15px; height: 15px; place-items: center; border: 1px solid var(--line-strong); border-radius: 50%; color: var(--muted); cursor: help; font-size: 10px; font-weight: 700; line-height: 1; }
+.web-help:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.web-tooltip { position: absolute; bottom: calc(100% + 9px); left: 0; z-index: 6; width: min(265px, 75vw); padding: 9px 11px; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--surface-2); color: var(--text); box-shadow: var(--shadow); font-size: 11px; line-height: 1.4; opacity: 0; pointer-events: none; visibility: hidden; }
+.web-help:hover + .web-tooltip, .web-help:focus + .web-tooltip { opacity: 1; visibility: visible; }
 .control-button, #demos button, #cycle button { display: inline-flex; align-items: center; justify-content: center; min-height: 34px; padding: 0 11px; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--surface-2); color: var(--text); font-size: 11px; font-weight: 600; text-decoration: none; transition: border-color 150ms ease, background 150ms ease, color 150ms ease; }
 .control-button:hover, #demos button:hover, #cycle button:hover { border-color: var(--accent-strong); background: var(--accent-soft); color: var(--accent); }
 #filebtn { cursor: pointer; }
@@ -116,6 +126,19 @@ body.using-demo #clear { display: none !important; }
 .skeleton { display: block; border-radius: 5px; background: linear-gradient(90deg, #e9eeec 25%, #f5f7f6 48%, #e9eeec 72%); background-size: 220% 100%; animation: shimmer 1.6s ease-in-out infinite; }
 .preview-panel[data-loading="title"] .chart-frame:not(:has(.qv-title:not(:empty))) #chart:not(:empty) ~ .title-loading { position: absolute; top: 9px; left: 10px; z-index: 1; display: flex; width: min(46%, 330px); height: 27px; align-items: center; padding: 3px 7px; background: #fff; }
 .title-loading .skeleton { width: 100%; height: 17px; }
+.web-loading { position: absolute; inset: 0; z-index: 1; display: none; flex-direction: column; gap: 11%; padding: 24px 7% 8%; background: #fff; }
+.preview-panel[data-loading="web"] .web-loading { display: flex; }
+.preview-panel[data-loading="web"] #chart { visibility: hidden; }
+.web-loading-title { width: 38%; height: 22px; }
+.web-loading-plot { display: flex; min-height: 0; flex: 1; align-items: flex-end; justify-content: space-around; gap: 4%; padding: 0 2% 8%; border-bottom: 1px solid #e9eeec; }
+.web-loading-plot .skeleton { width: 12%; height: 50%; }
+.web-loading-plot .skeleton:nth-child(2) { height: 75%; }
+.web-loading-plot .skeleton:nth-child(3) { height: 42%; }
+.web-loading-plot .skeleton:nth-child(4) { height: 63%; }
+.web-loading-plot .skeleton:nth-child(5) { height: 88%; }
+.web-loading-plot .skeleton:nth-child(6) { height: 57%; }
+.web-sources { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 5px 9px; padding-top: 8px; color: var(--faint); font-size: 10px; }
+.web-sources a { color: var(--accent-strong); text-decoration: underline; text-underline-offset: 2px; }
 @keyframes shimmer { to { background-position-x: -220%; } }
 .preview-footer { display: flex; align-items: center; justify-content: center; gap: 12px; min-height: 42px; margin-top: 14px; }
 #cycle, #actions { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; }
