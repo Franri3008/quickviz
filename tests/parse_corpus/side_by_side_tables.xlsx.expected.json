@@ -1,0 +1,25 @@
+{
+ "about": "Two tables next to each other on one sheet. Rules cannot split them by columns",
+ "sheet": null,
+ "needs_ai": true,
+ "columns": [
+  [
+   "Sex",
+   "category"
+  ],
+  [
+   "Country",
+   "category"
+  ],
+  [
+   "Year",
+   "time"
+  ],
+  [
+   "Value",
+   "number"
+  ]
+ ],
+ "n_rows": 54,
+ "rows": []
+}

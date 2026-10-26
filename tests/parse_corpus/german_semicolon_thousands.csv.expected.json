@@ -1,0 +1,38 @@
+{
+ "about": "German export. Semicolons, thousands with dots, decimal comma, German month names, Windows line endings",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "Monat",
+   "time"
+  ],
+  [
+   "Bundesland",
+   "category"
+  ],
+  [
+   "Stellenanzeigen",
+   "number"
+  ],
+  [
+   "KI-Anteil in %",
+   "number"
+  ]
+ ],
+ "n_rows": 48,
+ "rows": [
+  {
+   "Monat": "2025-03",
+   "Bundesland": "Berlin",
+   "Stellenanzeigen": 7314,
+   "KI-Anteil in %": 5.63
+  },
+  {
+   "Monat": "2025-11",
+   "Bundesland": "Berlin",
+   "Stellenanzeigen": 126667,
+   "KI-Anteil in %": 3.82
+  }
+ ]
+}

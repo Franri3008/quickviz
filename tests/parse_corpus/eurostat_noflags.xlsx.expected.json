@@ -1,0 +1,38 @@
+{
+ "about": "Eurostat XLSX without flag columns, numeric year headers, single GEO row",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "GEO",
+   "category"
+  ],
+  [
+   "Year",
+   "time"
+  ],
+  [
+   "Value",
+   "number"
+  ]
+ ],
+ "n_rows": 54,
+ "rows": [
+  {
+   "GEO": "Germany",
+   "Year": "2021",
+   "Value": 3.1
+  },
+  {
+   "GEO": "EU27_2020",
+   "Year": "2019",
+   "Value": 1.21
+  }
+ ],
+ "aggregates": [
+  "EU27_2020"
+ ],
+ "not_aggregates": [
+  "Germany"
+ ]
+}

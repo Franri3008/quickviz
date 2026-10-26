@@ -1,0 +1,39 @@
+{
+ "about": "OECD.Stat wide export with two title lines, '..' for missing, a trailing extraction line",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "Country",
+   "category"
+  ],
+  [
+   "Year",
+   "time"
+  ],
+  [
+   "Value",
+   "number"
+  ]
+ ],
+ "n_rows": 52,
+ "rows": [
+  {
+   "Country": "Chile",
+   "Year": "2020",
+   "Value": 5.0
+  },
+  {
+   "Country": "Korea",
+   "Year": "2020",
+   "Value": 2.7
+  }
+ ],
+ "aggregates": [
+  "OECD - Total",
+  "European Union (27 countries from 01/02/2020)"
+ ],
+ "not_aggregates": [
+  "Korea"
+ ]
+}

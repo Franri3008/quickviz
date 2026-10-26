@@ -1,0 +1,32 @@
+{
+ "about": "Quarterly periods as columns like 2023Q1, title and source lines",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "Region",
+   "category"
+  ],
+  [
+   "Period",
+   "time"
+  ],
+  [
+   "Value",
+   "number"
+  ]
+ ],
+ "n_rows": 48,
+ "rows": [
+  {
+   "Region": "Lombardia",
+   "Period": "2023Q2",
+   "Value": 13.31
+  },
+  {
+   "Region": "Lombardia",
+   "Period": "2024Q4",
+   "Value": 3.6
+  }
+ ]
+}

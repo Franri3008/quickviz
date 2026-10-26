@@ -1,0 +1,74 @@
+[
+ {
+  "country": "Belgium",
+  "year": 2023,
+  "ai_share": 27.82,
+  "source": "mock"
+ },
+ {
+  "country": "Belgium",
+  "year": 2024,
+  "ai_share": 28.51,
+  "source": "mock"
+ },
+ {
+  "country": "Bulgaria",
+  "year": 2023,
+  "ai_share": 26.88,
+  "source": "mock"
+ },
+ {
+  "country": "Bulgaria",
+  "year": 2024,
+  "ai_share": 3.42,
+  "source": "mock"
+ },
+ {
+  "country": "Czechia",
+  "year": 2023,
+  "ai_share": 18.17,
+  "source": "mock"
+ },
+ {
+  "country": "Czechia",
+  "year": 2024,
+  "ai_share": 13.29,
+  "source": "mock"
+ },
+ {
+  "country": "Denmark",
+  "year": 2023,
+  "ai_share": 16.37,
+  "source": "mock"
+ },
+ {
+  "country": "Denmark",
+  "year": 2024,
+  "ai_share": null,
+  "source": "mock"
+ },
+ {
+  "country": "Germany",
+  "year": 2023,
+  "ai_share": 4.78,
+  "source": "mock"
+ },
+ {
+  "country": "Germany",
+  "year": 2024,
+  "ai_share": 6.57,
+  "source": "mock"
+ },
+ {
+  "country": "Estonia",
+  "year": 2023,
+  "ai_share": 13.89,
+  "source": "mock"
+ },
+ {
+  "country": "Estonia",
+  "year": 2024,
+  "ai_share": 7.41,
+  "source": "mock"
+ }
+]

@@ -1,0 +1,38 @@
+{
+ "about": "A national table where section headings sit on their own rows above the lines they cover",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "Group",
+   "category"
+  ],
+  [
+   "Secteur",
+   "category"
+  ],
+  [
+   "Year",
+   "time"
+  ],
+  [
+   "Value",
+   "number"
+  ]
+ ],
+ "n_rows": 21,
+ "rows": [
+  {
+   "Group": "Construction",
+   "Secteur": "Bâtiment",
+   "Year": "2023",
+   "Value": 1212.3
+  },
+  {
+   "Group": "Services",
+   "Secteur": "Commerce",
+   "Year": "2023",
+   "Value": 1374.2
+  }
+ ]
+}

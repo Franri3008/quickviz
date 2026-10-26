@@ -1,0 +1,42 @@
+{
+  "charts.min.js": {
+    "source": "charts.js",
+    "source_sha256": "db75ce1e8cbc222783fdbace2bf12d5522bc36e2d3b1d5f3961de2079d42f699",
+    "sha256": "44f6b01a72e23ee42ad617b224d3a2ad810a80439095369acd9fcbcbb19606e4"
+  },
+  "ceps-theme.min.js": {
+    "source": "ceps-theme.js",
+    "source_sha256": "eda1de6da0290b612d223edec1e1012c2417d3f2b12f0f59fc4e811040fbe67f",
+    "sha256": "80998fa2f82a896bff3113dd5ab597a5b9a13d9a83b777452c0b7f68349eb74a"
+  },
+  "aiw-theme.min.js": {
+    "source": "aiw-theme.js",
+    "source_sha256": "4cbceed504ec7dc88518dc68e6e5665017e6dd32eb125ac8429551efbca17f36",
+    "sha256": "014a742c542e9d92ef083b0f080829b8f336ea7fcb7477fd7c599c208383a2a0"
+  },
+  "franri-theme.min.js": {
+    "source": "franri-theme.js",
+    "source_sha256": "ddcfe45afb866e6c45ddd51f9e68309c108a793ad7eecc4576c1a0b7f46fe656",
+    "sha256": "4736e2c485b49f75c9d2c993d3f38ae5852b8122af502ea5ef722f0a9289dd7b"
+  },
+  "d3.min.js": {
+    "source": "vendor/d3.min.js",
+    "source_sha256": "f2094bbf6141b359722c4fe454eb6c4b0f0e42cc10cc7af921fc158fceb86539",
+    "sha256": "84c7488ecd8b886962c3077a9887f3270246ba7c806a6719b67f4ec4b4dcb445"
+  },
+  "d3-sankey.min.js": {
+    "source": "vendor/d3-sankey.min.js",
+    "source_sha256": "8286db5d6aa049cc6e8a546708943b79dfb4daaefb0ccf42af674ec0ee4c86be",
+    "sha256": "a1944523761adf1af3e2c1a243ef3b0b3f7a3678ec4391e9e61274fdc3fe369c"
+  },
+  "topojson-client.min.js": {
+    "source": "vendor/topojson-client.min.js",
+    "source_sha256": "25cd02ae486cc5063e0215a4e4cfb15de83700c87ac48bac4d57dc6aaf3ebb89",
+    "sha256": "176c1f58631fea33b3a6873b55063df2a3ee91d5f7716efdd980f4b24cedb353"
+  },
+  "countries-50m.min.json": {
+    "source": "vendor/countries-50m.json",
+    "source_sha256": "04342cdc1e3016bcd7db1630de95684d67b79fe3c8c460321e87aef469502394",
+    "sha256": "dfed872c9238817b8f8da8c70313f6bff264104a271f9f38d31729da6fb67617"
+  }
+}

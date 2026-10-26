@@ -1,0 +1,44 @@
+{
+ "about": "Report table pasted to CSV. A year header with a footnote star, an estimate flag glued to a value",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "Member State",
+   "category"
+  ],
+  [
+   "Year",
+   "time"
+  ],
+  [
+   "Value",
+   "number"
+  ],
+  [
+   "flag",
+   "category"
+  ]
+ ],
+ "n_rows": 24,
+ "rows": [
+  {
+   "Member State": "Czechia",
+   "Year": "2024",
+   "Value": 316.7,
+   "flag": "e"
+  },
+  {
+   "Member State": "EU-27",
+   "Year": "2024",
+   "Value": 620.7,
+   "flag": ""
+  }
+ ],
+ "aggregates": [
+  "EU-27"
+ ],
+ "not_aggregates": [
+  "Czechia"
+ ]
+}

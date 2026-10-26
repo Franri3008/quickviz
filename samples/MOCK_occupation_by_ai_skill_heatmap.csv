@@ -1,0 +1,99 @@
+"MOCK DATA. Share of online job ads for each occupation that ask for each AI skill, 2025 (%)"
+occupation,ai_skill,pct_of_job_ads_mentioning_skill,job_ads_total
+Software developers,Machine learning,15.5,7470
+Software developers,Python,17.5,8098
+Software developers,Prompt writing,47.3,7182
+Software developers,Data analysis,45.1,8428
+Software developers,Cloud computing,39.6,2377
+Software developers,Computer vision,48.8,7836
+Software developers,NLP,35.2,1535
+Software developers,AI ethics,28.3,3770
+Data scientists,Machine learning,21.6,8325
+Data scientists,Python,26.8,6721
+Data scientists,Prompt writing,50.9,4278
+Data scientists,Data analysis,13.4,1144
+Data scientists,Cloud computing,44.4,8478
+Data scientists,Computer vision,50.5,920
+Data scientists,NLP,19.2,6237
+Data scientists,AI ethics,42.2,4041
+Financial analysts,Machine learning,31.4,6041
+Financial analysts,Python,21.2,3940
+Financial analysts,Prompt writing,23.8,7880
+Financial analysts,Data analysis,25.3,4989
+Financial analysts,Cloud computing,16.9,8502
+Financial analysts,Computer vision,20.7,5721
+Financial analysts,NLP,30.5,7816
+Financial analysts,AI ethics,20.4,3990
+Mechanical engineers,Machine learning,18.5,1883
+Mechanical engineers,Python,16.4,999
+Mechanical engineers,Prompt writing,9.0,5318
+Mechanical engineers,Data analysis,13.4,3695
+Mechanical engineers,Cloud computing,17.6,6055
+Mechanical engineers,Computer vision,16.0,4975
+Mechanical engineers,NLP,26.0,951
+Mechanical engineers,AI ethics,24.9,3769
+Marketing specialists,Machine learning,14.7,1378
+Marketing specialists,Python,8.6,989
+Marketing specialists,Prompt writing,10.7,1665
+Marketing specialists,Data analysis,9.4,7768
+Marketing specialists,Cloud computing,5.0,6403
+Marketing specialists,Computer vision,10.6,2453
+Marketing specialists,NLP,11.8,8275
+Marketing specialists,AI ethics,15.9,3805
+Accountants,Machine learning,8.4,4095
+Accountants,Python,14.1,8007
+Accountants,Prompt writing,14.2,6538
+Accountants,Data analysis,10.6,4358
+Accountants,Cloud computing,5.3,7332
+Accountants,Computer vision,13.5,2009
+Accountants,NLP,14.4,2306
+Accountants,AI ethics,12.9,993
+Nurses,Machine learning,7.5,1908
+Nurses,Python,18.5,2749
+Nurses,Prompt writing,9.0,8901
+Nurses,Data analysis,7.5,6213
+Nurses,Cloud computing,10.1,451
+Nurses,Computer vision,10.4,3021
+Nurses,NLP,8.2,3248
+Nurses,AI ethics,9.8,6681
+Teachers,Machine learning,8.1,7868
+Teachers,Python,11.0,6666
+Teachers,Prompt writing,15.3,1422
+Teachers,Data analysis,10.5,5799
+Teachers,Cloud computing,3.2,2647
+Teachers,Computer vision,8.2,4235
+Teachers,NLP,9.1,8375
+Teachers,AI ethics,18.9,2118
+Graphic designers,Machine learning,14.2,4797
+Graphic designers,Python,7.2,6764
+Graphic designers,Prompt writing,12.5,6206
+Graphic designers,Data analysis,9.6,2859
+Graphic designers,Cloud computing,9.7,7018
+Graphic designers,Computer vision,17.7,7981
+Graphic designers,NLP,16.1,2037
+Graphic designers,AI ethics,8.5,1092
+Sales representatives,Machine learning,11.0,644
+Sales representatives,Python,9.1,5032
+Sales representatives,Prompt writing,17.5,644
+Sales representatives,Data analysis,13.5,6979
+Sales representatives,Cloud computing,16.3,3736
+Sales representatives,Computer vision,6.7,5550
+Sales representatives,NLP,16.6,7177
+Sales representatives,AI ethics,11.5,7006
+Logistics planners,Machine learning,6.9,6582
+Logistics planners,Python,21.3,5533
+Logistics planners,Prompt writing,17.6,1606
+Logistics planners,Data analysis,19.6,5426
+Logistics planners,Cloud computing,10.1,6896
+Logistics planners,Computer vision,21.6,4213
+Logistics planners,NLP,18.8,5892
+Logistics planners,AI ethics,32.1,8076
+Customer service agents,Machine learning,6.2,3782
+Customer service agents,Python,4.3,6222
+Customer service agents,Prompt writing,7.7,1480
+Customer service agents,Data analysis,17.9,6537
+Customer service agents,Cloud computing,10.5,5953
+Customer service agents,Computer vision,10.8,5624
+Customer service agents,NLP,13.2,4968
+Customer service agents,AI ethics,17.6,2672
+"Source: mock data for testing, not real figures"

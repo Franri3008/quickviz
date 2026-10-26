@@ -1,0 +1,38 @@
+{
+ "about": "CORDIS-style CSV with Windows line endings, quoted names holding commas, thousands commas",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "Organisation",
+   "category"
+  ],
+  [
+   "Country",
+   "category"
+  ],
+  [
+   "Projects",
+   "number"
+  ],
+  [
+   "EU contribution (EUR)",
+   "number"
+  ]
+ ],
+ "n_rows": 15,
+ "rows": [
+  {
+   "Organisation": "Institute of Applied Research, Unit 1",
+   "Country": "Belgium",
+   "Projects": 31,
+   "EU contribution (EUR)": 63153121.73
+  },
+  {
+   "Organisation": "Institute of Applied Research, Unit 15",
+   "Country": "Estonia",
+   "Projects": 40,
+   "EU contribution (EUR)": 84624619.31
+  }
+ ]
+}

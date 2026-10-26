@@ -1,0 +1,67 @@
+{
+ "about": "World Bank WDI CSV. Four metadata lines with blanks, 65 year columns, region and income aggregates, trailing comma",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "Country Name",
+   "category"
+  ],
+  [
+   "Country Code",
+   "category"
+  ],
+  [
+   "Indicator Name",
+   "category"
+  ],
+  [
+   "Indicator Code",
+   "category"
+  ],
+  [
+   "Year",
+   "time"
+  ],
+  [
+   "Value",
+   "number"
+  ]
+ ],
+ "n_rows": 645,
+ "rows": [
+  {
+   "Country Name": "Belgium",
+   "Country Code": "BEL",
+   "Year": "2020",
+   "Value": 2.664535
+  },
+  {
+   "Country Name": "World",
+   "Country Code": "WLD",
+   "Year": "2020",
+   "Value": 1.239066
+  }
+ ],
+ "aggregates": [
+  "Africa Eastern and Southern",
+  "Central Europe and the Baltics",
+  "Euro area",
+  "East Asia & Pacific",
+  "European Union",
+  "High income",
+  "Low & middle income",
+  "Middle income",
+  "OECD members",
+  "Sub-Saharan Africa",
+  "World",
+  "Upper middle income",
+  "Small states",
+  "Heavily indebted poor countries (HIPC)"
+ ],
+ "not_aggregates": [
+  "Belgium",
+  "United States",
+  "China"
+ ]
+}

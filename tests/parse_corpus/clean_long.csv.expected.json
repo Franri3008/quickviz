@@ -1,0 +1,47 @@
+{
+ "about": "A clean long CSV with the header on line one",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "country",
+   "category"
+  ],
+  [
+   "year",
+   "time"
+  ],
+  [
+   "gdp_growth",
+   "number"
+  ],
+  [
+   "inflation",
+   "number"
+  ]
+ ],
+ "n_rows": 30,
+ "rows": [
+  {
+   "country": "Spain",
+   "year": "2022",
+   "gdp_growth": -1.0,
+   "inflation": 5.7
+  },
+  {
+   "country": "Spain",
+   "year": "2023",
+   "gdp_growth": 4.6,
+   "inflation": 2.4
+  },
+  {
+   "country": "Spain",
+   "year": "2024",
+   "gdp_growth": 5.4,
+   "inflation": 10.7
+  }
+ ],
+ "not_aggregates": [
+  "Spain"
+ ]
+}

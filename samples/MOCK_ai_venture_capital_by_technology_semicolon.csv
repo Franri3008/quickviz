@@ -1,0 +1,123 @@
+MOCK DATA. Venture capital invested in EU AI start-ups, by technology (EUR million)
+quarter;technology;vc_investment_eur_m;deals
+2021-Q1;Generative AI;183,7;38
+2021-Q1;Computer vision;141,3;88
+2021-Q1;Robotics;208,8;21
+2021-Q1;AI chips;270,9;73
+2021-Q1;Speech and language;293,1;49
+2021-Q1;AI for science;90,3;36
+2021-Q2;Generative AI;188,7;44
+2021-Q2;Computer vision;155,3;23
+2021-Q2;Robotics;201,2;20
+2021-Q2;AI chips;310,7;64
+2021-Q2;Speech and language;336,3;16
+2021-Q2;AI for science;98,2;10
+2021-Q3;Generative AI;187,9;72
+2021-Q3;Computer vision;170,9;87
+2021-Q3;Robotics;210,6;29
+2021-Q3;AI chips;350,9;87
+2021-Q3;Speech and language;377,4;50
+2021-Q3;AI for science;92,4;60
+2021-Q4;Generative AI;202,6;39
+2021-Q4;Computer vision;161,9;42
+2021-Q4;Robotics;226,1;45
+2021-Q4;AI chips;368,6;71
+2021-Q4;Speech and language;373,8;8
+2021-Q4;AI for science;98,7;73
+2022-Q1;Generative AI;224,2;59
+2022-Q1;Computer vision;180,1;17
+2022-Q1;Robotics;227,6;67
+2022-Q1;AI chips;355,5;33
+2022-Q1;Speech and language;366,4;50
+2022-Q1;AI for science;102,8;26
+2022-Q2;Generative AI;213,9;44
+2022-Q2;Computer vision;196,2;81
+2022-Q2;Robotics;212,7;86
+2022-Q2;AI chips;330,6;69
+2022-Q2;Speech and language;351,1;82
+2022-Q2;AI for science;107,9;28
+2022-Q3;Generative AI;206,9;12
+2022-Q3;Computer vision;211,5;71
+2022-Q3;Robotics;239,1;29
+2022-Q3;AI chips;339,4;63
+2022-Q3;Speech and language;342,7;75
+2022-Q3;AI for science;112,3;17
+2022-Q4;Generative AI;209,5;19
+2022-Q4;Computer vision;210,6;67
+2022-Q4;Robotics;268,0;89
+2022-Q4;AI chips;384,6;28
+2022-Q4;Speech and language;371,2;82
+2022-Q4;AI for science;123,1;37
+2023-Q1;Generative AI;246,6;74
+2023-Q1;Computer vision;196,9;46
+2023-Q1;Robotics;254,5;48
+2023-Q1;AI chips;369,3;79
+2023-Q1;Speech and language;357,2;33
+2023-Q1;AI for science;124,9;35
+2023-Q2;Generative AI;275,6;73
+2023-Q2;Computer vision;219,9;81
+2023-Q2;Robotics;243,6;47
+2023-Q2;AI chips;389,5;79
+2023-Q2;Speech and language;399,3;73
+2023-Q2;AI for science;117,4;28
+2023-Q3;Generative AI;326,0;17
+2023-Q3;Computer vision;251,9;69
+2023-Q3;Robotics;257,3;45
+2023-Q3;AI chips;365,4;33
+2023-Q3;Speech and language;418,3;86
+2023-Q3;AI for science;126,7;14
+2023-Q4;Generative AI;404,1;41
+2023-Q4;Computer vision;235,0;57
+2023-Q4;Robotics;239,6;25
+2023-Q4;AI chips;383,9;20
+2023-Q4;Speech and language;479,1;82
+2023-Q4;AI for science;132,7;24
+2024-Q1;Generative AI;420,8;84
+2024-Q1;Computer vision;248,0;62
+2024-Q1;Robotics;268,7;41
+2024-Q1;AI chips;414,8;61
+2024-Q1;Speech and language;467,8;14
+2024-Q1;AI for science;139,1;13
+2024-Q2;Generative AI;462,6;46
+2024-Q2;Computer vision;283,5;30
+2024-Q2;Robotics;281,6;22
+2024-Q2;AI chips;398,1;15
+2024-Q2;Speech and language;521,2;12
+2024-Q2;AI for science;147,2;63
+2024-Q3;Generative AI;496,1;90
+2024-Q3;Computer vision;272,3;31
+2024-Q3;Robotics;277,7;49
+2024-Q3;AI chips;397,7;20
+2024-Q3;Speech and language;588,9;65
+2024-Q3;AI for science;153,1;56
+2024-Q4;Generative AI;508,8;58
+2024-Q4;Computer vision;311,7;42
+2024-Q4;Robotics;283,4;43
+2024-Q4;AI chips;415,7;69
+2024-Q4;Speech and language;553,0;49
+2024-Q4;AI for science;160,5;22
+2025-Q1;Generative AI;568,4;8
+2025-Q1;Computer vision;339,0;13
+2025-Q1;Robotics;287,4;33
+2025-Q1;AI chips;422,6;23
+2025-Q1;Speech and language;532,5;76
+2025-Q1;AI for science;180,3;43
+2025-Q2;Generative AI;688,7;21
+2025-Q2;Computer vision;315,7;61
+2025-Q2;Robotics;319,7;55
+2025-Q2;AI chips;453,6;85
+2025-Q2;Speech and language;562,2;57
+2025-Q2;AI for science;201,8;22
+2025-Q3;Generative AI;847,8;87
+2025-Q3;Computer vision;345,0;90
+2025-Q3;Robotics;331,2;90
+2025-Q3;AI chips;438,5;62
+2025-Q3;Speech and language;630,4;8
+2025-Q3;AI for science;191,7;42
+2025-Q4;Generative AI;901,3;9
+2025-Q4;Computer vision;377,9;15
+2025-Q4;Robotics;320,2;89
+2025-Q4;AI chips;451,6;87
+2025-Q4;Speech and language;633,9;34
+2025-Q4;AI for science;180,0;87
+Source: mock data for testing, not real figures

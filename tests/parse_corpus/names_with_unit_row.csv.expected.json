@@ -1,0 +1,32 @@
+{
+ "about": "Column names on one row and their units on the next",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "Region",
+   "category"
+  ],
+  [
+   "GDP EUR bn",
+   "number"
+  ],
+  [
+   "Population thousand",
+   "number"
+  ],
+  [
+   "R&D spending % of GDP",
+   "number"
+  ]
+ ],
+ "n_rows": 3,
+ "rows": [
+  {
+   "Region": "Flanders",
+   "GDP EUR bn": 289.9,
+   "Population thousand": 4030,
+   "R&D spending % of GDP": 3.01
+  }
+ ]
+}

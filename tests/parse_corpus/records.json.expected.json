@@ -1,0 +1,46 @@
+{
+ "about": "JSON array of records, one null",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "country",
+   "category"
+  ],
+  [
+   "year",
+   "time"
+  ],
+  [
+   "ai_share",
+   "number"
+  ],
+  [
+   "source",
+   "category"
+  ]
+ ],
+ "n_rows": 12,
+ "rows": [
+  {
+   "country": "Bulgaria",
+   "year": "2023",
+   "ai_share": 26.88
+  },
+  {
+   "country": "Bulgaria",
+   "year": "2024",
+   "ai_share": 3.42
+  },
+  {
+   "country": "Denmark",
+   "year": "2023",
+   "ai_share": 16.37
+  },
+  {
+   "country": "Denmark",
+   "year": "2024",
+   "ai_share": null
+  }
+ ]
+}

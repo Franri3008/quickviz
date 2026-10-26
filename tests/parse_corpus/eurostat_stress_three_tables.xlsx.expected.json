@@ -1,0 +1,66 @@
+{
+ "about": "The stress file. Eurostat XLSX with three size-class tables stacked, flag columns, legend footer",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "Size classes in number of persons employed",
+   "category"
+  ],
+  [
+   "GEO",
+   "category"
+  ],
+  [
+   "Year",
+   "time"
+  ],
+  [
+   "Value",
+   "number"
+  ],
+  [
+   "flag",
+   "category"
+  ]
+ ],
+ "n_rows": 371,
+ "rows": [
+  {
+   "Size classes in number of persons employed": "250 persons employed or more",
+   "GEO": "Belgium",
+   "Year": "2023",
+   "Value": 43.07,
+   "flag": "b"
+  },
+  {
+   "Size classes in number of persons employed": "From 10 to 249 persons employed",
+   "GEO": "Ireland",
+   "Year": "2025",
+   "Value": 14.12,
+   "flag": "p"
+  },
+  {
+   "Size classes in number of persons employed": "10 persons employed or more",
+   "GEO": "Türkiye",
+   "Year": "2021",
+   "Value": 1.51,
+   "flag": ""
+  },
+  {
+   "Size classes in number of persons employed": "250 persons employed or more",
+   "GEO": "Malta",
+   "Year": "2023",
+   "Value": 39.61,
+   "flag": "u"
+  }
+ ],
+ "aggregates": [
+  "European Union - 27 countries (from 2020)",
+  "Euro area – 20 countries (from 2023)"
+ ],
+ "not_aggregates": [
+  "Belgium",
+  "Malta"
+ ]
+}

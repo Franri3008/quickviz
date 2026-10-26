@@ -1,0 +1,50 @@
+{
+ "about": "Three tables in one CSV with no blank lines. Each starts with a 'Sex: ...' line and repeats the header",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "Sex",
+   "category"
+  ],
+  [
+   "geo",
+   "category"
+  ],
+  [
+   "Year",
+   "time"
+  ],
+  [
+   "Value",
+   "number"
+  ]
+ ],
+ "n_rows": 36,
+ "rows": [
+  {
+   "Sex": "Total",
+   "geo": "FR",
+   "Year": "2022",
+   "Value": 72.8
+  },
+  {
+   "Sex": "Females",
+   "geo": "FR",
+   "Year": "2022",
+   "Value": 73.1
+  },
+  {
+   "Sex": "Males",
+   "geo": "FR",
+   "Year": "2022",
+   "Value": 69.9
+  }
+ ],
+ "aggregates": [
+  "Total"
+ ],
+ "not_aggregates": [
+  "FR"
+ ]
+}

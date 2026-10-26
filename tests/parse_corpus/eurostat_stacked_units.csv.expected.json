@@ -1,0 +1,68 @@
+{
+ "about": "Eurostat-style CSV with two tables, one per unit of measure, split by blank rows",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "Unit of measure",
+   "category"
+  ],
+  [
+   "GEO",
+   "category"
+  ],
+  [
+   "Year",
+   "time"
+  ],
+  [
+   "Value",
+   "number"
+  ]
+ ],
+ "n_rows": 30,
+ "rows": [
+  {
+   "Unit of measure": "Percentage of enterprises",
+   "GEO": "Ireland",
+   "Year": "2022",
+   "Value": 30.9
+  },
+  {
+   "Unit of measure": "Percentage of enterprises",
+   "GEO": "Ireland",
+   "Year": "2023",
+   "Value": 28.2
+  },
+  {
+   "Unit of measure": "Percentage of enterprises",
+   "GEO": "Ireland",
+   "Year": "2024",
+   "Value": 9.8
+  },
+  {
+   "Unit of measure": "Percentage of turnover",
+   "GEO": "Ireland",
+   "Year": "2022",
+   "Value": 12.4
+  },
+  {
+   "Unit of measure": "Percentage of turnover",
+   "GEO": "Ireland",
+   "Year": "2023",
+   "Value": 12.6
+  },
+  {
+   "Unit of measure": "Percentage of turnover",
+   "GEO": "Ireland",
+   "Year": "2024",
+   "Value": 25.5
+  }
+ ],
+ "aggregates": [
+  "European Union - 27 countries (from 2020)"
+ ],
+ "not_aggregates": [
+  "Ireland"
+ ]
+}

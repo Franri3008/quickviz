@@ -1,0 +1,132 @@
+{
+ "about": "OECD Data Explorer SDMX CSV with labels. Two label columns are empty and dropped",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "STRUCTURE",
+   "category"
+  ],
+  [
+   "STRUCTURE_ID",
+   "category"
+  ],
+  [
+   "STRUCTURE_NAME",
+   "category"
+  ],
+  [
+   "ACTION",
+   "category"
+  ],
+  [
+   "REF_AREA",
+   "category"
+  ],
+  [
+   "Reference area",
+   "category"
+  ],
+  [
+   "FREQ",
+   "category"
+  ],
+  [
+   "Frequency of observation",
+   "category"
+  ],
+  [
+   "MEASURE",
+   "category"
+  ],
+  [
+   "Measure",
+   "category"
+  ],
+  [
+   "UNIT_MEASURE",
+   "category"
+  ],
+  [
+   "Unit of measure",
+   "category"
+  ],
+  [
+   "TIME_PERIOD",
+   "time"
+  ],
+  [
+   "OBS_VALUE",
+   "number"
+  ],
+  [
+   "OBS_STATUS",
+   "category"
+  ],
+  [
+   "Observation status",
+   "category"
+  ],
+  [
+   "UNIT_MULT",
+   "number"
+  ],
+  [
+   "Unit multiplier",
+   "category"
+  ],
+  [
+   "DECIMALS",
+   "number"
+  ],
+  [
+   "Decimals",
+   "category"
+  ]
+ ],
+ "n_rows": 25,
+ "rows": [
+  {
+   "REF_AREA": "ITA",
+   "TIME_PERIOD": "2023-Q1",
+   "OBS_VALUE": 57.4,
+   "OBS_STATUS": "A"
+  },
+  {
+   "REF_AREA": "ITA",
+   "TIME_PERIOD": "2023-Q2",
+   "OBS_VALUE": 80.0,
+   "OBS_STATUS": "A"
+  },
+  {
+   "REF_AREA": "ITA",
+   "TIME_PERIOD": "2023-Q3",
+   "OBS_VALUE": 56.3,
+   "OBS_STATUS": "A"
+  },
+  {
+   "REF_AREA": "ITA",
+   "TIME_PERIOD": "2023-Q4",
+   "OBS_VALUE": 69.3,
+   "OBS_STATUS": "A"
+  },
+  {
+   "REF_AREA": "ITA",
+   "TIME_PERIOD": "2024-Q1",
+   "OBS_VALUE": 63.8,
+   "OBS_STATUS": "P"
+  },
+  {
+   "REF_AREA": "OECD",
+   "TIME_PERIOD": "2023-Q1",
+   "OBS_VALUE": 61.4,
+   "OBS_STATUS": "A"
+  }
+ ],
+ "aggregates": [
+  "OECD"
+ ],
+ "not_aggregates": [
+  "ITA"
+ ]
+}

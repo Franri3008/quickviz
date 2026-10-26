@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <title>QuickViz</title>
+  <meta name="qv-version" content="__VERSION__">
+  <script src="theme-mode.js?v=__VERSION__"></script>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="fonts/carlito.css?v=__VERSION__">
+  <link rel="stylesheet" href="style.css?v=__VERSION__">
+  <script src="vendor/d3.min.js?v=__VERSION__" defer></script>
+  <script src="vendor/d3-sankey.min.js?v=__VERSION__" defer></script>
+  <script src="franri-theme.js?v=__VERSION__" defer></script>
+  <script src="charts.js?v=__VERSION__" defer></script>
+  <script src="charts-mock.js?v=__VERSION__" defer></script>
+  <script src="frame-host.js?v=__VERSION__" defer></script>
+  <script src="keep.js?v=__VERSION__" defer></script>
+  <script src="app.js?v=__VERSION__" defer></script>
+  <script src="credits.js?v=__VERSION__" defer></script>
+  <script src="help.js?v=__VERSION__" defer></script>
+</head>
+<body class="view-1" data-style="franri">
+  <header class="topbar">
+    <div class="brand"><span class="brand-name"><span class="brand-app">QuickViz</span><span class="brand-version" title="Version">v__VERSION__</span></span></div>
+    <nav class="account" aria-label="Page">
+      <span id="credits" class="credits" aria-live="polite" hidden></span>
+      <a id="signin" class="signin" href="/auth/google/login" hidden>Sign in</a>
+      <span id="who-wrap" class="who-wrap" hidden>
+        <button id="who" type="button" class="who" aria-haspopup="menu" aria-expanded="false" aria-controls="who-menu"><span id="who-email"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+        <span id="who-menu" class="menu who-menu" role="menu" aria-label="Account" hidden>
+          <span id="who-line" class="who-line"></span>
+          <a id="admin-link" role="menuitem" href="/admin" hidden>Admin</a>
+          <a role="menuitem" href="/privacy">Privacy</a>
+          <button id="signout" type="button" role="menuitem">Sign out</button>
+        </span>
+      </span>
+      <button id="help" type="button" class="icon-btn help-btn" aria-label="Which charts can I make?" title="Which charts can I make?" aria-haspopup="dialog" aria-controls="help-dialog">?</button>
+      <button id="theme" type="button" class="icon-btn" aria-label="Dark mode" aria-pressed="false" title="Dark mode">
+        <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
+        <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+      </button>
+    </nav>
+  </header>
+  <div id="cap-banner" class="banner" role="alert" hidden><span id="cap-text"></span> <a id="cap-signin" class="banner-btn" href="/auth/google/login" hidden>Sign in for more</a></div>
+
+  <div class="stepbar">
+    <ol id="stepper" class="stepper" aria-label="Steps">
+      <li class="st" data-step="1"><button type="button" class="st-btn" data-step="1"><span class="dot"><span class="n">1</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="lbl">Upload</span></button></li>
+      <li class="chev" aria-hidden="true"><svg viewBox="0 0 36 14"><path d="M2 2l5 5-5 5M14 2l5 5-5 5M26 2l5 5-5 5"/></svg></li>
+      <li class="st" data-step="2"><button type="button" class="st-btn" data-step="2"><span class="dot"><span class="n">2</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="lbl">Preview</span></button></li>
+      <li class="chev" aria-hidden="true"><svg viewBox="0 0 36 14"><path d="M2 2l5 5-5 5M14 2l5 5-5 5M26 2l5 5-5 5"/></svg></li>
+      <li class="st" data-step="3"><button type="button" class="st-btn" data-step="3"><span class="dot"><span class="n">3</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="lbl">Adjust</span></button></li>
+      <li class="chev" aria-hidden="true"><svg viewBox="0 0 36 14"><path d="M2 2l5 5-5 5M14 2l5 5-5 5M26 2l5 5-5 5"/></svg></li>
+      <li class="st" data-step="4"><button type="button" class="st-btn" data-step="4"><span class="dot"><span class="n">4</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="lbl">Export</span></button></li>
+    </ol>
+    <div class="restart-wrap">
+      <button id="restart" type="button" class="restart" hidden>Start over</button>
+      <div id="restart-ask" class="restart-ask" role="dialog" aria-label="Start over" hidden>
+        <p>Clear the data, the chart and the chat?</p>
+        <div class="restart-row">
+          <button id="restart-yes" type="button" class="primary">Start over</button>
+          <button id="restart-no" type="button">Keep working</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="notice">
+    <div id="status" class="status" role="status" aria-live="polite"></div>
+    <p id="err" class="err" role="alert" hidden></p>
+  </div>
+
+  <main class="layout">
+    <section id="step-data" class="step" aria-labelledby="h-data">
+      <div class="data-head">
+        <h2 id="h-data">Upload your data</h2>
+        <div id="file-card" class="file-card">
+          <b id="file-name"></b>
+          <span id="file-mock" class="mock-badge" hidden>Mockup data</span>
+          <span class="file-side">
+            <button id="replace" type="button" class="linkish">Replace</button>
+            <span id="file-meta"></span>
+          </span>
+        </div>
+      </div>
+      <label id="drop" class="drop">
+        <input id="file" type="file" accept=".csv,.tsv,.txt,.xlsx,.xlsm,.xls,.json,.png,.jpg,.jpeg,text/csv,image/png,image/jpeg">
+        <span class="drop-main">Drop a <b class="hl"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9.5h18M3 14.5h18M9 4v16"/></svg>data file</b> or a <b class="hl"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg>chart image</b> here, or <u>choose a file</u></span>
+        <span class="drop-sub">CSV, TSV, XLSX, JSON, PNG or JPG, up to 5 MB</span>
+        <span class="drop-warn"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.5 21.5 20h-19Z"/><path d="M12 10v4.5"/><circle cx="12" cy="17.2" r=".6"/></svg>Never upload sensitive data</span>
+        <span class="drop-busy" aria-hidden="true"><span class="drop-spin"></span><span id="drop-busy-text"></span></span>
+      </label>
+      <div id="describe" class="describe">
+        <label for="describe-input" class="describe-cap">...or <b class="hl"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>describe</b> what you want to see with <b class="hl"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>mockup data</b></label>
+        <input id="describe-input" type="text" autocomplete="off" maxlength="2000" placeholder="e.g. coffee exports by country since 2015">
+        <div class="describe-row">
+          <label class="describe-web"><input id="describe-web" type="checkbox" disabled> Use real numbers from the web</label>
+          <span id="describe-state" class="describe-state" aria-live="polite"></span>
+        </div>
+        <div id="mock-box" class="mock-box" hidden>
+          <div class="mock-head">
+            <button id="mock-prev" type="button" class="icon-btn" aria-label="Previous chart type" title="Previous chart type"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+            <span id="mock-kind" class="mock-kind"></span>
+            <button id="mock-next" type="button" class="icon-btn" aria-label="Next chart type" title="Next chart type"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+            <span id="mock-tag" class="mock-badge">Mockup data</span>
+          </div>
+          <div class="mock-frame"><iframe id="mock-chart" class="chart-frame" title="Sample chart" sandbox="allow-scripts"></iframe></div>
+          <p id="mock-sources" class="muted mock-sources" hidden></p>
+        </div>
+      </div>
+      <div id="data-summary" hidden>
+        <div id="reading" class="reading" hidden>
+          <span id="reading-warn" class="warn" hidden>
+            <button id="reading-warn-btn" type="button" class="warn-btn" aria-label="Warning: we are not sure this file was read correctly" aria-describedby="reading-tip">
+              <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><path d="M8 1.6 15.2 14.4H.8Z" fill="#f2c230" stroke="#b8860b" stroke-width="1" stroke-linejoin="round"/><path d="M8 6v3.6" stroke="#1a1a1a" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="11.9" r=".95" fill="#1a1a1a"/></svg>
+            </button>
+            <span id="reading-tip" role="tooltip" class="tip">We are not sure this file was read correctly. Check the preview, or pick another reading.</span>
+          </span>
+          <span id="reading-text" class="reading-text"></span>
+          <span class="reading-more">
+            <button id="readings" type="button" class="quiet" aria-haspopup="menu" aria-expanded="false" aria-controls="readings-menu">Other readings</button>
+            <span id="readings-menu" class="menu" role="menu" aria-label="Other readings" hidden></span>
+          </span>
+        </div>
+        <div id="header-pick" class="header-pick" hidden>
+          <p id="header-pick-h" class="header-pick-h">Pick the row that holds the column names.</p>
+          <div id="header-rows" class="header-rows" role="group" aria-labelledby="header-pick-h"></div>
+          <button id="header-cancel" type="button" class="linkish">Cancel</button>
+        </div>
+        <label id="sheet-wrap" class="sheet" hidden>Sheet <select id="sheet"></select></label>
+        <ul id="col-list" class="cols"></ul>
+        <p id="data-notes" class="muted" hidden></p>
+        <div class="preview-wrap"><table id="preview" class="preview"></table></div>
+        <p id="preview-meta" class="muted preview-meta"></p>
+      </div>
+    </section>
+
+    <section id="step-ask" class="step" aria-labelledby="h-ask">
+      <h2 id="h-ask">Here is the chart that fits your data best</h2>
+      <p id="pick-msg" class="pick-msg" hidden></p>
+    </section>
+
+    <section id="stage" class="stage" aria-label="Chart">
+      <div class="stage-head">
+        <div id="kinds" class="kinds" role="tablist" aria-label="Chart type"></div>
+        <span id="stage-mock" class="mock-badge" hidden>Mockup data</span>
+      </div>
+      <p id="shown-line" class="shown-line" role="note" hidden></p>
+      <div id="frame" class="frame">
+        <iframe id="chart" class="chart-frame" title="Chart" sandbox="allow-scripts"></iframe>
+      </div>
+      <div class="below">
+        <div class="exports">
+          <button id="png" type="button" class="primary" disabled><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg>Download PNG</button>
+          <button id="html" type="button" disabled><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></svg>Download HTML</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="step-chat" class="step" aria-labelledby="h-chat">
+      <div class="chat-head">
+        <h2 id="h-chat">Adjust it in your own words</h2>
+      </div>
+      <div class="chat-panel">
+        <div id="chat-log" class="chat-log" aria-live="polite"></div>
+        <form id="chat-form" class="chat-form">
+          <input id="chat-input" type="text" placeholder="e.g. only EU27, since 2020" autocomplete="off" maxlength="600" aria-label="Ask for a change">
+          <button id="chat-send" type="submit" class="primary">Send</button>
+        </form>
+        <div id="chat-empty" class="chat-empty">
+          <div id="suggest" class="suggest" role="group" aria-label="Suggested changes"></div>
+        </div>
+      </div>
+    </section>
+
+    <div id="next-row" class="next-row">
+      <button id="next" type="button" class="next-btn" disabled>Next</button>
+    </div>
+  </main>
+  <dialog id="help-dialog" class="help-dialog" aria-labelledby="help-title">
+    <div class="help-box">
+      <div class="help-head">
+        <h2 id="help-title">Available Chart Types</h2>
+        <button id="help-close" type="button" class="icon-btn help-close" aria-label="Close">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="help-scroll" tabindex="0" role="region" aria-label="Chart types">
+        <ul id="help-list" class="help-list"></ul>
+        <p class="help-privacy"><a href="/privacy">Privacy</a></p>
+      </div>
+    </div>
+  </dialog>
+</body>
+</html>

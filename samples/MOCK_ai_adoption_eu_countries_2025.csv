@@ -1,0 +1,31 @@
+"MOCK DATA. Share of enterprises using at least one AI technology, 2025 (%)"
+country,iso3,country_group,ai_use_pct_all_firms,ai_use_pct_large_firms
+Austria,AUT,North and West,11.6,29.6
+Belgium,BEL,North and West,15.4,34.7
+Bulgaria,BGR,Central and East,5.4,15.9
+Croatia,HRV,Central and East,11.3,32.4
+Cyprus,CYP,South,6.3,:
+Czechia,CZE,Central and East,22.6,70.1
+Denmark,DNK,North and West,20.1,60.1
+Estonia,EST,Central and East,21.5,51.0
+Finland,FIN,North and West,17.7,43.8
+France,FRA,North and West,7.2,15.9
+Germany,DEU,North and West,23.4,69.7
+Greece,GRC,South,4.7,10.4
+Hungary,HUN,Central and East,13.5,35.5
+Ireland,IRL,North and West,10.2,22.7
+Italy,ITA,South,30.0,81.6
+Latvia,LVA,Central and East,5.6,16.6
+Lithuania,LTU,Central and East,6.4,14.6
+Luxembourg,LUX,North and West,,76.1
+Malta,MLT,South,:,
+Netherlands,NLD,North and West,29.1,76.6
+Poland,POL,Central and East,4.3,12.7
+Portugal,PRT,South,29.7,86.0
+Romania,ROU,Central and East,5.3,14.0
+Slovakia,SVK,Central and East,24.8,73.5
+Slovenia,SVN,Central and East,6.0,15.0
+Spain,ESP,South,16.7,51.4
+Sweden,SWE,North and West,20.6,47.7
+EU27,,EU,15.0,39.0
+"Source: mock data for testing, not real figures"

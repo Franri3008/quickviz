@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy / QuickViz</title>
+  <script src="theme-mode.js?v=__VERSION__"></script>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="fonts/carlito.css?v=__VERSION__">
+  <link rel="stylesheet" href="style.css?v=__VERSION__">
+  <style>
+    .privacy { max-width: 720px; margin: 0 auto; padding: 24px clamp(16px, 3vw, 40px) 60px; font-size: 16px; line-height: 1.55; }
+    .privacy h1 { margin: 0 0 6px; font-size: 28px; }
+    .privacy h2 { margin: 28px 0 6px; font-size: 19px; }
+    .privacy p, .privacy li { margin: 0 0 8px; }
+    .privacy ul { padding-left: 20px; }
+    .privacy .lead { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-name"><a class="brand-app" href="/">QuickViz</a><span class="brand-version" title="Version">v__VERSION__</span></span></div>
+  </header>
+  <main class="privacy">
+    <h1>Privacy</h1>
+    <p class="lead">QuickViz is a personal project by Francisco Ríos. This page says what it keeps about you and why. Last updated 26 October 2026.</p>
+
+    <h2>What is kept</h2>
+    <ul>
+      <li>If you sign in with Google, your email address, your name and your Google account id. They identify your account and your daily credits.</li>
+      <li>A sign-in cookie. It keeps you signed in for up to 30 days. Signing out removes it.</li>
+      <li>A record of each AI call. It holds the time, its cost, and your account or your IP address. This counts your daily credits and stops misuse.</li>
+    </ul>
+
+    <h2>What is not kept</h2>
+    <ul>
+      <li>The files, pictures and text you give QuickViz are not stored on the server. They are read, sent to the AI models and then dropped.</li>
+      <li>Your charts are saved only in your own browser, so a reload does not lose them. They are cleared after 7 days or when you start over.</li>
+      <li>There are no ads, no tracking and no analytics cookies.</li>
+    </ul>
+
+    <h2>Who else sees your data</h2>
+    <ul>
+      <li>Your data and messages go to AI models through OpenRouter, which passes them to Anthropic, Google or Typesafe. Their own privacy terms apply.</li>
+      <li>The site runs on Render. Accounts and credit records are stored on Neon.</li>
+      <li>Google handles sign-in. QuickViz only asks Google for your email and basic profile.</li>
+    </ul>
+    <p>Never upload sensitive or personal data.</p>
+
+    <h2>Deleting your data</h2>
+    <p>Write to <a href="mailto:franrios9930@gmail.com">franrios9930@gmail.com</a> and your account and its records will be deleted.</p>
+  </main>
+</body>
+</html>

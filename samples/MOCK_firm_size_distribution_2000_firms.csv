@@ -1,0 +1,2002 @@
+firm_id,country,sector,employees,size_class,productivity_keur_per_worker,uses_ai,survey_year
+F00001,Poland,Finance and insurance,63,Medium (50-249),73.8,Yes,2025
+F00002,Spain,Manufacturing,15,Small (10-49),66.7,No,2025
+F00003,Sweden,Manufacturing,14,Small (10-49),90.2,No,2025
+F00004,France,Professional services,39,Small (10-49),130.9,Yes,2025
+F00005,Spain,Manufacturing,6,Micro (1-9),49.8,No,2025
+F00006,Sweden,Wholesale and retail,11,Small (10-49),55.9,No,2025
+F00007,Belgium,Finance and insurance,16,Small (10-49),46.8,Yes,2025
+F00008,Italy,Accommodation and food,24,Small (10-49),79.2,No,2025
+F00009,Italy,Manufacturing,10,Small (10-49),68.6,Yes,2025
+F00010,Sweden,Wholesale and retail,237,Medium (50-249),84.8,Yes,2025
+F00011,France,Finance and insurance,5,Micro (1-9),79.5,No,2025
+F00012,Spain,Information and communication,17,Small (10-49),64.6,Yes,2025
+F00013,Germany,Wholesale and retail,9,Micro (1-9),26.4,Yes,2025
+F00014,Belgium,Manufacturing,93,Medium (50-249),70.3,Yes,2025
+F00015,Netherlands,Transport and logistics,190,Medium (50-249),85.8,No,2025
+F00016,Germany,Transport and logistics,19,Small (10-49),93.6,Yes,2025
+F00017,Belgium,Professional services,105,Medium (50-249),113.6,Yes,2025
+F00018,France,Construction,83,Medium (50-249),94.9,Yes,2025
+F00019,Poland,Finance and insurance,20,Small (10-49),73.3,Yes,2025
+F00020,Spain,Accommodation and food,110,Medium (50-249),90.9,No,2025
+F00021,Sweden,Finance and insurance,25,Small (10-49),79.2,No,2025
+F00022,Belgium,Transport and logistics,5,Micro (1-9),70.6,No,2025
+F00023,Italy,Manufacturing,2,Micro (1-9),39.7,No,2025
+F00024,Belgium,Health and social work,24,Small (10-49),83.9,No,2025
+F00025,Germany,Energy and utilities,16,Small (10-49),86.5,No,2025
+F00026,Netherlands,Accommodation and food,3,Micro (1-9),80.0,No,2025
+F00027,Netherlands,Manufacturing,29,Small (10-49),89.1,Yes,2025
+F00028,Sweden,Wholesale and retail,22,Small (10-49),82.0,No,2025
+F00029,Netherlands,Wholesale and retail,11,Small (10-49),82.6,Yes,2025
+F00030,Netherlands,Energy and utilities,7,Micro (1-9),77.0,No,2025
+F00031,Sweden,Information and communication,28,Small (10-49),76.1,Yes,2025
+F00032,France,Health and social work,1,Micro (1-9),49.3,No,2025
+F00033,Poland,Finance and insurance,7,Micro (1-9),46.4,No,2025
+F00034,Netherlands,Construction,5,Micro (1-9),44.9,No,2025
+F00035,Italy,Construction,5,Micro (1-9),117.0,No,2025
+F00036,Poland,Manufacturing,37,Small (10-49),59.5,No,2025
+F00037,Poland,Information and communication,44,Small (10-49),73.0,No,2025
+F00038,France,Manufacturing,15,Small (10-49),91.5,No,2025
+F00039,Italy,Health and social work,4,Micro (1-9),90.3,No,2025
+F00040,Poland,Information and communication,46,Small (10-49),78.6,No,2025
+F00041,Germany,Accommodation and food,4,Micro (1-9),75.4,No,2025
+F00042,France,Professional services,13,Small (10-49),16.9,No,2025
+F00043,Italy,Transport and logistics,2,Micro (1-9),39.3,No,2025
+F00044,Netherlands,Construction,3,Micro (1-9),36.9,No,2025
+F00045,Germany,Transport and logistics,23,Small (10-49),72.4,No,2025
+F00046,Belgium,Transport and logistics,8,Micro (1-9),52.7,No,2025
+F00047,Italy,Energy and utilities,1,Micro (1-9),43.8,No,2025
+F00048,Sweden,Construction,131,Medium (50-249),91.4,No,2025
+F00049,Netherlands,Information and communication,3,Micro (1-9),61.1,No,2025
+F00050,Italy,Manufacturing,18,Small (10-49),91.4,Yes,2025
+F00051,Poland,Finance and insurance,4,Micro (1-9),54.8,No,2025
+F00052,Sweden,Construction,6,Micro (1-9),101.5,No,2025
+F00053,Germany,Accommodation and food,15,Small (10-49),89.1,No,2025
+F00054,Italy,Manufacturing,18,Small (10-49),97.4,No,2025
+F00055,Poland,Wholesale and retail,18,Small (10-49),64.3,No,2025
+F00056,Spain,Accommodation and food,1,Micro (1-9),31.8,No,2025
+F00057,Poland,Professional services,4,Micro (1-9),98.0,No,2025
+F00058,Spain,Construction,12,Small (10-49),62.6,Yes,2025
+F00059,France,Accommodation and food,7,Micro (1-9),26.6,No,2025
+F00060,Belgium,Information and communication,1,Micro (1-9),84.5,No,2025
+F00061,Poland,Transport and logistics,30,Small (10-49),95.3,No,2025
+F00062,Spain,Professional services,19,Small (10-49),42.6,No,2025
+F00063,France,Construction,135,Medium (50-249),62.7,No,2025
+F00064,Netherlands,Health and social work,5,Micro (1-9),52.6,No,2025
+F00065,Sweden,Accommodation and food,7,Micro (1-9),84.6,No,2025
+F00066,Netherlands,Manufacturing,20,Small (10-49),88.0,No,2025
+F00067,France,Energy and utilities,49,Small (10-49),71.1,No,2025
+F00068,Spain,Energy and utilities,28,Small (10-49),58.8,No,2025
+F00069,Belgium,Accommodation and food,6,Micro (1-9),110.1,Yes,2025
+F00070,Germany,Health and social work,253,Large (250+),65.1,No,2025
+F00071,Italy,Accommodation and food,10,Small (10-49),56.0,No,2025
+F00072,Italy,Accommodation and food,9,Micro (1-9),76.5,Yes,2025
+F00073,France,Health and social work,13,Small (10-49),75.2,No,2025
+F00074,Germany,Health and social work,6,Micro (1-9),77.4,No,2025
+F00075,Sweden,Construction,80,Medium (50-249),82.5,No,2025
+F00076,Germany,Health and social work,7,Micro (1-9),102.6,No,2025
+F00077,Germany,Manufacturing,20,Small (10-49),77.0,Yes,2025
+F00078,Spain,Accommodation and food,80,Medium (50-249),86.9,Yes,2025
+F00079,Belgium,Transport and logistics,20,Small (10-49),82.2,No,2025
+F00080,Belgium,Accommodation and food,100,Medium (50-249),93.6,Yes,2025
+F00081,France,Manufacturing,10,Small (10-49),48.9,Yes,2025
+F00082,Belgium,Wholesale and retail,34,Small (10-49),112.7,No,2025
+F00083,France,Finance and insurance,51,Medium (50-249),62.5,Yes,2025
+F00084,Belgium,Health and social work,14,Small (10-49),113.4,No,2025
+F00085,Italy,Health and social work,1,Micro (1-9),77.1,No,2025
+F00086,Spain,Wholesale and retail,6,Micro (1-9),57.1,No,2025
+F00087,France,Wholesale and retail,2,Micro (1-9),63.3,No,2025
+F00088,Netherlands,Manufacturing,2,Micro (1-9),75.9,No,2025
+F00089,Spain,Manufacturing,4,Micro (1-9),28.7,Yes,2025
+F00090,France,Manufacturing,9,Micro (1-9),37.9,No,2025
+F00091,Belgium,Professional services,89,Medium (50-249),71.8,Yes,2025
+F00092,Belgium,Construction,12,Small (10-49),68.4,No,2025
+F00093,Spain,Finance and insurance,4,Micro (1-9),74.4,No,2025
+F00094,Italy,Health and social work,39,Small (10-49),79.7,Yes,2025
+F00095,Netherlands,Construction,123,Medium (50-249),84.3,No,2025
+F00096,Poland,Professional services,11,Small (10-49),67.8,No,2025
+F00097,Sweden,Energy and utilities,88,Medium (50-249),78.3,Yes,2025
+F00098,Germany,Finance and insurance,117,Medium (50-249),75.8,Yes,2025
+F00099,France,Manufacturing,9,Micro (1-9),84.0,No,2025
+F00100,Belgium,Information and communication,78,Medium (50-249),89.9,No,2025
+F00101,Netherlands,Professional services,33,Small (10-49),74.6,No,2025
+F00102,Spain,Accommodation and food,97,Medium (50-249),89.0,No,2025
+F00103,Sweden,Construction,5,Micro (1-9),46.4,No,2025
+F00104,Belgium,Professional services,1,Micro (1-9),92.2,No,2025
+F00105,Spain,Professional services,14,Small (10-49),74.4,No,2025
+F00106,Belgium,Manufacturing,9,Micro (1-9),73.0,Yes,2025
+F00107,Sweden,Accommodation and food,105,Medium (50-249),63.9,Yes,2025
+F00108,Belgium,Construction,1,Micro (1-9),101.4,No,2025
+F00109,Belgium,Energy and utilities,8,Micro (1-9),36.9,No,2025
+F00110,Germany,Professional services,3,Micro (1-9),78.9,No,2025
+F00111,Germany,Manufacturing,6,Micro (1-9),64.6,No,2025
+F00112,Sweden,Wholesale and retail,25,Small (10-49),84.4,No,2025
+F00113,Sweden,Energy and utilities,32,Small (10-49),73.9,Yes,2025
+F00114,France,Information and communication,6,Micro (1-9),18.9,No,2025
+F00115,Italy,Manufacturing,18,Small (10-49),84.0,No,2025
+F00116,France,Manufacturing,28,Small (10-49),78.7,No,2025
+F00117,Spain,Energy and utilities,110,Medium (50-249),122.2,Yes,2025
+F00118,Germany,Energy and utilities,3,Micro (1-9),72.9,No,2025
+F00119,Netherlands,Health and social work,4,Micro (1-9),91.0,No,2025
+F00120,Belgium,Transport and logistics,5,Micro (1-9),54.1,No,2025
+F00121,Sweden,Finance and insurance,18,Small (10-49),67.9,No,2025
+F00122,France,Health and social work,15,Small (10-49),78.0,Yes,2025
+F00123,Spain,Wholesale and retail,22,Small (10-49),74.6,No,2025
+F00124,Belgium,Information and communication,30,Small (10-49),95.3,No,2025
+F00125,Poland,Manufacturing,88,Medium (50-249),64.4,No,2025
+F00126,Belgium,Professional services,3,Micro (1-9),70.2,No,2025
+F00127,Spain,Wholesale and retail,4,Micro (1-9),100.0,No,2025
+F00128,Spain,Manufacturing,2,Micro (1-9),61.0,No,2025
+F00129,France,Manufacturing,11,Small (10-49),74.2,No,2025
+F00130,Spain,Information and communication,5,Micro (1-9),111.2,No,2025
+F00131,Belgium,Finance and insurance,29,Small (10-49),101.4,No,2025
+F00132,Poland,Accommodation and food,5,Micro (1-9),39.9,No,2025
+F00133,Germany,Health and social work,3,Micro (1-9),86.9,No,2025
+F00134,Poland,Finance and insurance,61,Medium (50-249),83.4,No,2025
+F00135,Poland,Accommodation and food,6,Micro (1-9),68.6,Yes,2025
+F00136,Italy,Construction,51,Medium (50-249),98.7,No,2025
+F00137,Sweden,Transport and logistics,43,Small (10-49),80.5,No,2025
+F00138,Germany,Wholesale and retail,47,Small (10-49),84.0,No,2025
+F00139,Italy,Construction,8,Micro (1-9),50.1,No,2025
+F00140,Germany,Professional services,34,Small (10-49),87.9,No,2025
+F00141,Germany,Health and social work,33,Small (10-49),55.1,Yes,2025
+F00142,France,Wholesale and retail,108,Medium (50-249),79.8,Yes,2025
+F00143,France,Transport and logistics,9,Micro (1-9),68.8,No,2025
+F00144,Netherlands,Manufacturing,5,Micro (1-9),36.1,No,2025
+F00145,Belgium,Professional services,15,Small (10-49),49.3,No,2025
+F00146,Sweden,Information and communication,8,Micro (1-9),84.8,No,2025
+F00147,Germany,Professional services,25,Small (10-49),30.2,Yes,2025
+F00148,Sweden,Professional services,3,Micro (1-9),75.2,No,2025
+F00149,Germany,Information and communication,32,Small (10-49),54.9,No,2025
+F00150,Germany,Manufacturing,10,Small (10-49),76.5,No,2025
+F00151,Poland,Information and communication,10,Small (10-49),47.8,No,2025
+F00152,Germany,Finance and insurance,63,Medium (50-249),97.3,No,2025
+F00153,Sweden,Manufacturing,8,Micro (1-9),99.2,Yes,2025
+F00154,Italy,Wholesale and retail,20,Small (10-49),84.6,Yes,2025
+F00155,Netherlands,Professional services,2,Micro (1-9),96.5,No,2025
+F00156,Sweden,Information and communication,92,Medium (50-249),124.4,No,2025
+F00157,Netherlands,Construction,32,Small (10-49),78.0,No,2025
+F00158,Belgium,Finance and insurance,2,Micro (1-9),50.3,No,2025
+F00159,Italy,Construction,21,Small (10-49),105.9,Yes,2025
+F00160,Belgium,Transport and logistics,12,Small (10-49),77.8,No,2025
+F00161,France,Finance and insurance,92,Medium (50-249),73.4,No,2025
+F00162,France,Health and social work,4,Micro (1-9),75.6,Yes,2025
+F00163,Germany,Transport and logistics,17,Small (10-49),72.8,Yes,2025
+F00164,Belgium,Construction,8,Micro (1-9),80.2,Yes,2025
+F00165,Germany,Professional services,8,Micro (1-9),46.7,No,2025
+F00166,Belgium,Professional services,2,Micro (1-9),84.0,No,2025
+F00167,Spain,Energy and utilities,52,Medium (50-249),45.6,Yes,2025
+F00168,France,Professional services,458,Large (250+),81.4,Yes,2025
+F00169,Spain,Health and social work,4,Micro (1-9),81.5,No,2025
+F00170,Poland,Information and communication,13,Small (10-49),75.1,No,2025
+F00171,Netherlands,Transport and logistics,1,Micro (1-9),88.4,No,2025
+F00172,Italy,Manufacturing,15,Small (10-49),74.4,No,2025
+F00173,Netherlands,Manufacturing,20,Small (10-49),69.1,No,2025
+F00174,Poland,Professional services,9,Micro (1-9),73.9,No,2025
+F00175,Italy,Information and communication,3,Micro (1-9),75.5,No,2025
+F00176,France,Energy and utilities,3,Micro (1-9),74.9,No,2025
+F00177,Poland,Information and communication,13,Small (10-49),56.6,No,2025
+F00178,Belgium,Construction,12,Small (10-49),77.3,No,2025
+F00179,Spain,Energy and utilities,11,Small (10-49),39.0,No,2025
+F00180,Sweden,Energy and utilities,11,Small (10-49),78.1,No,2025
+F00181,Spain,Information and communication,7,Micro (1-9),70.9,No,2025
+F00182,Belgium,Information and communication,25,Small (10-49),58.1,No,2025
+F00183,Belgium,Professional services,2,Micro (1-9),43.9,No,2025
+F00184,Spain,Information and communication,4,Micro (1-9),63.1,No,2025
+F00185,France,Professional services,34,Small (10-49),68.5,Yes,2025
+F00186,Netherlands,Transport and logistics,91,Medium (50-249),101.3,Yes,2025
+F00187,Italy,Accommodation and food,55,Medium (50-249),104.2,No,2025
+F00188,Netherlands,Transport and logistics,5,Micro (1-9),46.4,No,2025
+F00189,Poland,Construction,9,Micro (1-9),101.2,No,2025
+F00190,Germany,Professional services,1,Micro (1-9),59.0,No,2025
+F00191,Spain,Wholesale and retail,12,Small (10-49),74.0,Yes,2025
+F00192,Italy,Transport and logistics,8,Micro (1-9),56.4,No,2025
+F00193,Spain,Transport and logistics,6,Micro (1-9),116.3,No,2025
+F00194,France,Transport and logistics,39,Small (10-49),65.8,No,2025
+F00195,Poland,Finance and insurance,1,Micro (1-9),65.5,No,2025
+F00196,Spain,Finance and insurance,1,Micro (1-9),38.5,No,2025
+F00197,Spain,Transport and logistics,17,Small (10-49),76.7,No,2025
+F00198,Spain,Professional services,102,Medium (50-249),105.0,Yes,2025
+F00199,Spain,Finance and insurance,8,Micro (1-9),70.5,Yes,2025
+F00200,Belgium,Manufacturing,10,Small (10-49),44.4,Yes,2025
+F00201,Spain,Energy and utilities,36,Small (10-49),73.9,No,2025
+F00202,Germany,Health and social work,37,Small (10-49),48.8,No,2025
+F00203,Sweden,Health and social work,20,Small (10-49),78.2,No,2025
+F00204,Belgium,Professional services,6,Micro (1-9),28.8,No,2025
+F00205,France,Professional services,6,Micro (1-9),67.6,No,2025
+F00206,Germany,Wholesale and retail,28,Small (10-49),61.3,Yes,2025
+F00207,Netherlands,Wholesale and retail,7,Micro (1-9),40.8,No,2025
+F00208,Poland,Wholesale and retail,19,Small (10-49),110.2,Yes,2025
+F00209,Sweden,Transport and logistics,20,Small (10-49),99.3,Yes,2025
+F00210,Sweden,Construction,10,Small (10-49),64.5,Yes,2025
+F00211,Spain,Accommodation and food,3,Micro (1-9),65.0,No,2025
+F00212,Italy,Construction,21,Small (10-49),77.6,No,2025
+F00213,Italy,Construction,18,Small (10-49),61.4,No,2025
+F00214,Spain,Finance and insurance,5,Micro (1-9),39.6,No,2025
+F00215,Belgium,Manufacturing,22,Small (10-49),83.6,Yes,2025
+F00216,Poland,Information and communication,28,Small (10-49),89.5,No,2025
+F00217,France,Wholesale and retail,15,Small (10-49),56.9,No,2025
+F00218,Germany,Manufacturing,7,Micro (1-9),50.1,No,2025
+F00219,Belgium,Finance and insurance,4,Micro (1-9),75.1,No,2025
+F00220,France,Transport and logistics,2,Micro (1-9),69.6,No,2025
+F00221,Spain,Health and social work,6,Micro (1-9),47.1,Yes,2025
+F00222,Belgium,Energy and utilities,10,Small (10-49),64.4,No,2025
+F00223,Netherlands,Manufacturing,230,Medium (50-249),84.6,Yes,2025
+F00224,Belgium,Wholesale and retail,23,Small (10-49),48.9,No,2025
+F00225,Germany,Wholesale and retail,59,Medium (50-249),74.7,Yes,2025
+F00226,Belgium,Transport and logistics,47,Small (10-49),94.8,No,2025
+F00227,Italy,Finance and insurance,9,Micro (1-9),82.2,Yes,2025
+F00228,Germany,Health and social work,26,Small (10-49),77.2,No,2025
+F00229,Netherlands,Finance and insurance,1,Micro (1-9),109.1,No,2025
+F00230,Belgium,Accommodation and food,2,Micro (1-9),74.2,No,2025
+F00231,Germany,Energy and utilities,56,Medium (50-249),97.5,Yes,2025
+F00232,Poland,Professional services,9,Micro (1-9),78.1,No,2025
+F00233,Germany,Information and communication,13,Small (10-49),44.3,No,2025
+F00234,Spain,Professional services,66,Medium (50-249),63.5,No,2025
+F00235,Belgium,Health and social work,5,Micro (1-9),67.9,No,2025
+F00236,Italy,Health and social work,3,Micro (1-9),94.6,No,2025
+F00237,Netherlands,Finance and insurance,16,Small (10-49),59.6,No,2025
+F00238,Netherlands,Wholesale and retail,1,Micro (1-9),73.7,No,2025
+F00239,Spain,Accommodation and food,35,Small (10-49),84.5,No,2025
+F00240,France,Manufacturing,77,Medium (50-249),99.0,No,2025
+F00241,Poland,Energy and utilities,29,Small (10-49),98.9,No,2025
+F00242,Germany,Information and communication,1,Micro (1-9),39.6,No,2025
+F00243,Sweden,Wholesale and retail,14,Small (10-49),63.7,No,2025
+F00244,Belgium,Information and communication,4,Micro (1-9),59.1,Yes,2025
+F00245,Poland,Accommodation and food,16,Small (10-49),93.7,No,2025
+F00246,Belgium,Finance and insurance,34,Small (10-49),84.1,No,2025
+F00247,Sweden,Transport and logistics,1,Micro (1-9),89.2,No,2025
+F00248,Germany,Energy and utilities,5,Micro (1-9),45.3,Yes,2025
+F00249,Netherlands,Wholesale and retail,4,Micro (1-9),64.5,No,2025
+F00250,Netherlands,Energy and utilities,32,Small (10-49),82.7,No,2025
+F00251,Germany,Wholesale and retail,6,Micro (1-9),79.7,No,2025
+F00252,Netherlands,Finance and insurance,30,Small (10-49),58.6,Yes,2025
+F00253,Sweden,Health and social work,11,Small (10-49),58.0,No,2025
+F00254,Poland,Energy and utilities,8,Micro (1-9),72.4,No,2025
+F00255,Italy,Construction,39,Small (10-49),96.8,No,2025
+F00256,Germany,Professional services,105,Medium (50-249),81.8,No,2025
+F00257,Poland,Information and communication,6,Micro (1-9),62.7,No,2025
+F00258,France,Professional services,174,Medium (50-249),72.0,No,2025
+F00259,Spain,Accommodation and food,64,Medium (50-249),98.4,No,2025
+F00260,Netherlands,Wholesale and retail,8,Micro (1-9),73.2,No,2025
+F00261,Spain,Finance and insurance,39,Small (10-49),64.7,No,2025
+F00262,Germany,Information and communication,17,Small (10-49),62.8,No,2025
+F00263,Germany,Accommodation and food,109,Medium (50-249),58.8,No,2025
+F00264,Belgium,Health and social work,13,Small (10-49),65.0,No,2025
+F00265,Italy,Information and communication,6,Micro (1-9),59.6,No,2025
+F00266,Netherlands,Finance and insurance,59,Medium (50-249),50.4,Yes,2025
+F00267,Germany,Energy and utilities,18,Small (10-49),42.6,No,2025
+F00268,Belgium,Information and communication,27,Small (10-49),83.0,No,2025
+F00269,Spain,Manufacturing,59,Medium (50-249),86.5,No,2025
+F00270,Germany,Construction,279,Large (250+),98.7,No,2025
+F00271,Italy,Accommodation and food,12,Small (10-49),72.1,Yes,2025
+F00272,Spain,Transport and logistics,3,Micro (1-9),52.7,No,2025
+F00273,Spain,Manufacturing,3,Micro (1-9),73.3,No,2025
+F00274,Netherlands,Transport and logistics,47,Small (10-49),76.9,No,2025
+F00275,Germany,Professional services,4,Micro (1-9),71.6,No,2025
+F00276,Poland,Transport and logistics,8,Micro (1-9),56.8,No,2025
+F00277,Sweden,Wholesale and retail,2,Micro (1-9),73.4,No,2025
+F00278,Italy,Transport and logistics,37,Small (10-49),90.5,No,2025
+F00279,Poland,Professional services,2,Micro (1-9),89.2,No,2025
+F00280,Belgium,Health and social work,5,Micro (1-9),85.4,Yes,2025
+F00281,France,Wholesale and retail,20,Small (10-49),87.0,Yes,2025
+F00282,Italy,Finance and insurance,7,Micro (1-9),107.0,No,2025
+F00283,Italy,Construction,405,Large (250+),84.8,Yes,2025
+F00284,Belgium,Information and communication,17,Small (10-49),79.2,No,2025
+F00285,Belgium,Transport and logistics,44,Small (10-49),61.7,No,2025
+F00286,Italy,Accommodation and food,70,Medium (50-249),77.8,Yes,2025
+F00287,Spain,Energy and utilities,9,Micro (1-9),104.7,No,2025
+F00288,Italy,Health and social work,6,Micro (1-9),40.9,No,2025
+F00289,Sweden,Health and social work,50,Medium (50-249),100.8,Yes,2025
+F00290,Germany,Construction,119,Medium (50-249),98.2,No,2025
+F00291,Italy,Transport and logistics,2,Micro (1-9),76.3,No,2025
+F00292,France,Information and communication,3,Micro (1-9),72.3,No,2025
+F00293,Poland,Accommodation and food,9,Micro (1-9),111.4,Yes,2025
+F00294,Netherlands,Transport and logistics,3,Micro (1-9),76.8,No,2025
+F00295,France,Construction,37,Small (10-49),82.4,No,2025
+F00296,Germany,Construction,4,Micro (1-9),82.9,No,2025
+F00297,Spain,Professional services,3,Micro (1-9),49.9,No,2025
+F00298,Sweden,Professional services,34,Small (10-49),47.1,No,2025
+F00299,Poland,Manufacturing,5,Micro (1-9),94.8,No,2025
+F00300,France,Manufacturing,11,Small (10-49),87.7,No,2025
+F00301,Germany,Information and communication,41,Small (10-49),84.6,No,2025
+F00302,Netherlands,Transport and logistics,8,Micro (1-9),87.5,Yes,2025
+F00303,France,Manufacturing,8,Micro (1-9),92.3,No,2025
+F00304,Belgium,Health and social work,5,Micro (1-9),91.2,No,2025
+F00305,Sweden,Health and social work,5,Micro (1-9),48.2,No,2025
+F00306,Belgium,Accommodation and food,4,Micro (1-9),45.7,No,2025
+F00307,Poland,Energy and utilities,10,Small (10-49),52.7,Yes,2025
+F00308,Sweden,Construction,95,Medium (50-249),119.9,No,2025
+F00309,Poland,Construction,5,Micro (1-9),70.1,No,2025
+F00310,France,Wholesale and retail,514,Large (250+),123.7,Yes,2025
+F00311,Spain,Information and communication,12,Small (10-49),82.2,No,2025
+F00312,Spain,Manufacturing,31,Small (10-49),84.5,No,2025
+F00313,Belgium,Professional services,23,Small (10-49),87.8,Yes,2025
+F00314,Belgium,Finance and insurance,38,Small (10-49),80.0,No,2025
+F00315,Germany,Accommodation and food,1,Micro (1-9),45.1,No,2025
+F00316,France,Accommodation and food,34,Small (10-49),31.3,Yes,2025
+F00317,Spain,Transport and logistics,8,Micro (1-9),88.0,Yes,2025
+F00318,Belgium,Wholesale and retail,2,Micro (1-9),78.3,No,2025
+F00319,Italy,Construction,6,Micro (1-9),65.4,No,2025
+F00320,Netherlands,Energy and utilities,44,Small (10-49),99.0,Yes,2025
+F00321,Poland,Health and social work,11,Small (10-49),68.4,No,2025
+F00322,Italy,Information and communication,26,Small (10-49),71.5,No,2025
+F00323,Spain,Information and communication,6,Micro (1-9),52.1,No,2025
+F00324,Belgium,Energy and utilities,91,Medium (50-249),82.0,No,2025
+F00325,Netherlands,Accommodation and food,6,Micro (1-9),73.1,Yes,2025
+F00326,Spain,Health and social work,9,Micro (1-9),80.9,No,2025
+F00327,Germany,Finance and insurance,8,Micro (1-9),60.1,Yes,2025
+F00328,Belgium,Health and social work,61,Medium (50-249),73.7,No,2025
+F00329,Italy,Transport and logistics,3,Micro (1-9),99.5,No,2025
+F00330,France,Accommodation and food,26,Small (10-49),71.6,No,2025
+F00331,Netherlands,Accommodation and food,5,Micro (1-9),64.3,Yes,2025
+F00332,Italy,Information and communication,50,Medium (50-249),75.1,No,2025
+F00333,Poland,Information and communication,37,Small (10-49),96.8,Yes,2025
+F00334,Italy,Information and communication,3,Micro (1-9),60.9,No,2025
+F00335,Sweden,Transport and logistics,24,Small (10-49),52.6,No,2025
+F00336,Netherlands,Transport and logistics,49,Small (10-49),72.0,Yes,2025
+F00337,Poland,Finance and insurance,2,Micro (1-9),70.2,No,2025
+F00338,Germany,Finance and insurance,40,Small (10-49),67.1,No,2025
+F00339,Spain,Professional services,2,Micro (1-9),16.4,No,2025
+F00340,France,Information and communication,15,Small (10-49),83.7,Yes,2025
+F00341,Netherlands,Wholesale and retail,3,Micro (1-9),59.4,No,2025
+F00342,Netherlands,Accommodation and food,3,Micro (1-9),79.5,Yes,2025
+F00343,Poland,Wholesale and retail,27,Small (10-49),58.3,Yes,2025
+F00344,Germany,Accommodation and food,29,Small (10-49),80.7,No,2025
+F00345,Belgium,Accommodation and food,19,Small (10-49),31.5,No,2025
+F00346,Sweden,Health and social work,18,Small (10-49),44.9,Yes,2025
+F00347,France,Accommodation and food,15,Small (10-49),75.4,No,2025
+F00348,Spain,Transport and logistics,24,Small (10-49),73.5,No,2025
+F00349,France,Professional services,28,Small (10-49),70.0,No,2025
+F00350,Sweden,Health and social work,1,Micro (1-9),75.7,No,2025
+F00351,Belgium,Energy and utilities,9,Micro (1-9),77.2,No,2025
+F00352,Sweden,Manufacturing,21,Small (10-49),54.1,Yes,2025
+F00353,Spain,Transport and logistics,2,Micro (1-9),33.2,No,2025
+F00354,Sweden,Health and social work,39,Small (10-49),65.0,No,2025
+F00355,France,Manufacturing,6,Micro (1-9),92.0,No,2025
+F00356,Belgium,Health and social work,10,Small (10-49),71.4,Yes,2025
+F00357,France,Construction,4,Micro (1-9),51.6,Yes,2025
+F00358,Italy,Accommodation and food,171,Medium (50-249),104.6,No,2025
+F00359,Italy,Accommodation and food,7,Micro (1-9),71.0,No,2025
+F00360,Netherlands,Professional services,139,Medium (50-249),76.3,No,2025
+F00361,Italy,Accommodation and food,3,Micro (1-9),63.3,No,2025
+F00362,Italy,Wholesale and retail,12,Small (10-49),78.3,No,2025
+F00363,Germany,Professional services,11,Small (10-49),64.9,Yes,2025
+F00364,Sweden,Professional services,7,Micro (1-9),59.2,No,2025
+F00365,Germany,Manufacturing,169,Medium (50-249),105.4,Yes,2025
+F00366,Italy,Transport and logistics,16,Small (10-49),77.3,No,2025
+F00367,Germany,Energy and utilities,18,Small (10-49),99.3,No,2025
+F00368,Netherlands,Information and communication,1,Micro (1-9),112.5,No,2025
+F00369,Italy,Professional services,133,Medium (50-249),52.1,No,2025
+F00370,Italy,Energy and utilities,13,Small (10-49),41.5,No,2025
+F00371,Germany,Transport and logistics,27,Small (10-49),80.9,No,2025
+F00372,Germany,Construction,4,Micro (1-9),71.1,No,2025
+F00373,Belgium,Energy and utilities,11,Small (10-49),72.6,No,2025
+F00374,Sweden,Health and social work,2,Micro (1-9),57.8,No,2025
+F00375,Netherlands,Energy and utilities,83,Medium (50-249),73.4,Yes,2025
+F00376,Poland,Professional services,3,Micro (1-9),77.7,No,2025
+F00377,Poland,Health and social work,23,Small (10-49),75.9,No,2025
+F00378,Sweden,Professional services,134,Medium (50-249),83.5,No,2025
+F00379,Italy,Finance and insurance,15,Small (10-49),99.6,Yes,2025
+F00380,Netherlands,Health and social work,25,Small (10-49),69.6,Yes,2025
+F00381,France,Accommodation and food,92,Medium (50-249),51.8,Yes,2025
+F00382,Italy,Professional services,18,Small (10-49),55.0,No,2025
+F00383,Italy,Information and communication,6,Micro (1-9),40.5,No,2025
+F00384,France,Transport and logistics,7,Micro (1-9),67.8,Yes,2025
+F00385,Sweden,Information and communication,7,Micro (1-9),102.4,Yes,2025
+F00386,Italy,Manufacturing,31,Small (10-49),85.7,No,2025
+F00387,Belgium,Information and communication,4,Micro (1-9),81.7,No,2025
+F00388,Germany,Transport and logistics,8,Micro (1-9),73.2,No,2025
+F00389,Germany,Wholesale and retail,15,Small (10-49),49.1,Yes,2025
+F00390,Spain,Energy and utilities,27,Small (10-49),58.8,No,2025
+F00391,Sweden,Manufacturing,8,Micro (1-9),63.1,Yes,2025
+F00392,Spain,Energy and utilities,3,Micro (1-9),61.1,No,2025
+F00393,Italy,Finance and insurance,3,Micro (1-9),61.9,Yes,2025
+F00394,Poland,Health and social work,4,Micro (1-9),62.2,No,2025
+F00395,Netherlands,Energy and utilities,9,Micro (1-9),88.8,No,2025
+F00396,Sweden,Transport and logistics,4,Micro (1-9),86.0,No,2025
+F00397,Germany,Professional services,9,Micro (1-9),51.7,No,2025
+F00398,Sweden,Professional services,8,Micro (1-9),50.2,No,2025
+F00399,Spain,Health and social work,18,Small (10-49),101.2,No,2025
+F00400,Italy,Accommodation and food,8,Micro (1-9),103.0,No,2025
+F00401,Germany,Construction,111,Medium (50-249),124.1,No,2025
+F00402,Italy,Wholesale and retail,15,Small (10-49),70.8,Yes,2025
+F00403,Germany,Energy and utilities,54,Medium (50-249),64.3,No,2025
+F00404,Sweden,Finance and insurance,11,Small (10-49),39.5,No,2025
+F00405,Germany,Professional services,9,Micro (1-9),60.2,No,2025
+F00406,Sweden,Accommodation and food,8,Micro (1-9),88.9,No,2025
+F00407,Netherlands,Energy and utilities,10,Small (10-49),82.2,No,2025
+F00408,France,Accommodation and food,27,Small (10-49),65.2,Yes,2025
+F00409,Italy,Construction,2,Micro (1-9),83.3,No,2025
+F00410,Sweden,Professional services,6,Micro (1-9),74.4,No,2025
+F00411,Sweden,Transport and logistics,9,Micro (1-9),66.1,No,2025
+F00412,Belgium,Accommodation and food,61,Medium (50-249),73.0,Yes,2025
+F00413,Poland,Energy and utilities,10,Small (10-49),70.1,No,2025
+F00414,Poland,Manufacturing,3,Micro (1-9),89.9,No,2025
+F00415,Spain,Transport and logistics,14,Small (10-49),103.0,No,2025
+F00416,Italy,Wholesale and retail,1,Micro (1-9),68.8,No,2025
+F00417,Italy,Accommodation and food,11,Small (10-49),76.1,No,2025
+F00418,Germany,Wholesale and retail,41,Small (10-49),54.3,No,2025
+F00419,Belgium,Construction,6,Micro (1-9),60.3,No,2025
+F00420,France,Health and social work,3,Micro (1-9),58.9,Yes,2025
+F00421,France,Manufacturing,84,Medium (50-249),79.2,No,2025
+F00422,Netherlands,Health and social work,22,Small (10-49),58.0,No,2025
+F00423,Belgium,Finance and insurance,8,Micro (1-9),81.4,Yes,2025
+F00424,Italy,Finance and insurance,1,Micro (1-9),61.5,Yes,2025
+F00425,Belgium,Manufacturing,4,Micro (1-9),47.4,No,2025
+F00426,Italy,Energy and utilities,9,Micro (1-9),69.3,Yes,2025
+F00427,Sweden,Construction,2,Micro (1-9),40.8,No,2025
+F00428,Netherlands,Accommodation and food,144,Medium (50-249),99.2,Yes,2025
+F00429,Germany,Wholesale and retail,12,Small (10-49),68.2,No,2025
+F00430,France,Manufacturing,30,Small (10-49),61.9,Yes,2025
+F00431,Poland,Energy and utilities,9,Micro (1-9),32.5,No,2025
+F00432,Belgium,Manufacturing,2,Micro (1-9),21.4,No,2025
+F00433,Belgium,Accommodation and food,8,Micro (1-9),81.5,No,2025
+F00434,Poland,Information and communication,16,Small (10-49),43.6,Yes,2025
+F00435,France,Finance and insurance,180,Medium (50-249),76.2,No,2025
+F00436,Netherlands,Construction,7,Micro (1-9),52.9,No,2025
+F00437,France,Professional services,1,Micro (1-9),40.3,No,2025
+F00438,Sweden,Finance and insurance,3,Micro (1-9),62.7,No,2025
+F00439,Poland,Transport and logistics,17,Small (10-49),116.0,No,2025
+F00440,Sweden,Professional services,3,Micro (1-9),91.0,No,2025
+F00441,Spain,Wholesale and retail,7,Micro (1-9),24.4,No,2025
+F00442,Spain,Manufacturing,81,Medium (50-249),83.8,No,2025
+F00443,Germany,Accommodation and food,42,Small (10-49),99.4,No,2025
+F00444,Italy,Transport and logistics,28,Small (10-49),95.8,No,2025
+F00445,France,Health and social work,3,Micro (1-9),120.4,No,2025
+F00446,Sweden,Energy and utilities,8,Micro (1-9),72.3,No,2025
+F00447,Belgium,Manufacturing,15,Small (10-49),56.2,Yes,2025
+F00448,Poland,Transport and logistics,35,Small (10-49),78.9,No,2025
+F00449,France,Transport and logistics,4,Micro (1-9),53.1,No,2025
+F00450,Italy,Manufacturing,4,Micro (1-9),70.6,Yes,2025
+F00451,Sweden,Construction,35,Small (10-49),75.6,Yes,2025
+F00452,Spain,Wholesale and retail,156,Medium (50-249),90.6,No,2025
+F00453,Germany,Manufacturing,2,Micro (1-9),79.4,No,2025
+F00454,Netherlands,Professional services,21,Small (10-49),70.6,No,2025
+F00455,Belgium,Transport and logistics,11,Small (10-49),81.7,Yes,2025
+F00456,Belgium,Accommodation and food,17,Small (10-49),78.4,Yes,2025
+F00457,France,Energy and utilities,27,Small (10-49),85.1,No,2025
+F00458,Belgium,Accommodation and food,2,Micro (1-9),67.4,No,2025
+F00459,Netherlands,Finance and insurance,2,Micro (1-9),76.4,No,2025
+F00460,Germany,Wholesale and retail,21,Small (10-49),76.7,Yes,2025
+F00461,Sweden,Energy and utilities,118,Medium (50-249),56.1,Yes,2025
+F00462,Belgium,Information and communication,49,Small (10-49),82.7,Yes,2025
+F00463,Sweden,Transport and logistics,33,Small (10-49),74.5,No,2025
+F00464,Italy,Energy and utilities,7,Micro (1-9),48.6,No,2025
+F00465,Poland,Information and communication,5,Micro (1-9),40.3,No,2025
+F00466,Italy,Professional services,9,Micro (1-9),59.5,No,2025
+F00467,Belgium,Transport and logistics,78,Medium (50-249),124.3,No,2025
+F00468,France,Energy and utilities,7,Micro (1-9),37.3,No,2025
+F00469,Italy,Information and communication,2,Micro (1-9),82.4,No,2025
+F00470,Germany,Information and communication,33,Small (10-49),94.2,No,2025
+F00471,Spain,Information and communication,3,Micro (1-9),59.5,No,2025
+F00472,Spain,Wholesale and retail,20,Small (10-49),35.4,No,2025
+F00473,Belgium,Health and social work,35,Small (10-49),86.6,No,2025
+F00474,Germany,Transport and logistics,11,Small (10-49),89.2,No,2025
+F00475,Sweden,Transport and logistics,1,Micro (1-9),40.2,No,2025
+F00476,France,Information and communication,4,Micro (1-9),76.8,No,2025
+F00477,Italy,Information and communication,18,Small (10-49),51.0,No,2025
+F00478,France,Finance and insurance,9,Micro (1-9),94.5,No,2025
+F00479,Italy,Energy and utilities,10,Small (10-49),50.8,No,2025
+F00480,Germany,Accommodation and food,21,Small (10-49),50.9,No,2025
+F00481,Germany,Construction,8,Micro (1-9),47.3,Yes,2025
+F00482,Netherlands,Professional services,9,Micro (1-9),68.3,No,2025
+F00483,Netherlands,Transport and logistics,5,Micro (1-9),91.3,No,2025
+F00484,Sweden,Energy and utilities,2,Micro (1-9),60.0,No,2025
+F00485,Spain,Finance and insurance,14,Small (10-49),67.7,Yes,2025
+F00486,Spain,Finance and insurance,38,Small (10-49),62.8,No,2025
+F00487,Sweden,Manufacturing,209,Medium (50-249),102.4,Yes,2025
+F00488,Netherlands,Health and social work,62,Medium (50-249),87.9,Yes,2025
+F00489,Poland,Health and social work,43,Small (10-49),65.2,Yes,2025
+F00490,Italy,Construction,6,Micro (1-9),59.1,No,2025
+F00491,Sweden,Information and communication,25,Small (10-49),76.5,Yes,2025
+F00492,Belgium,Manufacturing,52,Medium (50-249),56.1,No,2025
+F00493,Poland,Accommodation and food,35,Small (10-49),48.6,Yes,2025
+F00494,Italy,Transport and logistics,8,Micro (1-9),110.6,No,2025
+F00495,France,Professional services,30,Small (10-49),115.2,No,2025
+F00496,Poland,Information and communication,20,Small (10-49),67.9,No,2025
+F00497,Sweden,Transport and logistics,75,Medium (50-249),83.0,No,2025
+F00498,Poland,Wholesale and retail,294,Large (250+),79.3,No,2025
+F00499,Sweden,Finance and insurance,49,Small (10-49),80.7,No,2025
+F00500,Belgium,Wholesale and retail,22,Small (10-49),86.6,No,2025
+F00501,Germany,Information and communication,9,Micro (1-9),94.7,No,2025
+F00502,Spain,Wholesale and retail,4,Micro (1-9),59.4,No,2025
+F00503,Spain,Accommodation and food,8,Micro (1-9),88.1,Yes,2025
+F00504,Netherlands,Transport and logistics,207,Medium (50-249),83.1,No,2025
+F00505,Netherlands,Wholesale and retail,27,Small (10-49),50.3,No,2025
+F00506,Spain,Manufacturing,11,Small (10-49),42.1,No,2025
+F00507,Belgium,Information and communication,4,Micro (1-9),78.6,No,2025
+F00508,Italy,Manufacturing,7,Micro (1-9),73.3,Yes,2025
+F00509,Germany,Finance and insurance,1,Micro (1-9),60.8,No,2025
+F00510,Netherlands,Energy and utilities,3,Micro (1-9),76.5,No,2025
+F00511,Poland,Finance and insurance,447,Large (250+),91.7,No,2025
+F00512,Spain,Energy and utilities,42,Small (10-49),94.9,No,2025
+F00513,Poland,Finance and insurance,16,Small (10-49),66.3,Yes,2025
+F00514,Poland,Health and social work,8,Micro (1-9),56.6,No,2025
+F00515,Spain,Construction,27,Small (10-49),78.5,Yes,2025
+F00516,Italy,Health and social work,23,Small (10-49),53.9,No,2025
+F00517,Netherlands,Manufacturing,23,Small (10-49),102.6,Yes,2025
+F00518,Belgium,Transport and logistics,14,Small (10-49),66.6,No,2025
+F00519,Germany,Manufacturing,22,Small (10-49),64.1,No,2025
+F00520,Sweden,Accommodation and food,14,Small (10-49),93.7,No,2025
+F00521,Germany,Wholesale and retail,5,Micro (1-9),97.0,No,2025
+F00522,Italy,Information and communication,1,Micro (1-9),72.6,No,2025
+F00523,Belgium,Transport and logistics,429,Large (250+),73.6,Yes,2025
+F00524,Belgium,Health and social work,123,Medium (50-249),93.1,No,2025
+F00525,Spain,Transport and logistics,58,Medium (50-249),135.3,No,2025
+F00526,Sweden,Health and social work,5,Micro (1-9),55.5,No,2025
+F00527,Germany,Professional services,85,Medium (50-249),86.4,No,2025
+F00528,Germany,Health and social work,12,Small (10-49),84.5,Yes,2025
+F00529,Poland,Manufacturing,5,Micro (1-9),83.7,No,2025
+F00530,Germany,Wholesale and retail,225,Medium (50-249),101.6,No,2025
+F00531,Poland,Accommodation and food,2,Micro (1-9),77.7,No,2025
+F00532,Sweden,Health and social work,36,Small (10-49),71.8,No,2025
+F00533,Poland,Energy and utilities,10,Small (10-49),52.2,No,2025
+F00534,Germany,Manufacturing,8,Micro (1-9),64.0,No,2025
+F00535,Italy,Manufacturing,33,Small (10-49),65.1,Yes,2025
+F00536,Poland,Transport and logistics,42,Small (10-49),106.9,No,2025
+F00537,Netherlands,Finance and insurance,21,Small (10-49),69.9,No,2025
+F00538,Spain,Manufacturing,11,Small (10-49),79.9,Yes,2025
+F00539,Poland,Transport and logistics,18,Small (10-49),63.6,No,2025
+F00540,Germany,Energy and utilities,74,Medium (50-249),95.8,Yes,2025
+F00541,Italy,Health and social work,14,Small (10-49),43.4,No,2025
+F00542,Belgium,Finance and insurance,37,Small (10-49),80.7,No,2025
+F00543,Belgium,Energy and utilities,22,Small (10-49),75.8,No,2025
+F00544,Netherlands,Information and communication,31,Small (10-49),84.4,No,2025
+F00545,Netherlands,Wholesale and retail,55,Medium (50-249),69.2,Yes,2025
+F00546,Belgium,Professional services,101,Medium (50-249),61.9,No,2025
+F00547,Poland,Accommodation and food,2,Micro (1-9),104.3,No,2025
+F00548,France,Energy and utilities,5,Micro (1-9),79.0,No,2025
+F00549,Sweden,Health and social work,5,Micro (1-9),73.6,No,2025
+F00550,France,Information and communication,2,Micro (1-9),43.4,No,2025
+F00551,Belgium,Professional services,5,Micro (1-9),69.3,No,2025
+F00552,Poland,Energy and utilities,1,Micro (1-9),64.1,Yes,2025
+F00553,Sweden,Professional services,16,Small (10-49),74.8,No,2025
+F00554,Poland,Wholesale and retail,3,Micro (1-9),89.9,No,2025
+F00555,Germany,Finance and insurance,1079,Large (250+),85.4,Yes,2025
+F00556,Italy,Transport and logistics,30,Small (10-49),53.6,No,2025
+F00557,Belgium,Energy and utilities,12,Small (10-49),73.5,No,2025
+F00558,Poland,Accommodation and food,14,Small (10-49),77.0,Yes,2025
+F00559,Germany,Accommodation and food,12,Small (10-49),44.8,No,2025
+F00560,Italy,Finance and insurance,5,Micro (1-9),93.0,No,2025
+F00561,Spain,Health and social work,35,Small (10-49),66.5,No,2025
+F00562,Spain,Professional services,37,Small (10-49),74.5,No,2025
+F00563,Poland,Wholesale and retail,29,Small (10-49),74.5,No,2025
+F00564,Netherlands,Transport and logistics,3,Micro (1-9),92.7,No,2025
+F00565,Italy,Construction,35,Small (10-49),68.1,Yes,2025
+F00566,Belgium,Wholesale and retail,1,Micro (1-9),39.7,Yes,2025
+F00567,Italy,Manufacturing,1,Micro (1-9),34.7,No,2025
+F00568,France,Manufacturing,9,Micro (1-9),31.0,Yes,2025
+F00569,Spain,Information and communication,29,Small (10-49),81.3,Yes,2025
+F00570,Netherlands,Wholesale and retail,43,Small (10-49),81.0,No,2025
+F00571,Italy,Energy and utilities,2,Micro (1-9),26.8,No,2025
+F00572,Netherlands,Health and social work,20,Small (10-49),87.8,No,2025
+F00573,Netherlands,Transport and logistics,13,Small (10-49),81.1,No,2025
+F00574,Sweden,Wholesale and retail,10,Small (10-49),62.8,No,2025
+F00575,Germany,Accommodation and food,7,Micro (1-9),103.2,No,2025
+F00576,Italy,Finance and insurance,44,Small (10-49),68.9,No,2025
+F00577,Netherlands,Health and social work,2,Micro (1-9),43.8,No,2025
+F00578,Netherlands,Wholesale and retail,1,Micro (1-9),99.7,No,2025
+F00579,France,Accommodation and food,11,Small (10-49),78.4,No,2025
+F00580,Spain,Health and social work,7,Micro (1-9),46.9,No,2025
+F00581,Italy,Accommodation and food,2,Micro (1-9),86.0,No,2025
+F00582,France,Manufacturing,49,Small (10-49),76.7,No,2025
+F00583,Netherlands,Health and social work,67,Medium (50-249),80.8,No,2025
+F00584,Germany,Manufacturing,9,Micro (1-9),70.4,No,2025
+F00585,Belgium,Wholesale and retail,4,Micro (1-9),83.1,No,2025
+F00586,Netherlands,Information and communication,8,Micro (1-9),74.8,No,2025
+F00587,Poland,Accommodation and food,9,Micro (1-9),67.7,No,2025
+F00588,Sweden,Construction,16,Small (10-49),55.3,No,2025
+F00589,Sweden,Health and social work,7,Micro (1-9),70.4,No,2025
+F00590,Spain,Transport and logistics,12,Small (10-49),75.6,No,2025
+F00591,Spain,Construction,51,Medium (50-249),76.8,No,2025
+F00592,France,Transport and logistics,92,Medium (50-249),73.5,Yes,2025
+F00593,France,Finance and insurance,8,Micro (1-9),73.5,No,2025
+F00594,Netherlands,Information and communication,3,Micro (1-9),97.0,Yes,2025
+F00595,France,Transport and logistics,1,Micro (1-9),55.4,No,2025
+F00596,Germany,Health and social work,16,Small (10-49),63.2,No,2025
+F00597,Belgium,Wholesale and retail,2,Micro (1-9),65.2,No,2025
+F00598,Belgium,Information and communication,31,Small (10-49),60.6,Yes,2025
+F00599,Germany,Transport and logistics,3,Micro (1-9),71.1,No,2025
+F00600,Sweden,Finance and insurance,1,Micro (1-9),55.8,No,2025
+F00601,France,Health and social work,19,Small (10-49),73.4,No,2025
+F00602,Germany,Construction,4,Micro (1-9),109.1,No,2025
+F00603,Poland,Finance and insurance,5,Micro (1-9),62.4,No,2025
+F00604,Netherlands,Finance and insurance,7,Micro (1-9),76.5,No,2025
+F00605,Spain,Accommodation and food,1,Micro (1-9),65.4,No,2025
+F00606,Italy,Finance and insurance,3,Micro (1-9),69.8,No,2025
+F00607,Belgium,Transport and logistics,4,Micro (1-9),77.8,No,2025
+F00608,Germany,Accommodation and food,9,Micro (1-9),57.9,No,2025
+F00609,Italy,Construction,4,Micro (1-9),67.7,No,2025
+F00610,Poland,Professional services,18,Small (10-49),77.9,No,2025
+F00611,France,Transport and logistics,5,Micro (1-9),39.1,No,2025
+F00612,Germany,Wholesale and retail,4,Micro (1-9),48.2,No,2025
+F00613,Belgium,Professional services,25,Small (10-49),93.2,No,2025
+F00614,France,Health and social work,5,Micro (1-9),48.0,No,2025
+F00615,Poland,Information and communication,10,Small (10-49),41.0,No,2025
+F00616,Sweden,Information and communication,65,Medium (50-249),102.4,Yes,2025
+F00617,Netherlands,Information and communication,1,Micro (1-9),61.2,No,2025
+F00618,Sweden,Professional services,3,Micro (1-9),39.0,No,2025
+F00619,Sweden,Professional services,9,Micro (1-9),49.4,No,2025
+F00620,Sweden,Health and social work,17,Small (10-49),57.7,No,2025
+F00621,France,Information and communication,18,Small (10-49),68.4,No,2025
+F00622,Spain,Accommodation and food,5,Micro (1-9),101.8,No,2025
+F00623,Spain,Energy and utilities,35,Small (10-49),76.3,No,2025
+F00624,Sweden,Professional services,118,Medium (50-249),89.0,Yes,2025
+F00625,Spain,Manufacturing,33,Small (10-49),83.1,No,2025
+F00626,Netherlands,Professional services,56,Medium (50-249),86.6,Yes,2025
+F00627,France,Accommodation and food,24,Small (10-49),101.7,No,2025
+F00628,Poland,Transport and logistics,30,Small (10-49),73.7,Yes,2025
+F00629,Poland,Construction,76,Medium (50-249),62.8,Yes,2025
+F00630,Sweden,Health and social work,17,Small (10-49),52.1,No,2025
+F00631,Spain,Finance and insurance,3,Micro (1-9),81.3,No,2025
+F00632,Sweden,Information and communication,52,Medium (50-249),89.4,No,2025
+F00633,Poland,Transport and logistics,62,Medium (50-249),78.6,No,2025
+F00634,Spain,Accommodation and food,11,Small (10-49),54.6,No,2025
+F00635,Poland,Wholesale and retail,5,Micro (1-9),79.9,No,2025
+F00636,Poland,Transport and logistics,16,Small (10-49),74.0,No,2025
+F00637,Italy,Transport and logistics,12,Small (10-49),50.0,No,2025
+F00638,Netherlands,Transport and logistics,102,Medium (50-249),50.6,No,2025
+F00639,Italy,Wholesale and retail,18,Small (10-49),99.2,No,2025
+F00640,Spain,Construction,10,Small (10-49),39.7,No,2025
+F00641,Poland,Wholesale and retail,37,Small (10-49),94.7,Yes,2025
+F00642,Sweden,Professional services,2,Micro (1-9),66.0,No,2025
+F00643,Germany,Energy and utilities,18,Small (10-49),61.1,No,2025
+F00644,France,Manufacturing,8,Micro (1-9),79.1,No,2025
+F00645,Italy,Transport and logistics,5,Micro (1-9),48.9,No,2025
+F00646,Poland,Wholesale and retail,4,Micro (1-9),51.7,No,2025
+F00647,France,Health and social work,24,Small (10-49),59.5,Yes,2025
+F00648,Poland,Professional services,7,Micro (1-9),45.8,Yes,2025
+F00649,Netherlands,Wholesale and retail,12,Small (10-49),53.5,No,2025
+F00650,France,Information and communication,1,Micro (1-9),61.7,No,2025
+F00651,Poland,Information and communication,44,Small (10-49),112.6,Yes,2025
+F00652,France,Energy and utilities,19,Small (10-49),58.0,No,2025
+F00653,Netherlands,Information and communication,35,Small (10-49),90.4,No,2025
+F00654,Spain,Wholesale and retail,60,Medium (50-249),65.7,No,2025
+F00655,Spain,Information and communication,65,Medium (50-249),79.1,No,2025
+F00656,Italy,Professional services,1,Micro (1-9),52.3,No,2025
+F00657,Spain,Wholesale and retail,6,Micro (1-9),72.7,Yes,2025
+F00658,Netherlands,Health and social work,13,Small (10-49),67.7,No,2025
+F00659,Sweden,Health and social work,10,Small (10-49),69.4,Yes,2025
+F00660,Germany,Manufacturing,39,Small (10-49),94.7,Yes,2025
+F00661,Belgium,Accommodation and food,7,Micro (1-9),82.5,Yes,2025
+F00662,Germany,Health and social work,16,Small (10-49),94.9,Yes,2025
+F00663,Belgium,Transport and logistics,2,Micro (1-9),71.8,No,2025
+F00664,Poland,Manufacturing,1,Micro (1-9),59.9,No,2025
+F00665,Netherlands,Finance and insurance,6,Micro (1-9),47.0,No,2025
+F00666,Spain,Health and social work,3,Micro (1-9),48.0,No,2025
+F00667,Germany,Health and social work,40,Small (10-49),69.7,Yes,2025
+F00668,Spain,Accommodation and food,4,Micro (1-9),54.5,No,2025
+F00669,Belgium,Energy and utilities,61,Medium (50-249),48.5,No,2025
+F00670,Poland,Energy and utilities,16,Small (10-49),81.3,No,2025
+F00671,Poland,Finance and insurance,9,Micro (1-9),40.3,No,2025
+F00672,France,Information and communication,16,Small (10-49),74.0,No,2025
+F00673,Poland,Health and social work,9,Micro (1-9),92.7,No,2025
+F00674,Germany,Transport and logistics,33,Small (10-49),72.8,Yes,2025
+F00675,Sweden,Wholesale and retail,39,Small (10-49),93.2,No,2025
+F00676,Poland,Professional services,164,Medium (50-249),80.6,No,2025
+F00677,Sweden,Wholesale and retail,84,Medium (50-249),71.3,Yes,2025
+F00678,Spain,Information and communication,3,Micro (1-9),76.6,No,2025
+F00679,Sweden,Wholesale and retail,3,Micro (1-9),78.7,Yes,2025
+F00680,Spain,Professional services,19,Small (10-49),91.1,No,2025
+F00681,Sweden,Finance and insurance,6,Micro (1-9),79.8,No,2025
+F00682,Belgium,Manufacturing,10,Small (10-49),83.9,No,2025
+F00683,Poland,Transport and logistics,59,Medium (50-249),68.7,Yes,2025
+F00684,Netherlands,Accommodation and food,9,Micro (1-9),75.5,Yes,2025
+F00685,Germany,Construction,8,Micro (1-9),56.3,No,2025
+F00686,Sweden,Accommodation and food,3,Micro (1-9),42.1,No,2025
+F00687,Spain,Energy and utilities,2,Micro (1-9),46.2,No,2025
+F00688,Italy,Finance and insurance,6,Micro (1-9),65.5,No,2025
+F00689,Belgium,Professional services,22,Small (10-49),61.2,No,2025
+F00690,France,Finance and insurance,10,Small (10-49),51.9,Yes,2025
+F00691,Italy,Health and social work,4,Micro (1-9),84.3,No,2025
+F00692,Poland,Manufacturing,4,Micro (1-9),86.6,No,2025
+F00693,Sweden,Accommodation and food,16,Small (10-49),59.2,Yes,2025
+F00694,Spain,Energy and utilities,19,Small (10-49),68.8,Yes,2025
+F00695,Belgium,Construction,1,Micro (1-9),87.0,No,2025
+F00696,Sweden,Construction,67,Medium (50-249),65.6,No,2025
+F00697,Sweden,Information and communication,36,Small (10-49),59.2,No,2025
+F00698,Netherlands,Accommodation and food,5,Micro (1-9),99.8,No,2025
+F00699,Sweden,Accommodation and food,49,Small (10-49),96.3,Yes,2025
+F00700,France,Transport and logistics,3,Micro (1-9),79.1,No,2025
+F00701,Spain,Finance and insurance,2,Micro (1-9),78.7,No,2025
+F00702,Spain,Information and communication,4,Micro (1-9),35.7,Yes,2025
+F00703,Spain,Professional services,8,Micro (1-9),64.0,No,2025
+F00704,Poland,Wholesale and retail,16,Small (10-49),90.0,No,2025
+F00705,Belgium,Wholesale and retail,1,Micro (1-9),53.5,No,2025
+F00706,Spain,Finance and insurance,33,Small (10-49),78.1,No,2025
+F00707,Germany,Information and communication,51,Medium (50-249),83.2,No,2025
+F00708,Sweden,Energy and utilities,2,Micro (1-9),71.8,No,2025
+F00709,Sweden,Professional services,3,Micro (1-9),25.3,No,2025
+F00710,Poland,Health and social work,26,Small (10-49),62.0,No,2025
+F00711,Belgium,Information and communication,20,Small (10-49),104.3,No,2025
+F00712,Germany,Wholesale and retail,243,Medium (50-249),91.6,No,2025
+F00713,Italy,Energy and utilities,8,Micro (1-9),47.1,No,2025
+F00714,Sweden,Finance and insurance,5,Micro (1-9),53.4,Yes,2025
+F00715,Sweden,Wholesale and retail,11,Small (10-49),61.6,No,2025
+F00716,Italy,Transport and logistics,14,Small (10-49),53.2,No,2025
+F00717,Germany,Wholesale and retail,9,Micro (1-9),42.0,No,2025
+F00718,France,Health and social work,10,Small (10-49),92.3,No,2025
+F00719,Poland,Energy and utilities,5,Micro (1-9),52.1,No,2025
+F00720,Italy,Health and social work,9,Micro (1-9),61.0,Yes,2025
+F00721,Spain,Accommodation and food,9,Micro (1-9),48.2,Yes,2025
+F00722,Germany,Information and communication,45,Small (10-49),63.9,Yes,2025
+F00723,Germany,Information and communication,34,Small (10-49),78.8,No,2025
+F00724,Germany,Information and communication,2,Micro (1-9),34.6,No,2025
+F00725,Sweden,Energy and utilities,48,Small (10-49),43.5,Yes,2025
+F00726,Poland,Accommodation and food,18,Small (10-49),91.7,No,2025
+F00727,Germany,Construction,22,Small (10-49),67.7,Yes,2025
+F00728,France,Energy and utilities,187,Medium (50-249),93.1,No,2025
+F00729,Sweden,Finance and insurance,7,Micro (1-9),69.5,No,2025
+F00730,Belgium,Wholesale and retail,36,Small (10-49),75.5,No,2025
+F00731,Italy,Construction,164,Medium (50-249),99.9,No,2025
+F00732,Spain,Information and communication,2,Micro (1-9),52.2,No,2025
+F00733,Poland,Energy and utilities,5,Micro (1-9),88.0,Yes,2025
+F00734,France,Wholesale and retail,4,Micro (1-9),57.6,No,2025
+F00735,Spain,Health and social work,55,Medium (50-249),62.3,Yes,2025
+F00736,Netherlands,Accommodation and food,18,Small (10-49),77.8,No,2025
+F00737,Spain,Health and social work,14,Small (10-49),66.5,No,2025
+F00738,Italy,Construction,1,Micro (1-9),43.6,No,2025
+F00739,Sweden,Manufacturing,4,Micro (1-9),81.5,No,2025
+F00740,Poland,Energy and utilities,5,Micro (1-9),72.3,No,2025
+F00741,Sweden,Health and social work,10,Small (10-49),86.6,No,2025
+F00742,Germany,Construction,36,Small (10-49),64.7,Yes,2025
+F00743,Italy,Energy and utilities,101,Medium (50-249),108.0,Yes,2025
+F00744,Netherlands,Finance and insurance,1,Micro (1-9),82.7,No,2025
+F00745,Poland,Information and communication,3,Micro (1-9),41.8,No,2025
+F00746,Italy,Wholesale and retail,43,Small (10-49),61.2,No,2025
+F00747,Germany,Wholesale and retail,6,Micro (1-9),68.5,No,2025
+F00748,Sweden,Accommodation and food,17,Small (10-49),62.0,Yes,2025
+F00749,Italy,Health and social work,20,Small (10-49),86.1,Yes,2025
+F00750,Poland,Finance and insurance,6,Micro (1-9),76.7,No,2025
+F00751,Poland,Accommodation and food,10,Small (10-49),73.8,No,2025
+F00752,France,Finance and insurance,12,Small (10-49),67.3,No,2025
+F00753,Netherlands,Construction,10,Small (10-49),66.2,No,2025
+F00754,France,Health and social work,23,Small (10-49),65.4,No,2025
+F00755,Spain,Professional services,4,Micro (1-9),68.7,No,2025
+F00756,Poland,Wholesale and retail,19,Small (10-49),71.5,No,2025
+F00757,Belgium,Professional services,21,Small (10-49),93.5,Yes,2025
+F00758,Germany,Manufacturing,12,Small (10-49),64.9,No,2025
+F00759,Spain,Health and social work,20,Small (10-49),47.4,No,2025
+F00760,Italy,Professional services,31,Small (10-49),50.7,No,2025
+F00761,France,Professional services,8,Micro (1-9),76.2,No,2025
+F00762,Germany,Wholesale and retail,2,Micro (1-9),78.9,No,2025
+F00763,Poland,Health and social work,11,Small (10-49),91.2,No,2025
+F00764,Poland,Energy and utilities,9,Micro (1-9),58.1,No,2025
+F00765,Sweden,Wholesale and retail,44,Small (10-49),63.3,No,2025
+F00766,Spain,Accommodation and food,1,Micro (1-9),57.9,No,2025
+F00767,Poland,Finance and insurance,1,Micro (1-9),47.2,No,2025
+F00768,Belgium,Wholesale and retail,11,Small (10-49),60.2,Yes,2025
+F00769,Germany,Finance and insurance,114,Medium (50-249),105.3,No,2025
+F00770,Belgium,Professional services,2,Micro (1-9),46.3,No,2025
+F00771,Italy,Transport and logistics,36,Small (10-49),52.5,No,2025
+F00772,Netherlands,Energy and utilities,2,Micro (1-9),66.2,No,2025
+F00773,Sweden,Information and communication,12,Small (10-49),57.2,No,2025
+F00774,Netherlands,Finance and insurance,3,Micro (1-9),65.2,No,2025
+F00775,Italy,Health and social work,7,Micro (1-9),60.2,No,2025
+F00776,Germany,Finance and insurance,31,Small (10-49),61.2,Yes,2025
+F00777,France,Health and social work,9,Micro (1-9),71.0,No,2025
+F00778,Sweden,Construction,14,Small (10-49),75.0,No,2025
+F00779,Italy,Health and social work,5,Micro (1-9),76.5,No,2025
+F00780,Belgium,Accommodation and food,11,Small (10-49),90.6,No,2025
+F00781,Netherlands,Information and communication,72,Medium (50-249),67.8,No,2025
+F00782,Spain,Energy and utilities,5,Micro (1-9),65.2,Yes,2025
+F00783,Italy,Accommodation and food,2,Micro (1-9),64.2,No,2025
+F00784,Germany,Finance and insurance,15,Small (10-49),62.7,No,2025
+F00785,Germany,Finance and insurance,5,Micro (1-9),64.9,No,2025
+F00786,Spain,Wholesale and retail,1,Micro (1-9),46.6,No,2025
+F00787,France,Wholesale and retail,11,Small (10-49),79.3,Yes,2025
+F00788,Spain,Health and social work,26,Small (10-49),88.9,Yes,2025
+F00789,Netherlands,Information and communication,45,Small (10-49),74.7,No,2025
+F00790,Germany,Health and social work,100,Medium (50-249),59.5,Yes,2025
+F00791,Germany,Manufacturing,4,Micro (1-9),71.6,No,2025
+F00792,Italy,Energy and utilities,33,Small (10-49),65.2,No,2025
+F00793,Sweden,Health and social work,6,Micro (1-9),82.8,No,2025
+F00794,Netherlands,Energy and utilities,26,Small (10-49),83.0,Yes,2025
+F00795,Netherlands,Accommodation and food,24,Small (10-49),84.1,No,2025
+F00796,Belgium,Professional services,71,Medium (50-249),56.9,Yes,2025
+F00797,Sweden,Finance and insurance,51,Medium (50-249),81.5,Yes,2025
+F00798,Netherlands,Information and communication,1,Micro (1-9),26.3,No,2025
+F00799,Poland,Energy and utilities,37,Small (10-49),110.3,No,2025
+F00800,Netherlands,Accommodation and food,4,Micro (1-9),74.6,No,2025
+F00801,Poland,Health and social work,10,Small (10-49),86.8,No,2025
+F00802,Belgium,Finance and insurance,2,Micro (1-9),52.0,No,2025
+F00803,Belgium,Construction,11,Small (10-49),28.6,No,2025
+F00804,Sweden,Health and social work,4,Micro (1-9),78.3,No,2025
+F00805,Germany,Wholesale and retail,9,Micro (1-9),88.0,Yes,2025
+F00806,Germany,Wholesale and retail,8,Micro (1-9),53.9,No,2025
+F00807,Spain,Professional services,2,Micro (1-9),60.9,No,2025
+F00808,Belgium,Energy and utilities,24,Small (10-49),91.9,No,2025
+F00809,Sweden,Finance and insurance,16,Small (10-49),86.9,Yes,2025
+F00810,Italy,Information and communication,53,Medium (50-249),59.7,Yes,2025
+F00811,Netherlands,Energy and utilities,5,Micro (1-9),75.9,No,2025
+F00812,Spain,Professional services,7,Micro (1-9),64.9,No,2025
+F00813,Italy,Energy and utilities,3,Micro (1-9),76.3,No,2025
+F00814,Poland,Accommodation and food,15,Small (10-49),79.0,No,2025
+F00815,Belgium,Construction,2,Micro (1-9),94.5,No,2025
+F00816,Belgium,Transport and logistics,1,Micro (1-9),45.8,No,2025
+F00817,Italy,Energy and utilities,1,Micro (1-9),60.1,No,2025
+F00818,France,Information and communication,7,Micro (1-9),46.6,No,2025
+F00819,Italy,Manufacturing,7,Micro (1-9),69.6,Yes,2025
+F00820,Spain,Information and communication,4,Micro (1-9),73.1,No,2025
+F00821,Spain,Energy and utilities,28,Small (10-49),95.8,Yes,2025
+F00822,Sweden,Energy and utilities,14,Small (10-49),71.3,No,2025
+F00823,Italy,Health and social work,112,Medium (50-249),118.9,Yes,2025
+F00824,Sweden,Wholesale and retail,62,Medium (50-249),63.8,No,2025
+F00825,Netherlands,Information and communication,26,Small (10-49),75.7,No,2025
+F00826,Netherlands,Accommodation and food,6,Micro (1-9),44.9,No,2025
+F00827,Italy,Finance and insurance,128,Medium (50-249),68.2,Yes,2025
+F00828,Spain,Transport and logistics,15,Small (10-49),53.2,Yes,2025
+F00829,Netherlands,Energy and utilities,10,Small (10-49),75.9,No,2025
+F00830,France,Information and communication,40,Small (10-49),73.0,No,2025
+F00831,Germany,Finance and insurance,14,Small (10-49),95.0,No,2025
+F00832,Netherlands,Finance and insurance,13,Small (10-49),60.3,No,2025
+F00833,Sweden,Transport and logistics,1,Micro (1-9),64.1,No,2025
+F00834,Belgium,Wholesale and retail,12,Small (10-49),98.8,No,2025
+F00835,Sweden,Manufacturing,33,Small (10-49),65.2,Yes,2025
+F00836,Poland,Energy and utilities,1,Micro (1-9),64.1,No,2025
+F00837,Germany,Health and social work,43,Small (10-49),85.4,No,2025
+F00838,Spain,Construction,5,Micro (1-9),111.4,Yes,2025
+F00839,France,Health and social work,7,Micro (1-9),139.0,Yes,2025
+F00840,Germany,Professional services,17,Small (10-49),96.8,No,2025
+F00841,Poland,Energy and utilities,13,Small (10-49),96.4,No,2025
+F00842,Spain,Professional services,68,Medium (50-249),57.0,No,2025
+F00843,France,Wholesale and retail,8,Micro (1-9),66.9,Yes,2025
+F00844,France,Construction,26,Small (10-49),74.0,No,2025
+F00845,Belgium,Wholesale and retail,42,Small (10-49),58.6,Yes,2025
+F00846,Poland,Manufacturing,4,Micro (1-9),50.9,No,2025
+F00847,Spain,Accommodation and food,28,Small (10-49),61.8,Yes,2025
+F00848,Belgium,Finance and insurance,6,Micro (1-9),80.7,Yes,2025
+F00849,Belgium,Wholesale and retail,14,Small (10-49),56.1,Yes,2025
+F00850,France,Finance and insurance,4,Micro (1-9),66.4,No,2025
+F00851,Belgium,Professional services,14,Small (10-49),50.4,No,2025
+F00852,Germany,Transport and logistics,66,Medium (50-249),58.2,No,2025
+F00853,Belgium,Construction,22,Small (10-49),62.1,No,2025
+F00854,Belgium,Construction,19,Small (10-49),39.2,Yes,2025
+F00855,Sweden,Manufacturing,13,Small (10-49),78.7,No,2025
+F00856,Poland,Professional services,83,Medium (50-249),92.6,Yes,2025
+F00857,Belgium,Wholesale and retail,19,Small (10-49),80.3,No,2025
+F00858,Spain,Finance and insurance,9,Micro (1-9),67.0,No,2025
+F00859,Sweden,Professional services,55,Medium (50-249),92.1,Yes,2025
+F00860,Netherlands,Energy and utilities,2,Micro (1-9),60.9,No,2025
+F00861,Sweden,Accommodation and food,83,Medium (50-249),69.7,Yes,2025
+F00862,Germany,Accommodation and food,124,Medium (50-249),86.4,Yes,2025
+F00863,Poland,Finance and insurance,19,Small (10-49),106.1,Yes,2025
+F00864,Germany,Finance and insurance,205,Medium (50-249),95.4,Yes,2025
+F00865,Germany,Transport and logistics,45,Small (10-49),69.8,Yes,2025
+F00866,France,Manufacturing,5,Micro (1-9),37.1,No,2025
+F00867,Poland,Construction,48,Small (10-49),94.8,No,2025
+F00868,Spain,Information and communication,19,Small (10-49),52.4,No,2025
+F00869,Italy,Construction,60,Medium (50-249),94.2,Yes,2025
+F00870,Sweden,Information and communication,4,Micro (1-9),74.7,No,2025
+F00871,Netherlands,Wholesale and retail,15,Small (10-49),47.6,No,2025
+F00872,France,Wholesale and retail,6,Micro (1-9),94.6,No,2025
+F00873,Belgium,Wholesale and retail,62,Medium (50-249),76.7,No,2025
+F00874,Netherlands,Accommodation and food,82,Medium (50-249),85.7,No,2025
+F00875,Italy,Construction,6,Micro (1-9),45.7,No,2025
+F00876,Italy,Energy and utilities,2,Micro (1-9),49.2,No,2025
+F00877,Sweden,Energy and utilities,26,Small (10-49),68.2,No,2025
+F00878,Sweden,Information and communication,18,Small (10-49),70.8,No,2025
+F00879,Italy,Construction,3,Micro (1-9),69.0,No,2025
+F00880,Italy,Information and communication,7,Micro (1-9),68.6,No,2025
+F00881,France,Construction,25,Small (10-49),77.3,No,2025
+F00882,Spain,Manufacturing,16,Small (10-49),37.4,No,2025
+F00883,Sweden,Accommodation and food,5,Micro (1-9),98.6,No,2025
+F00884,Spain,Health and social work,85,Medium (50-249),62.9,No,2025
+F00885,Belgium,Finance and insurance,18,Small (10-49),78.9,No,2025
+F00886,Belgium,Manufacturing,89,Medium (50-249),70.6,No,2025
+F00887,Netherlands,Energy and utilities,24,Small (10-49),83.8,No,2025
+F00888,Poland,Professional services,14,Small (10-49),93.1,Yes,2025
+F00889,Sweden,Construction,25,Small (10-49),65.8,No,2025
+F00890,Sweden,Health and social work,20,Small (10-49),85.9,No,2025
+F00891,France,Accommodation and food,6,Micro (1-9),50.8,No,2025
+F00892,France,Construction,12,Small (10-49),58.9,Yes,2025
+F00893,Netherlands,Construction,10,Small (10-49),42.2,Yes,2025
+F00894,Poland,Health and social work,29,Small (10-49),80.6,No,2025
+F00895,Italy,Wholesale and retail,432,Large (250+),95.0,Yes,2025
+F00896,Netherlands,Finance and insurance,18,Small (10-49),79.9,No,2025
+F00897,Sweden,Energy and utilities,117,Medium (50-249),90.8,No,2025
+F00898,France,Wholesale and retail,99,Medium (50-249),111.4,No,2025
+F00899,Belgium,Health and social work,12,Small (10-49),77.5,No,2025
+F00900,Germany,Wholesale and retail,3,Micro (1-9),62.4,No,2025
+F00901,Netherlands,Construction,22,Small (10-49),97.9,Yes,2025
+F00902,Netherlands,Wholesale and retail,12,Small (10-49),91.0,Yes,2025
+F00903,Poland,Finance and insurance,2,Micro (1-9),82.5,No,2025
+F00904,France,Construction,6,Micro (1-9),80.5,No,2025
+F00905,Germany,Energy and utilities,10,Small (10-49),61.4,No,2025
+F00906,Poland,Energy and utilities,4,Micro (1-9),65.2,No,2025
+F00907,Spain,Accommodation and food,7,Micro (1-9),56.3,No,2025
+F00908,Sweden,Energy and utilities,11,Small (10-49),124.1,No,2025
+F00909,Poland,Information and communication,4,Micro (1-9),29.1,No,2025
+F00910,Netherlands,Transport and logistics,94,Medium (50-249),83.2,No,2025
+F00911,Netherlands,Wholesale and retail,10,Small (10-49),99.0,No,2025
+F00912,Italy,Energy and utilities,6,Micro (1-9),96.3,Yes,2025
+F00913,Italy,Manufacturing,25,Small (10-49),87.1,No,2025
+F00914,Belgium,Accommodation and food,309,Large (250+),104.8,No,2025
+F00915,France,Accommodation and food,26,Small (10-49),56.4,No,2025
+F00916,France,Professional services,16,Small (10-49),79.9,Yes,2025
+F00917,Germany,Transport and logistics,9,Micro (1-9),77.2,No,2025
+F00918,Sweden,Energy and utilities,5,Micro (1-9),70.9,No,2025
+F00919,Spain,Manufacturing,225,Medium (50-249),71.6,Yes,2025
+F00920,Sweden,Professional services,14,Small (10-49),77.9,No,2025
+F00921,Italy,Finance and insurance,13,Small (10-49),90.5,No,2025
+F00922,Germany,Construction,190,Medium (50-249),96.6,No,2025
+F00923,Belgium,Manufacturing,12,Small (10-49),80.2,No,2025
+F00924,Netherlands,Energy and utilities,16,Small (10-49),71.7,Yes,2025
+F00925,Italy,Finance and insurance,4,Micro (1-9),70.1,No,2025
+F00926,Germany,Transport and logistics,8,Micro (1-9),61.0,No,2025
+F00927,Belgium,Wholesale and retail,56,Medium (50-249),68.9,No,2025
+F00928,Sweden,Manufacturing,25,Small (10-49),57.1,No,2025
+F00929,Sweden,Information and communication,9,Micro (1-9),74.9,Yes,2025
+F00930,Germany,Manufacturing,119,Medium (50-249),71.1,Yes,2025
+F00931,Italy,Accommodation and food,1,Micro (1-9),65.0,No,2025
+F00932,Italy,Professional services,11,Small (10-49),84.4,No,2025
+F00933,Italy,Energy and utilities,2,Micro (1-9),65.9,No,2025
+F00934,France,Manufacturing,26,Small (10-49),67.5,No,2025
+F00935,Italy,Information and communication,6,Micro (1-9),30.8,Yes,2025
+F00936,Sweden,Wholesale and retail,3,Micro (1-9),83.8,No,2025
+F00937,Netherlands,Energy and utilities,17,Small (10-49),70.9,No,2025
+F00938,Netherlands,Accommodation and food,1,Micro (1-9),69.5,No,2025
+F00939,France,Accommodation and food,16,Small (10-49),77.2,No,2025
+F00940,Germany,Information and communication,13,Small (10-49),69.2,No,2025
+F00941,Sweden,Wholesale and retail,17,Small (10-49),79.1,No,2025
+F00942,Belgium,Construction,2,Micro (1-9),83.6,No,2025
+F00943,Poland,Professional services,9,Micro (1-9),63.1,Yes,2025
+F00944,France,Information and communication,9,Micro (1-9),61.5,No,2025
+F00945,Spain,Manufacturing,9,Micro (1-9),47.0,No,2025
+F00946,Sweden,Transport and logistics,15,Small (10-49),76.5,No,2025
+F00947,Germany,Energy and utilities,35,Small (10-49),73.6,No,2025
+F00948,Spain,Wholesale and retail,21,Small (10-49),89.0,Yes,2025
+F00949,Italy,Information and communication,5,Micro (1-9),69.0,No,2025
+F00950,Belgium,Transport and logistics,30,Small (10-49),55.6,No,2025
+F00951,Germany,Transport and logistics,3,Micro (1-9),86.6,No,2025
+F00952,Belgium,Transport and logistics,76,Medium (50-249),68.1,Yes,2025
+F00953,Italy,Accommodation and food,7,Micro (1-9),49.7,No,2025
+F00954,Sweden,Health and social work,6,Micro (1-9),67.6,Yes,2025
+F00955,France,Energy and utilities,3,Micro (1-9),100.2,No,2025
+F00956,Netherlands,Finance and insurance,11,Small (10-49),48.8,No,2025
+F00957,Sweden,Health and social work,30,Small (10-49),75.5,Yes,2025
+F00958,Spain,Professional services,1,Micro (1-9),52.4,No,2025
+F00959,Italy,Professional services,158,Medium (50-249),99.8,No,2025
+F00960,Italy,Finance and insurance,2,Micro (1-9),77.1,No,2025
+F00961,Netherlands,Manufacturing,50,Medium (50-249),96.9,No,2025
+F00962,Poland,Construction,19,Small (10-49),76.9,Yes,2025
+F00963,Sweden,Transport and logistics,225,Medium (50-249),96.2,No,2025
+F00964,Spain,Manufacturing,14,Small (10-49),79.9,Yes,2025
+F00965,Italy,Transport and logistics,5,Micro (1-9),74.3,No,2025
+F00966,Spain,Professional services,11,Small (10-49),97.8,No,2025
+F00967,Poland,Accommodation and food,3,Micro (1-9),71.0,Yes,2025
+F00968,Spain,Accommodation and food,73,Medium (50-249),89.3,No,2025
+F00969,Sweden,Professional services,35,Small (10-49),76.2,No,2025
+F00970,Poland,Finance and insurance,31,Small (10-49),95.2,No,2025
+F00971,Germany,Manufacturing,9,Micro (1-9),43.2,Yes,2025
+F00972,Italy,Energy and utilities,5,Micro (1-9),71.7,No,2025
+F00973,Germany,Health and social work,8,Micro (1-9),91.9,Yes,2025
+F00974,Italy,Accommodation and food,5,Micro (1-9),71.2,No,2025
+F00975,Italy,Finance and insurance,1,Micro (1-9),50.8,No,2025
+F00976,Germany,Finance and insurance,6,Micro (1-9),85.0,Yes,2025
+F00977,France,Professional services,7,Micro (1-9),79.6,Yes,2025
+F00978,Germany,Energy and utilities,2,Micro (1-9),66.4,No,2025
+F00979,Netherlands,Accommodation and food,24,Small (10-49),54.0,No,2025
+F00980,Poland,Professional services,8,Micro (1-9),114.8,No,2025
+F00981,Poland,Manufacturing,1,Micro (1-9),51.9,No,2025
+F00982,Poland,Construction,5,Micro (1-9),76.0,No,2025
+F00983,Italy,Manufacturing,1,Micro (1-9),48.6,No,2025
+F00984,France,Wholesale and retail,6,Micro (1-9),66.5,No,2025
+F00985,Netherlands,Construction,5,Micro (1-9),50.7,Yes,2025
+F00986,Spain,Finance and insurance,12,Small (10-49),56.2,Yes,2025
+F00987,Poland,Manufacturing,1,Micro (1-9),47.8,No,2025
+F00988,Netherlands,Accommodation and food,63,Medium (50-249),90.8,No,2025
+F00989,Netherlands,Manufacturing,1,Micro (1-9),69.9,No,2025
+F00990,Italy,Finance and insurance,2,Micro (1-9),59.5,No,2025
+F00991,Belgium,Wholesale and retail,3,Micro (1-9),52.0,No,2025
+F00992,Spain,Professional services,2,Micro (1-9),71.7,No,2025
+F00993,Italy,Energy and utilities,8,Micro (1-9),109.1,No,2025
+F00994,Germany,Energy and utilities,4,Micro (1-9),49.6,No,2025
+F00995,Netherlands,Professional services,4,Micro (1-9),15.6,No,2025
+F00996,France,Professional services,265,Large (250+),100.1,No,2025
+F00997,Netherlands,Information and communication,5,Micro (1-9),67.3,Yes,2025
+F00998,Poland,Information and communication,72,Medium (50-249),46.5,No,2025
+F00999,Poland,Finance and insurance,1,Micro (1-9),39.9,No,2025
+F01000,Italy,Information and communication,22,Small (10-49),46.7,Yes,2025
+F01001,Spain,Health and social work,3,Micro (1-9),29.7,No,2025
+F01002,Spain,Accommodation and food,4,Micro (1-9),81.4,No,2025
+F01003,Spain,Health and social work,36,Small (10-49),69.2,No,2025
+F01004,Italy,Wholesale and retail,1,Micro (1-9),75.5,No,2025
+F01005,Poland,Manufacturing,29,Small (10-49),67.1,No,2025
+F01006,Spain,Wholesale and retail,10,Small (10-49),74.5,No,2025
+F01007,France,Professional services,12,Small (10-49),82.7,No,2025
+F01008,France,Finance and insurance,33,Small (10-49),86.0,No,2025
+F01009,Netherlands,Transport and logistics,18,Small (10-49),95.8,Yes,2025
+F01010,Italy,Health and social work,28,Small (10-49),86.8,Yes,2025
+F01011,France,Wholesale and retail,28,Small (10-49),50.9,No,2025
+F01012,Belgium,Information and communication,2,Micro (1-9),59.5,Yes,2025
+F01013,Italy,Information and communication,2,Micro (1-9),84.3,No,2025
+F01014,Netherlands,Finance and insurance,143,Medium (50-249),62.9,No,2025
+F01015,Spain,Finance and insurance,23,Small (10-49),92.0,No,2025
+F01016,Germany,Accommodation and food,12,Small (10-49),77.0,No,2025
+F01017,France,Manufacturing,37,Small (10-49),52.1,Yes,2025
+F01018,Germany,Information and communication,14,Small (10-49),62.7,Yes,2025
+F01019,France,Accommodation and food,148,Medium (50-249),90.0,Yes,2025
+F01020,Sweden,Energy and utilities,4,Micro (1-9),89.5,No,2025
+F01021,Sweden,Transport and logistics,6,Micro (1-9),62.7,No,2025
+F01022,France,Health and social work,19,Small (10-49),67.8,No,2025
+F01023,Italy,Information and communication,45,Small (10-49),74.7,Yes,2025
+F01024,Germany,Finance and insurance,25,Small (10-49),58.2,No,2025
+F01025,Germany,Energy and utilities,14,Small (10-49),87.9,No,2025
+F01026,Italy,Health and social work,11,Small (10-49),79.4,Yes,2025
+F01027,Spain,Accommodation and food,2,Micro (1-9),83.7,Yes,2025
+F01028,Italy,Construction,9,Micro (1-9),82.3,No,2025
+F01029,Germany,Health and social work,12,Small (10-49),70.2,No,2025
+F01030,Italy,Health and social work,8,Micro (1-9),91.9,No,2025
+F01031,Poland,Health and social work,50,Medium (50-249),78.8,No,2025
+F01032,France,Professional services,4,Micro (1-9),58.4,No,2025
+F01033,Belgium,Wholesale and retail,31,Small (10-49),79.2,No,2025
+F01034,Germany,Transport and logistics,6,Micro (1-9),36.2,No,2025
+F01035,Spain,Professional services,30,Small (10-49),78.2,Yes,2025
+F01036,Poland,Finance and insurance,5,Micro (1-9),72.2,No,2025
+F01037,Poland,Accommodation and food,10,Small (10-49),77.3,Yes,2025
+F01038,Poland,Information and communication,14,Small (10-49),90.9,No,2025
+F01039,Sweden,Finance and insurance,48,Small (10-49),78.8,Yes,2025
+F01040,Poland,Professional services,5,Micro (1-9),103.6,No,2025
+F01041,Poland,Finance and insurance,136,Medium (50-249),92.7,Yes,2025
+F01042,Germany,Manufacturing,2,Micro (1-9),67.2,No,2025
+F01043,Sweden,Professional services,9,Micro (1-9),43.8,No,2025
+F01044,France,Wholesale and retail,28,Small (10-49),72.3,Yes,2025
+F01045,Italy,Energy and utilities,3,Micro (1-9),58.5,No,2025
+F01046,Poland,Transport and logistics,16,Small (10-49),64.0,No,2025
+F01047,Belgium,Finance and insurance,26,Small (10-49),74.3,No,2025
+F01048,Sweden,Manufacturing,16,Small (10-49),73.0,Yes,2025
+F01049,France,Construction,44,Small (10-49),48.0,No,2025
+F01050,Germany,Professional services,9,Micro (1-9),55.5,No,2025
+F01051,Poland,Professional services,5,Micro (1-9),60.3,No,2025
+F01052,Poland,Accommodation and food,24,Small (10-49),86.6,No,2025
+F01053,France,Manufacturing,9,Micro (1-9),106.5,No,2025
+F01054,Italy,Finance and insurance,9,Micro (1-9),68.2,No,2025
+F01055,Poland,Wholesale and retail,59,Medium (50-249),64.2,No,2025
+F01056,Belgium,Energy and utilities,14,Small (10-49),59.5,No,2025
+F01057,France,Health and social work,9,Micro (1-9),86.6,No,2025
+F01058,Poland,Professional services,4,Micro (1-9),84.0,No,2025
+F01059,Italy,Construction,10,Small (10-49),51.9,No,2025
+F01060,Belgium,Wholesale and retail,64,Medium (50-249),98.4,No,2025
+F01061,Spain,Health and social work,2,Micro (1-9),89.7,No,2025
+F01062,Italy,Wholesale and retail,33,Small (10-49),60.1,Yes,2025
+F01063,Germany,Transport and logistics,297,Large (250+),71.5,Yes,2025
+F01064,Netherlands,Wholesale and retail,2,Micro (1-9),66.5,No,2025
+F01065,Italy,Manufacturing,6,Micro (1-9),71.6,No,2025
+F01066,Germany,Information and communication,3,Micro (1-9),55.4,No,2025
+F01067,Italy,Accommodation and food,12,Small (10-49),82.5,No,2025
+F01068,Netherlands,Accommodation and food,1,Micro (1-9),91.0,No,2025
+F01069,Germany,Transport and logistics,82,Medium (50-249),72.6,Yes,2025
+F01070,Poland,Construction,6,Micro (1-9),71.7,Yes,2025
+F01071,Spain,Information and communication,12,Small (10-49),87.6,No,2025
+F01072,Netherlands,Finance and insurance,1,Micro (1-9),61.0,No,2025
+F01073,Germany,Transport and logistics,26,Small (10-49),81.1,Yes,2025
+F01074,Italy,Accommodation and food,94,Medium (50-249),71.0,No,2025
+F01075,Italy,Finance and insurance,4,Micro (1-9),85.8,No,2025
+F01076,Italy,Construction,21,Small (10-49),74.8,No,2025
+F01077,Poland,Accommodation and food,35,Small (10-49),69.6,Yes,2025
+F01078,Poland,Wholesale and retail,12,Small (10-49),75.2,No,2025
+F01079,Belgium,Finance and insurance,67,Medium (50-249),84.9,No,2025
+F01080,Netherlands,Information and communication,5,Micro (1-9),69.6,No,2025
+F01081,Spain,Accommodation and food,11,Small (10-49),76.4,No,2025
+F01082,Belgium,Health and social work,1,Micro (1-9),60.8,No,2025
+F01083,Germany,Accommodation and food,23,Small (10-49),53.1,No,2025
+F01084,Belgium,Information and communication,2,Micro (1-9),34.7,No,2025
+F01085,Poland,Information and communication,5,Micro (1-9),103.8,No,2025
+F01086,Italy,Wholesale and retail,11,Small (10-49),110.5,No,2025
+F01087,Germany,Transport and logistics,22,Small (10-49),94.3,No,2025
+F01088,Sweden,Wholesale and retail,3,Micro (1-9),56.0,No,2025
+F01089,Spain,Information and communication,15,Small (10-49),68.0,No,2025
+F01090,Poland,Wholesale and retail,48,Small (10-49),42.8,No,2025
+F01091,Netherlands,Information and communication,2,Micro (1-9),56.8,No,2025
+F01092,Italy,Wholesale and retail,12,Small (10-49),84.4,No,2025
+F01093,Poland,Transport and logistics,66,Medium (50-249),92.0,No,2025
+F01094,Germany,Manufacturing,3,Micro (1-9),46.7,No,2025
+F01095,Belgium,Energy and utilities,1,Micro (1-9),62.4,No,2025
+F01096,Poland,Energy and utilities,1,Micro (1-9),47.6,No,2025
+F01097,Italy,Finance and insurance,4,Micro (1-9),69.7,No,2025
+F01098,France,Wholesale and retail,5,Micro (1-9),83.6,No,2025
+F01099,Italy,Accommodation and food,3,Micro (1-9),38.8,No,2025
+F01100,France,Construction,26,Small (10-49),71.9,No,2025
+F01101,Germany,Construction,11,Small (10-49),61.5,Yes,2025
+F01102,Italy,Professional services,97,Medium (50-249),107.1,Yes,2025
+F01103,Poland,Information and communication,2,Micro (1-9),94.5,No,2025
+F01104,Belgium,Wholesale and retail,12,Small (10-49),93.9,Yes,2025
+F01105,Spain,Construction,21,Small (10-49),94.3,No,2025
+F01106,Netherlands,Health and social work,3,Micro (1-9),44.7,Yes,2025
+F01107,Poland,Wholesale and retail,3,Micro (1-9),75.7,No,2025
+F01108,Spain,Energy and utilities,16,Small (10-49),81.8,No,2025
+F01109,Poland,Finance and insurance,8,Micro (1-9),70.1,No,2025
+F01110,Spain,Manufacturing,5,Micro (1-9),75.2,No,2025
+F01111,Sweden,Energy and utilities,5,Micro (1-9),55.9,No,2025
+F01112,Italy,Construction,62,Medium (50-249),86.6,Yes,2025
+F01113,Germany,Professional services,6,Micro (1-9),71.0,No,2025
+F01114,Italy,Transport and logistics,25,Small (10-49),62.2,Yes,2025
+F01115,Sweden,Transport and logistics,21,Small (10-49),60.9,No,2025
+F01116,Italy,Transport and logistics,39,Small (10-49),93.4,No,2025
+F01117,France,Energy and utilities,12,Small (10-49),94.3,No,2025
+F01118,Italy,Professional services,13,Small (10-49),109.5,Yes,2025
+F01119,Netherlands,Health and social work,8,Micro (1-9),82.9,No,2025
+F01120,Netherlands,Accommodation and food,2,Micro (1-9),80.3,No,2025
+F01121,Germany,Construction,18,Small (10-49),49.0,Yes,2025
+F01122,Spain,Wholesale and retail,31,Small (10-49),85.8,Yes,2025
+F01123,Poland,Health and social work,22,Small (10-49),83.5,No,2025
+F01124,Netherlands,Professional services,2,Micro (1-9),57.5,No,2025
+F01125,Sweden,Information and communication,33,Small (10-49),72.8,No,2025
+F01126,Sweden,Transport and logistics,39,Small (10-49),100.0,Yes,2025
+F01127,Sweden,Transport and logistics,25,Small (10-49),88.6,No,2025
+F01128,Sweden,Information and communication,14,Small (10-49),68.9,Yes,2025
+F01129,Netherlands,Professional services,16,Small (10-49),64.6,No,2025
+F01130,Germany,Professional services,4,Micro (1-9),73.4,No,2025
+F01131,Sweden,Construction,7,Micro (1-9),75.4,Yes,2025
+F01132,Belgium,Manufacturing,3,Micro (1-9),71.5,No,2025
+F01133,Belgium,Energy and utilities,2,Micro (1-9),74.8,Yes,2025
+F01134,France,Wholesale and retail,10,Small (10-49),87.5,No,2025
+F01135,France,Professional services,58,Medium (50-249),73.5,No,2025
+F01136,Sweden,Construction,1,Micro (1-9),64.4,No,2025
+F01137,Sweden,Health and social work,15,Small (10-49),85.7,No,2025
+F01138,France,Professional services,10,Small (10-49),56.5,Yes,2025
+F01139,Sweden,Transport and logistics,9,Micro (1-9),78.9,No,2025
+F01140,Germany,Professional services,62,Medium (50-249),35.6,No,2025
+F01141,Netherlands,Information and communication,29,Small (10-49),65.5,Yes,2025
+F01142,Belgium,Professional services,3,Micro (1-9),54.9,No,2025
+F01143,Spain,Wholesale and retail,3,Micro (1-9),68.5,No,2025
+F01144,Netherlands,Professional services,27,Small (10-49),73.4,No,2025
+F01145,Poland,Transport and logistics,4,Micro (1-9),58.5,No,2025
+F01146,France,Health and social work,116,Medium (50-249),84.4,No,2025
+F01147,Spain,Energy and utilities,3,Micro (1-9),62.8,No,2025
+F01148,Netherlands,Accommodation and food,13,Small (10-49),84.3,No,2025
+F01149,Italy,Accommodation and food,6,Micro (1-9),84.8,No,2025
+F01150,Italy,Professional services,14,Small (10-49),62.1,Yes,2025
+F01151,Belgium,Information and communication,10,Small (10-49),75.4,No,2025
+F01152,France,Accommodation and food,10,Small (10-49),67.1,No,2025
+F01153,France,Information and communication,9,Micro (1-9),56.9,Yes,2025
+F01154,Sweden,Finance and insurance,19,Small (10-49),82.6,No,2025
+F01155,Sweden,Professional services,120,Medium (50-249),75.0,No,2025
+F01156,Italy,Information and communication,3,Micro (1-9),57.0,No,2025
+F01157,Netherlands,Accommodation and food,5,Micro (1-9),61.1,No,2025
+F01158,Sweden,Construction,155,Medium (50-249),53.4,No,2025
+F01159,Germany,Information and communication,84,Medium (50-249),84.8,No,2025
+F01160,Belgium,Manufacturing,8,Micro (1-9),79.8,No,2025
+F01161,France,Professional services,11,Small (10-49),77.3,No,2025
+F01162,Belgium,Manufacturing,13,Small (10-49),64.2,Yes,2025
+F01163,Germany,Construction,126,Medium (50-249),89.4,No,2025
+F01164,Poland,Health and social work,30,Small (10-49),115.4,No,2025
+F01165,Netherlands,Wholesale and retail,41,Small (10-49),77.2,No,2025
+F01166,Sweden,Manufacturing,3,Micro (1-9),64.8,Yes,2025
+F01167,Germany,Professional services,42,Small (10-49),101.2,No,2025
+F01168,Belgium,Wholesale and retail,9,Micro (1-9),46.9,No,2025
+F01169,Spain,Transport and logistics,5,Micro (1-9),56.0,No,2025
+F01170,Italy,Information and communication,16,Small (10-49),65.9,No,2025
+F01171,Spain,Wholesale and retail,15,Small (10-49),50.3,No,2025
+F01172,Poland,Information and communication,10,Small (10-49),85.6,Yes,2025
+F01173,Belgium,Manufacturing,7,Micro (1-9),96.0,Yes,2025
+F01174,Italy,Manufacturing,24,Small (10-49),82.6,No,2025
+F01175,Belgium,Finance and insurance,82,Medium (50-249),108.5,No,2025
+F01176,Germany,Professional services,17,Small (10-49),65.1,No,2025
+F01177,Spain,Transport and logistics,4,Micro (1-9),75.0,Yes,2025
+F01178,Belgium,Professional services,6,Micro (1-9),72.1,Yes,2025
+F01179,Belgium,Wholesale and retail,114,Medium (50-249),60.7,No,2025
+F01180,Italy,Construction,3,Micro (1-9),75.1,No,2025
+F01181,Belgium,Energy and utilities,6,Micro (1-9),67.9,No,2025
+F01182,Germany,Wholesale and retail,15,Small (10-49),55.5,No,2025
+F01183,Poland,Accommodation and food,15,Small (10-49),61.4,No,2025
+F01184,Germany,Professional services,8,Micro (1-9),95.9,No,2025
+F01185,France,Information and communication,28,Small (10-49),83.3,No,2025
+F01186,Germany,Health and social work,21,Small (10-49),103.6,No,2025
+F01187,Germany,Manufacturing,5,Micro (1-9),74.9,No,2025
+F01188,Spain,Information and communication,6,Micro (1-9),74.1,No,2025
+F01189,Spain,Health and social work,46,Small (10-49),71.6,No,2025
+F01190,Netherlands,Energy and utilities,18,Small (10-49),92.9,No,2025
+F01191,Sweden,Transport and logistics,32,Small (10-49),58.9,No,2025
+F01192,Poland,Energy and utilities,5,Micro (1-9),70.8,No,2025
+F01193,Spain,Manufacturing,6,Micro (1-9),52.2,No,2025
+F01194,Belgium,Professional services,7,Micro (1-9),43.2,No,2025
+F01195,Netherlands,Finance and insurance,14,Small (10-49),91.2,No,2025
+F01196,Spain,Manufacturing,4,Micro (1-9),50.9,No,2025
+F01197,Poland,Health and social work,101,Medium (50-249),93.1,No,2025
+F01198,France,Accommodation and food,31,Small (10-49),78.9,No,2025
+F01199,Belgium,Professional services,5,Micro (1-9),30.8,No,2025
+F01200,Poland,Information and communication,47,Small (10-49),128.5,No,2025
+F01201,France,Energy and utilities,1,Micro (1-9),32.4,No,2025
+F01202,Netherlands,Information and communication,4,Micro (1-9),84.9,Yes,2025
+F01203,Spain,Energy and utilities,15,Small (10-49),65.3,No,2025
+F01204,Belgium,Transport and logistics,10,Small (10-49),54.4,No,2025
+F01205,Belgium,Energy and utilities,29,Small (10-49),88.2,Yes,2025
+F01206,France,Manufacturing,35,Small (10-49),93.6,Yes,2025
+F01207,Belgium,Finance and insurance,15,Small (10-49),46.7,Yes,2025
+F01208,Poland,Health and social work,19,Small (10-49),54.8,No,2025
+F01209,Germany,Information and communication,7,Micro (1-9),77.0,No,2025
+F01210,Netherlands,Manufacturing,17,Small (10-49),102.6,No,2025
+F01211,Italy,Construction,87,Medium (50-249),60.4,No,2025
+F01212,Netherlands,Information and communication,22,Small (10-49),78.3,No,2025
+F01213,Spain,Professional services,17,Small (10-49),78.0,No,2025
+F01214,Belgium,Professional services,6,Micro (1-9),90.6,Yes,2025
+F01215,Belgium,Information and communication,18,Small (10-49),58.8,Yes,2025
+F01216,Netherlands,Health and social work,2,Micro (1-9),34.8,No,2025
+F01217,Italy,Wholesale and retail,5,Micro (1-9),80.6,No,2025
+F01218,Poland,Construction,4,Micro (1-9),85.0,No,2025
+F01219,Italy,Transport and logistics,4,Micro (1-9),101.4,No,2025
+F01220,Spain,Health and social work,22,Small (10-49),54.5,Yes,2025
+F01221,Spain,Energy and utilities,25,Small (10-49),53.5,No,2025
+F01222,Belgium,Professional services,3,Micro (1-9),58.4,No,2025
+F01223,Italy,Wholesale and retail,45,Small (10-49),65.1,No,2025
+F01224,France,Wholesale and retail,19,Small (10-49),124.3,Yes,2025
+F01225,Belgium,Transport and logistics,41,Small (10-49),70.4,No,2025
+F01226,Netherlands,Wholesale and retail,11,Small (10-49),81.5,Yes,2025
+F01227,Netherlands,Construction,5,Micro (1-9),58.2,No,2025
+F01228,Belgium,Manufacturing,12,Small (10-49),60.1,Yes,2025
+F01229,Germany,Accommodation and food,1,Micro (1-9),28.5,No,2025
+F01230,Netherlands,Manufacturing,30,Small (10-49),106.0,Yes,2025
+F01231,France,Transport and logistics,145,Medium (50-249),57.9,No,2025
+F01232,Sweden,Health and social work,48,Small (10-49),77.6,Yes,2025
+F01233,Italy,Professional services,6,Micro (1-9),61.3,No,2025
+F01234,Poland,Finance and insurance,31,Small (10-49),83.2,No,2025
+F01235,Germany,Transport and logistics,32,Small (10-49),62.7,No,2025
+F01236,Italy,Professional services,6,Micro (1-9),83.6,Yes,2025
+F01237,Germany,Construction,15,Small (10-49),56.2,No,2025
+F01238,Belgium,Energy and utilities,15,Small (10-49),130.5,No,2025
+F01239,Belgium,Health and social work,15,Small (10-49),48.5,No,2025
+F01240,Sweden,Health and social work,134,Medium (50-249),87.2,Yes,2025
+F01241,Belgium,Wholesale and retail,1,Micro (1-9),78.1,No,2025
+F01242,Italy,Health and social work,17,Small (10-49),39.4,No,2025
+F01243,Spain,Transport and logistics,264,Large (250+),82.3,No,2025
+F01244,Sweden,Energy and utilities,54,Medium (50-249),61.5,Yes,2025
+F01245,Netherlands,Energy and utilities,14,Small (10-49),65.1,No,2025
+F01246,Spain,Manufacturing,1,Micro (1-9),53.4,No,2025
+F01247,Germany,Professional services,4,Micro (1-9),87.7,No,2025
+F01248,Belgium,Transport and logistics,11,Small (10-49),84.5,No,2025
+F01249,Italy,Finance and insurance,9,Micro (1-9),60.2,No,2025
+F01250,Netherlands,Wholesale and retail,14,Small (10-49),86.5,No,2025
+F01251,Netherlands,Accommodation and food,85,Medium (50-249),76.9,No,2025
+F01252,Netherlands,Health and social work,133,Medium (50-249),74.9,No,2025
+F01253,Germany,Information and communication,13,Small (10-49),80.3,Yes,2025
+F01254,Spain,Health and social work,44,Small (10-49),100.0,Yes,2025
+F01255,Germany,Professional services,28,Small (10-49),105.5,No,2025
+F01256,Italy,Finance and insurance,5,Micro (1-9),63.5,Yes,2025
+F01257,Belgium,Information and communication,23,Small (10-49),107.5,No,2025
+F01258,Spain,Manufacturing,12,Small (10-49),77.9,Yes,2025
+F01259,Netherlands,Professional services,4,Micro (1-9),95.2,No,2025
+F01260,Belgium,Professional services,12,Small (10-49),42.2,No,2025
+F01261,Sweden,Information and communication,22,Small (10-49),88.5,No,2025
+F01262,Netherlands,Health and social work,54,Medium (50-249),78.3,Yes,2025
+F01263,Belgium,Energy and utilities,1,Micro (1-9),78.2,No,2025
+F01264,France,Health and social work,107,Medium (50-249),89.9,No,2025
+F01265,Sweden,Finance and insurance,7,Micro (1-9),53.2,No,2025
+F01266,Belgium,Manufacturing,8,Micro (1-9),92.0,No,2025
+F01267,Spain,Finance and insurance,27,Small (10-49),83.2,Yes,2025
+F01268,Sweden,Accommodation and food,6,Micro (1-9),69.9,No,2025
+F01269,Netherlands,Energy and utilities,207,Medium (50-249),88.4,No,2025
+F01270,Poland,Professional services,4,Micro (1-9),97.3,No,2025
+F01271,Sweden,Finance and insurance,5,Micro (1-9),79.3,No,2025
+F01272,Poland,Finance and insurance,86,Medium (50-249),77.7,Yes,2025
+F01273,France,Energy and utilities,43,Small (10-49),79.8,No,2025
+F01274,Sweden,Construction,4,Micro (1-9),26.5,No,2025
+F01275,Poland,Energy and utilities,9,Micro (1-9),70.4,No,2025
+F01276,Belgium,Transport and logistics,20,Small (10-49),65.0,No,2025
+F01277,Netherlands,Health and social work,12,Small (10-49),70.5,No,2025
+F01278,France,Energy and utilities,29,Small (10-49),57.9,Yes,2025
+F01279,Poland,Professional services,6,Micro (1-9),72.7,No,2025
+F01280,Sweden,Health and social work,14,Small (10-49),99.1,No,2025
+F01281,Germany,Manufacturing,10,Small (10-49),40.4,No,2025
+F01282,Belgium,Finance and insurance,20,Small (10-49),68.8,No,2025
+F01283,Poland,Information and communication,167,Medium (50-249),68.9,No,2025
+F01284,France,Construction,3,Micro (1-9),66.3,No,2025
+F01285,Belgium,Accommodation and food,11,Small (10-49),62.1,No,2025
+F01286,Netherlands,Finance and insurance,4,Micro (1-9),78.4,No,2025
+F01287,Italy,Construction,5,Micro (1-9),70.4,No,2025
+F01288,Spain,Professional services,3,Micro (1-9),99.6,No,2025
+F01289,Germany,Transport and logistics,22,Small (10-49),74.4,No,2025
+F01290,Sweden,Health and social work,39,Small (10-49),81.0,No,2025
+F01291,Italy,Construction,6,Micro (1-9),63.9,No,2025
+F01292,France,Finance and insurance,21,Small (10-49),91.7,Yes,2025
+F01293,Spain,Manufacturing,1,Micro (1-9),26.7,No,2025
+F01294,Spain,Finance and insurance,10,Small (10-49),92.8,No,2025
+F01295,Spain,Accommodation and food,8,Micro (1-9),81.6,No,2025
+F01296,France,Accommodation and food,12,Small (10-49),57.3,No,2025
+F01297,Belgium,Accommodation and food,4,Micro (1-9),67.7,No,2025
+F01298,Poland,Accommodation and food,5,Micro (1-9),69.5,No,2025
+F01299,Belgium,Finance and insurance,16,Small (10-49),42.9,No,2025
+F01300,Spain,Transport and logistics,5,Micro (1-9),78.4,No,2025
+F01301,Spain,Finance and insurance,34,Small (10-49),100.4,No,2025
+F01302,Netherlands,Energy and utilities,8,Micro (1-9),49.9,No,2025
+F01303,France,Health and social work,6,Micro (1-9),44.2,No,2025
+F01304,France,Finance and insurance,33,Small (10-49),61.0,Yes,2025
+F01305,France,Finance and insurance,92,Medium (50-249),60.9,No,2025
+F01306,France,Construction,356,Large (250+),103.7,No,2025
+F01307,Germany,Health and social work,168,Medium (50-249),67.9,No,2025
+F01308,France,Manufacturing,4,Micro (1-9),65.3,No,2025
+F01309,France,Construction,5,Micro (1-9),71.4,No,2025
+F01310,Sweden,Manufacturing,5,Micro (1-9),65.4,Yes,2025
+F01311,Belgium,Construction,15,Small (10-49),115.3,No,2025
+F01312,Spain,Construction,5,Micro (1-9),49.4,No,2025
+F01313,Germany,Manufacturing,62,Medium (50-249),88.2,No,2025
+F01314,Italy,Accommodation and food,7,Micro (1-9),85.8,Yes,2025
+F01315,Belgium,Manufacturing,23,Small (10-49),58.2,No,2025
+F01316,Belgium,Manufacturing,9,Micro (1-9),59.1,No,2025
+F01317,Italy,Professional services,7,Micro (1-9),86.2,Yes,2025
+F01318,Italy,Accommodation and food,1,Micro (1-9),95.0,No,2025
+F01319,Sweden,Construction,4,Micro (1-9),31.9,No,2025
+F01320,Netherlands,Wholesale and retail,15,Small (10-49),49.6,No,2025
+F01321,Sweden,Professional services,4,Micro (1-9),51.5,Yes,2025
+F01322,Sweden,Wholesale and retail,9,Micro (1-9),75.4,No,2025
+F01323,Belgium,Accommodation and food,10,Small (10-49),51.0,No,2025
+F01324,Germany,Transport and logistics,6,Micro (1-9),67.3,No,2025
+F01325,Poland,Health and social work,12,Small (10-49),91.5,Yes,2025
+F01326,Spain,Professional services,2,Micro (1-9),43.9,No,2025
+F01327,Poland,Professional services,2,Micro (1-9),66.1,No,2025
+F01328,Poland,Energy and utilities,30,Small (10-49),50.5,No,2025
+F01329,Netherlands,Construction,13,Small (10-49),49.2,No,2025
+F01330,Poland,Information and communication,1,Micro (1-9),90.9,No,2025
+F01331,Belgium,Professional services,12,Small (10-49),76.3,Yes,2025
+F01332,Sweden,Accommodation and food,25,Small (10-49),84.0,No,2025
+F01333,Germany,Information and communication,32,Small (10-49),53.5,Yes,2025
+F01334,Sweden,Information and communication,4,Micro (1-9),79.9,No,2025
+F01335,Belgium,Construction,36,Small (10-49),59.2,No,2025
+F01336,Belgium,Transport and logistics,19,Small (10-49),85.8,No,2025
+F01337,Belgium,Energy and utilities,14,Small (10-49),44.1,Yes,2025
+F01338,Germany,Wholesale and retail,21,Small (10-49),83.2,Yes,2025
+F01339,Italy,Professional services,1,Micro (1-9),54.2,No,2025
+F01340,Poland,Transport and logistics,66,Medium (50-249),62.8,Yes,2025
+F01341,Germany,Professional services,6,Micro (1-9),98.8,No,2025
+F01342,Germany,Energy and utilities,14,Small (10-49),40.1,No,2025
+F01343,Poland,Wholesale and retail,11,Small (10-49),83.9,Yes,2025
+F01344,Belgium,Transport and logistics,49,Small (10-49),83.9,Yes,2025
+F01345,Belgium,Health and social work,10,Small (10-49),86.8,No,2025
+F01346,Germany,Manufacturing,68,Medium (50-249),69.2,No,2025
+F01347,France,Health and social work,9,Micro (1-9),65.3,No,2025
+F01348,France,Health and social work,9,Micro (1-9),64.8,Yes,2025
+F01349,Poland,Finance and insurance,7,Micro (1-9),61.7,No,2025
+F01350,Poland,Manufacturing,2,Micro (1-9),63.1,No,2025
+F01351,Sweden,Wholesale and retail,71,Medium (50-249),95.0,Yes,2025
+F01352,Spain,Health and social work,75,Medium (50-249),93.9,Yes,2025
+F01353,Italy,Energy and utilities,24,Small (10-49),76.2,No,2025
+F01354,Belgium,Wholesale and retail,126,Medium (50-249),84.8,No,2025
+F01355,France,Finance and insurance,8,Micro (1-9),86.0,No,2025
+F01356,Sweden,Manufacturing,37,Small (10-49),57.7,No,2025
+F01357,Poland,Construction,11,Small (10-49),90.0,No,2025
+F01358,France,Professional services,55,Medium (50-249),61.3,Yes,2025
+F01359,Netherlands,Finance and insurance,8,Micro (1-9),74.6,No,2025
+F01360,Italy,Accommodation and food,16,Small (10-49),67.1,No,2025
+F01361,France,Accommodation and food,1,Micro (1-9),76.5,No,2025
+F01362,Netherlands,Energy and utilities,4,Micro (1-9),52.1,No,2025
+F01363,Belgium,Wholesale and retail,1,Micro (1-9),42.9,No,2025
+F01364,Germany,Transport and logistics,2,Micro (1-9),58.0,No,2025
+F01365,Poland,Accommodation and food,19,Small (10-49),59.5,No,2025
+F01366,Belgium,Information and communication,2,Micro (1-9),66.6,No,2025
+F01367,Netherlands,Transport and logistics,5,Micro (1-9),46.9,No,2025
+F01368,Sweden,Transport and logistics,3,Micro (1-9),78.5,No,2025
+F01369,Sweden,Transport and logistics,6,Micro (1-9),100.5,No,2025
+F01370,Belgium,Professional services,8,Micro (1-9),72.4,Yes,2025
+F01371,Italy,Professional services,13,Small (10-49),67.6,No,2025
+F01372,Germany,Wholesale and retail,59,Medium (50-249),65.1,No,2025
+F01373,Germany,Energy and utilities,58,Medium (50-249),106.7,No,2025
+F01374,Spain,Transport and logistics,21,Small (10-49),74.2,No,2025
+F01375,Sweden,Information and communication,70,Medium (50-249),60.4,Yes,2025
+F01376,Sweden,Accommodation and food,55,Medium (50-249),87.6,No,2025
+F01377,Poland,Information and communication,23,Small (10-49),69.8,No,2025
+F01378,Netherlands,Health and social work,55,Medium (50-249),73.8,No,2025
+F01379,Netherlands,Accommodation and food,53,Medium (50-249),52.0,Yes,2025
+F01380,Germany,Manufacturing,33,Small (10-49),48.0,No,2025
+F01381,Germany,Finance and insurance,54,Medium (50-249),99.8,Yes,2025
+F01382,France,Health and social work,4,Micro (1-9),71.1,No,2025
+F01383,Italy,Transport and logistics,2,Micro (1-9),66.9,No,2025
+F01384,Germany,Energy and utilities,2,Micro (1-9),53.2,Yes,2025
+F01385,Sweden,Accommodation and food,39,Small (10-49),81.5,No,2025
+F01386,Netherlands,Information and communication,33,Small (10-49),67.4,No,2025
+F01387,Italy,Accommodation and food,30,Small (10-49),99.8,Yes,2025
+F01388,Sweden,Transport and logistics,25,Small (10-49),29.7,Yes,2025
+F01389,France,Finance and insurance,33,Small (10-49),51.6,No,2025
+F01390,Germany,Finance and insurance,19,Small (10-49),92.4,No,2025
+F01391,Sweden,Manufacturing,1,Micro (1-9),81.5,No,2025
+F01392,Belgium,Wholesale and retail,15,Small (10-49),68.8,No,2025
+F01393,Germany,Energy and utilities,59,Medium (50-249),70.1,No,2025
+F01394,Belgium,Manufacturing,10,Small (10-49),77.3,No,2025
+F01395,France,Energy and utilities,366,Large (250+),47.5,No,2025
+F01396,Sweden,Health and social work,31,Small (10-49),111.9,Yes,2025
+F01397,Germany,Wholesale and retail,35,Small (10-49),96.2,No,2025
+F01398,Netherlands,Information and communication,1,Micro (1-9),79.9,No,2025
+F01399,Italy,Accommodation and food,8,Micro (1-9),70.6,No,2025
+F01400,France,Energy and utilities,11,Small (10-49),65.1,No,2025
+F01401,Sweden,Information and communication,15,Small (10-49),71.9,No,2025
+F01402,Sweden,Manufacturing,11,Small (10-49),85.8,No,2025
+F01403,Netherlands,Health and social work,15,Small (10-49),57.3,No,2025
+F01404,Belgium,Construction,46,Small (10-49),85.3,Yes,2025
+F01405,Germany,Information and communication,34,Small (10-49),101.3,No,2025
+F01406,Sweden,Wholesale and retail,2,Micro (1-9),99.1,No,2025
+F01407,Sweden,Wholesale and retail,9,Micro (1-9),68.4,Yes,2025
+F01408,Netherlands,Professional services,125,Medium (50-249),98.6,No,2025
+F01409,Poland,Transport and logistics,6,Micro (1-9),62.6,Yes,2025
+F01410,Spain,Professional services,15,Small (10-49),95.8,Yes,2025
+F01411,Italy,Health and social work,2,Micro (1-9),68.6,No,2025
+F01412,Germany,Health and social work,9,Micro (1-9),63.2,No,2025
+F01413,Spain,Health and social work,13,Small (10-49),73.7,No,2025
+F01414,Sweden,Manufacturing,92,Medium (50-249),79.1,Yes,2025
+F01415,Poland,Information and communication,4,Micro (1-9),69.9,No,2025
+F01416,Belgium,Construction,287,Large (250+),95.9,No,2025
+F01417,Spain,Construction,22,Small (10-49),57.6,No,2025
+F01418,Netherlands,Energy and utilities,3,Micro (1-9),90.6,No,2025
+F01419,France,Professional services,50,Medium (50-249),45.8,No,2025
+F01420,France,Information and communication,30,Small (10-49),69.5,Yes,2025
+F01421,Netherlands,Wholesale and retail,90,Medium (50-249),68.4,Yes,2025
+F01422,Poland,Energy and utilities,8,Micro (1-9),65.7,No,2025
+F01423,Germany,Transport and logistics,14,Small (10-49),85.1,No,2025
+F01424,Belgium,Energy and utilities,15,Small (10-49),66.6,No,2025
+F01425,Poland,Energy and utilities,18,Small (10-49),95.6,Yes,2025
+F01426,France,Finance and insurance,34,Small (10-49),57.9,No,2025
+F01427,Netherlands,Transport and logistics,46,Small (10-49),82.8,No,2025
+F01428,Germany,Accommodation and food,19,Small (10-49),97.4,No,2025
+F01429,Poland,Information and communication,15,Small (10-49),85.4,No,2025
+F01430,Belgium,Accommodation and food,27,Small (10-49),50.9,Yes,2025
+F01431,Poland,Construction,9,Micro (1-9),69.4,No,2025
+F01432,Belgium,Manufacturing,9,Micro (1-9),80.4,Yes,2025
+F01433,Spain,Finance and insurance,13,Small (10-49),115.4,No,2025
+F01434,France,Health and social work,29,Small (10-49),42.6,No,2025
+F01435,Belgium,Transport and logistics,2,Micro (1-9),46.0,No,2025
+F01436,Belgium,Manufacturing,4,Micro (1-9),75.9,No,2025
+F01437,Poland,Transport and logistics,1,Micro (1-9),56.6,No,2025
+F01438,France,Finance and insurance,25,Small (10-49),70.1,No,2025
+F01439,France,Professional services,14,Small (10-49),85.6,No,2025
+F01440,Belgium,Manufacturing,6,Micro (1-9),63.1,No,2025
+F01441,Belgium,Professional services,30,Small (10-49),74.9,Yes,2025
+F01442,Belgium,Energy and utilities,10,Small (10-49),78.9,No,2025
+F01443,Italy,Wholesale and retail,4,Micro (1-9),64.2,No,2025
+F01444,France,Wholesale and retail,19,Small (10-49),85.3,No,2025
+F01445,Poland,Energy and utilities,1,Micro (1-9),74.7,No,2025
+F01446,Netherlands,Information and communication,3,Micro (1-9),76.1,No,2025
+F01447,Poland,Manufacturing,4,Micro (1-9),77.5,Yes,2025
+F01448,Sweden,Health and social work,15,Small (10-49),34.9,Yes,2025
+F01449,Poland,Health and social work,12,Small (10-49),72.7,No,2025
+F01450,Poland,Information and communication,10,Small (10-49),63.6,No,2025
+F01451,Sweden,Health and social work,120,Medium (50-249),79.7,Yes,2025
+F01452,Spain,Construction,4,Micro (1-9),56.1,No,2025
+F01453,France,Finance and insurance,10,Small (10-49),61.4,No,2025
+F01454,Spain,Energy and utilities,1,Micro (1-9),65.0,No,2025
+F01455,Belgium,Manufacturing,113,Medium (50-249),81.1,Yes,2025
+F01456,Sweden,Finance and insurance,2,Micro (1-9),64.5,No,2025
+F01457,Netherlands,Energy and utilities,5,Micro (1-9),45.3,No,2025
+F01458,Sweden,Wholesale and retail,12,Small (10-49),56.7,No,2025
+F01459,Belgium,Manufacturing,4,Micro (1-9),88.3,No,2025
+F01460,Sweden,Transport and logistics,81,Medium (50-249),103.4,Yes,2025
+F01461,Spain,Manufacturing,15,Small (10-49),79.0,No,2025
+F01462,Sweden,Wholesale and retail,5,Micro (1-9),102.6,Yes,2025
+F01463,Belgium,Health and social work,8,Micro (1-9),100.5,No,2025
+F01464,Sweden,Manufacturing,38,Small (10-49),78.4,No,2025
+F01465,Italy,Finance and insurance,45,Small (10-49),70.7,No,2025
+F01466,Netherlands,Transport and logistics,2,Micro (1-9),42.5,No,2025
+F01467,Germany,Accommodation and food,19,Small (10-49),90.5,No,2025
+F01468,Poland,Accommodation and food,2,Micro (1-9),80.9,No,2025
+F01469,Sweden,Energy and utilities,5,Micro (1-9),57.8,No,2025
+F01470,Poland,Finance and insurance,59,Medium (50-249),70.7,No,2025
+F01471,Poland,Accommodation and food,107,Medium (50-249),80.0,No,2025
+F01472,Netherlands,Manufacturing,8,Micro (1-9),100.8,Yes,2025
+F01473,Sweden,Wholesale and retail,25,Small (10-49),77.1,Yes,2025
+F01474,Italy,Manufacturing,7,Micro (1-9),85.4,No,2025
+F01475,Belgium,Information and communication,4,Micro (1-9),59.2,Yes,2025
+F01476,Netherlands,Transport and logistics,14,Small (10-49),102.2,No,2025
+F01477,Poland,Finance and insurance,19,Small (10-49),47.8,No,2025
+F01478,Belgium,Wholesale and retail,13,Small (10-49),76.0,No,2025
+F01479,Belgium,Health and social work,1,Micro (1-9),21.5,No,2025
+F01480,Sweden,Finance and insurance,3,Micro (1-9),65.3,No,2025
+F01481,France,Finance and insurance,37,Small (10-49),103.0,Yes,2025
+F01482,Poland,Accommodation and food,4,Micro (1-9),56.9,No,2025
+F01483,Netherlands,Transport and logistics,10,Small (10-49),62.6,No,2025
+F01484,Belgium,Energy and utilities,23,Small (10-49),58.7,Yes,2025
+F01485,Germany,Transport and logistics,7,Micro (1-9),77.1,No,2025
+F01486,France,Information and communication,10,Small (10-49),69.7,No,2025
+F01487,Belgium,Wholesale and retail,2,Micro (1-9),50.3,No,2025
+F01488,Italy,Information and communication,14,Small (10-49),67.8,No,2025
+F01489,Poland,Accommodation and food,5,Micro (1-9),47.4,No,2025
+F01490,Belgium,Finance and insurance,2,Micro (1-9),56.6,Yes,2025
+F01491,Netherlands,Transport and logistics,22,Small (10-49),89.2,No,2025
+F01492,Netherlands,Accommodation and food,39,Small (10-49),53.7,Yes,2025
+F01493,Netherlands,Finance and insurance,29,Small (10-49),68.6,Yes,2025
+F01494,Poland,Manufacturing,81,Medium (50-249),98.1,Yes,2025
+F01495,Sweden,Wholesale and retail,2,Micro (1-9),42.8,No,2025
+F01496,Netherlands,Professional services,120,Medium (50-249),104.0,Yes,2025
+F01497,France,Manufacturing,14,Small (10-49),73.5,No,2025
+F01498,Spain,Energy and utilities,22,Small (10-49),80.2,No,2025
+F01499,Sweden,Finance and insurance,2,Micro (1-9),58.0,No,2025
+F01500,Sweden,Manufacturing,10,Small (10-49),84.2,Yes,2025
+F01501,Poland,Wholesale and retail,2,Micro (1-9),86.1,No,2025
+F01502,Belgium,Construction,22,Small (10-49),113.8,Yes,2025
+F01503,Belgium,Energy and utilities,7,Micro (1-9),87.9,No,2025
+F01504,France,Accommodation and food,8,Micro (1-9),26.6,No,2025
+F01505,Spain,Manufacturing,3,Micro (1-9),15,No,2025
+F01506,Poland,Energy and utilities,8,Micro (1-9),66.1,No,2025
+F01507,Belgium,Information and communication,6,Micro (1-9),62.9,No,2025
+F01508,Belgium,Professional services,10,Small (10-49),41.2,No,2025
+F01509,Belgium,Information and communication,7,Micro (1-9),50.7,No,2025
+F01510,France,Transport and logistics,3,Micro (1-9),79.1,No,2025
+F01511,Poland,Finance and insurance,22,Small (10-49),62.0,No,2025
+F01512,Italy,Finance and insurance,4,Micro (1-9),74.9,Yes,2025
+F01513,Netherlands,Energy and utilities,5,Micro (1-9),88.4,Yes,2025
+F01514,Poland,Information and communication,20,Small (10-49),95.8,No,2025
+F01515,Sweden,Manufacturing,6,Micro (1-9),100.9,Yes,2025
+F01516,Germany,Transport and logistics,5,Micro (1-9),93.5,Yes,2025
+F01517,Poland,Health and social work,3,Micro (1-9),72.6,No,2025
+F01518,Poland,Health and social work,3,Micro (1-9),74.3,No,2025
+F01519,Poland,Energy and utilities,8,Micro (1-9),74.4,No,2025
+F01520,Germany,Health and social work,13,Small (10-49),90.0,Yes,2025
+F01521,Italy,Energy and utilities,24,Small (10-49),47.3,Yes,2025
+F01522,Italy,Finance and insurance,17,Small (10-49),49.7,No,2025
+F01523,Netherlands,Construction,16,Small (10-49),72.1,No,2025
+F01524,Sweden,Transport and logistics,12,Small (10-49),88.7,No,2025
+F01525,France,Accommodation and food,1,Micro (1-9),58.3,No,2025
+F01526,France,Construction,7,Micro (1-9),73.8,No,2025
+F01527,Belgium,Information and communication,7,Micro (1-9),82.4,Yes,2025
+F01528,Italy,Accommodation and food,4,Micro (1-9),78.0,No,2025
+F01529,Italy,Construction,10,Small (10-49),74.6,No,2025
+F01530,Germany,Transport and logistics,203,Medium (50-249),110.8,Yes,2025
+F01531,Spain,Health and social work,1,Micro (1-9),35.2,No,2025
+F01532,Belgium,Energy and utilities,7,Micro (1-9),63.6,No,2025
+F01533,France,Transport and logistics,11,Small (10-49),77.4,No,2025
+F01534,Italy,Finance and insurance,306,Large (250+),83.9,Yes,2025
+F01535,Italy,Energy and utilities,6,Micro (1-9),92.7,No,2025
+F01536,France,Finance and insurance,2,Micro (1-9),104.6,No,2025
+F01537,Germany,Transport and logistics,26,Small (10-49),88.9,Yes,2025
+F01538,Netherlands,Professional services,1,Micro (1-9),110.5,No,2025
+F01539,Italy,Professional services,96,Medium (50-249),77.3,No,2025
+F01540,Belgium,Information and communication,2,Micro (1-9),72.5,No,2025
+F01541,Netherlands,Transport and logistics,19,Small (10-49),48.6,No,2025
+F01542,Sweden,Finance and insurance,7,Micro (1-9),56.7,No,2025
+F01543,Poland,Health and social work,12,Small (10-49),63.9,No,2025
+F01544,Poland,Energy and utilities,8,Micro (1-9),68.9,No,2025
+F01545,Poland,Transport and logistics,3,Micro (1-9),87.8,No,2025
+F01546,Italy,Transport and logistics,9,Micro (1-9),51.5,Yes,2025
+F01547,Sweden,Finance and insurance,5,Micro (1-9),84.5,Yes,2025
+F01548,Netherlands,Transport and logistics,15,Small (10-49),50.0,Yes,2025
+F01549,Germany,Energy and utilities,3,Micro (1-9),120.3,Yes,2025
+F01550,Italy,Finance and insurance,2,Micro (1-9),62.7,No,2025
+F01551,Italy,Construction,2,Micro (1-9),42.4,No,2025
+F01552,Sweden,Wholesale and retail,24,Small (10-49),67.0,No,2025
+F01553,Netherlands,Energy and utilities,1,Micro (1-9),30.9,No,2025
+F01554,France,Wholesale and retail,5,Micro (1-9),47.7,Yes,2025
+F01555,Spain,Finance and insurance,23,Small (10-49),62.8,No,2025
+F01556,France,Energy and utilities,25,Small (10-49),52.5,No,2025
+F01557,France,Information and communication,13,Small (10-49),67.0,No,2025
+F01558,Spain,Health and social work,78,Medium (50-249),83.5,Yes,2025
+F01559,Sweden,Construction,29,Small (10-49),78.8,Yes,2025
+F01560,Belgium,Manufacturing,32,Small (10-49),96.8,No,2025
+F01561,Belgium,Wholesale and retail,17,Small (10-49),74.2,No,2025
+F01562,Netherlands,Wholesale and retail,7,Micro (1-9),76.4,No,2025
+F01563,Italy,Wholesale and retail,13,Small (10-49),87.1,No,2025
+F01564,Spain,Construction,21,Small (10-49),52.8,No,2025
+F01565,Poland,Information and communication,6,Micro (1-9),72.4,No,2025
+F01566,France,Accommodation and food,13,Small (10-49),55.6,No,2025
+F01567,Germany,Transport and logistics,349,Large (250+),96.1,No,2025
+F01568,Belgium,Professional services,1,Micro (1-9),71.8,No,2025
+F01569,Spain,Manufacturing,3,Micro (1-9),39.5,No,2025
+F01570,Italy,Energy and utilities,14,Small (10-49),69.4,No,2025
+F01571,Poland,Transport and logistics,1,Micro (1-9),54.7,No,2025
+F01572,Italy,Construction,137,Medium (50-249),70.5,Yes,2025
+F01573,Spain,Accommodation and food,13,Small (10-49),76.0,Yes,2025
+F01574,Netherlands,Wholesale and retail,13,Small (10-49),85.5,No,2025
+F01575,Belgium,Energy and utilities,25,Small (10-49),86.2,Yes,2025
+F01576,Poland,Transport and logistics,29,Small (10-49),51.6,No,2025
+F01577,Sweden,Information and communication,23,Small (10-49),61.8,Yes,2025
+F01578,France,Health and social work,69,Medium (50-249),78.0,No,2025
+F01579,Spain,Accommodation and food,13,Small (10-49),65.3,No,2025
+F01580,Sweden,Transport and logistics,3,Micro (1-9),59.0,No,2025
+F01581,France,Accommodation and food,2,Micro (1-9),68.8,No,2025
+F01582,Belgium,Professional services,8,Micro (1-9),76.2,No,2025
+F01583,Spain,Professional services,25,Small (10-49),52.3,No,2025
+F01584,Sweden,Wholesale and retail,8,Micro (1-9),85.9,No,2025
+F01585,Poland,Manufacturing,7,Micro (1-9),63.4,Yes,2025
+F01586,Belgium,Health and social work,7,Micro (1-9),56.0,No,2025
+F01587,France,Energy and utilities,87,Medium (50-249),91.1,Yes,2025
+F01588,Sweden,Information and communication,24,Small (10-49),114.0,Yes,2025
+F01589,Germany,Transport and logistics,3,Micro (1-9),51.4,No,2025
+F01590,Netherlands,Transport and logistics,9,Micro (1-9),105.2,No,2025
+F01591,Poland,Health and social work,11,Small (10-49),50.4,No,2025
+F01592,France,Health and social work,4,Micro (1-9),72.8,Yes,2025
+F01593,Italy,Construction,15,Small (10-49),92.4,No,2025
+F01594,Poland,Transport and logistics,93,Medium (50-249),52.0,No,2025
+F01595,Germany,Transport and logistics,10,Small (10-49),77.9,No,2025
+F01596,Sweden,Wholesale and retail,93,Medium (50-249),95.3,Yes,2025
+F01597,Poland,Transport and logistics,73,Medium (50-249),59.1,No,2025
+F01598,Netherlands,Manufacturing,7,Micro (1-9),60.4,No,2025
+F01599,Poland,Transport and logistics,113,Medium (50-249),78.2,No,2025
+F01600,Belgium,Manufacturing,7,Micro (1-9),61.1,No,2025
+F01601,Poland,Manufacturing,18,Small (10-49),64.9,No,2025
+F01602,Belgium,Accommodation and food,82,Medium (50-249),108.3,Yes,2025
+F01603,Spain,Wholesale and retail,37,Small (10-49),65.7,Yes,2025
+F01604,Netherlands,Transport and logistics,27,Small (10-49),86.9,No,2025
+F01605,Netherlands,Construction,6,Micro (1-9),53.6,No,2025
+F01606,Belgium,Energy and utilities,2,Micro (1-9),65.0,Yes,2025
+F01607,Spain,Transport and logistics,14,Small (10-49),100.2,No,2025
+F01608,France,Finance and insurance,3,Micro (1-9),69.4,No,2025
+F01609,Germany,Construction,11,Small (10-49),55.7,Yes,2025
+F01610,France,Wholesale and retail,9,Micro (1-9),61.4,No,2025
+F01611,Poland,Accommodation and food,1,Micro (1-9),49.0,No,2025
+F01612,Belgium,Transport and logistics,19,Small (10-49),45.0,No,2025
+F01613,Germany,Information and communication,16,Small (10-49),68.4,No,2025
+F01614,Spain,Wholesale and retail,12,Small (10-49),77.9,Yes,2025
+F01615,France,Wholesale and retail,12,Small (10-49),81.7,No,2025
+F01616,Spain,Wholesale and retail,2,Micro (1-9),98.1,No,2025
+F01617,Italy,Energy and utilities,5,Micro (1-9),76.4,No,2025
+F01618,Spain,Manufacturing,2,Micro (1-9),82.7,No,2025
+F01619,Spain,Construction,23,Small (10-49),77.5,No,2025
+F01620,Spain,Transport and logistics,1,Micro (1-9),59.9,No,2025
+F01621,Spain,Manufacturing,16,Small (10-49),70.1,Yes,2025
+F01622,Belgium,Professional services,24,Small (10-49),87.8,No,2025
+F01623,Italy,Accommodation and food,2,Micro (1-9),71.7,No,2025
+F01624,Belgium,Information and communication,2,Micro (1-9),61.7,No,2025
+F01625,Netherlands,Professional services,6,Micro (1-9),50.2,No,2025
+F01626,Italy,Manufacturing,102,Medium (50-249),72.1,No,2025
+F01627,France,Wholesale and retail,52,Medium (50-249),87.0,Yes,2025
+F01628,Germany,Energy and utilities,8,Micro (1-9),65.8,No,2025
+F01629,Spain,Information and communication,16,Small (10-49),106.5,No,2025
+F01630,Italy,Wholesale and retail,16,Small (10-49),52.4,No,2025
+F01631,Netherlands,Transport and logistics,8,Micro (1-9),67.5,No,2025
+F01632,Italy,Professional services,2,Micro (1-9),41.5,No,2025
+F01633,Belgium,Manufacturing,6,Micro (1-9),59.1,Yes,2025
+F01634,Belgium,Health and social work,18,Small (10-49),79.5,Yes,2025
+F01635,Spain,Information and communication,8,Micro (1-9),69.6,No,2025
+F01636,Belgium,Finance and insurance,2,Micro (1-9),44.6,Yes,2025
+F01637,Poland,Manufacturing,27,Small (10-49),98.9,Yes,2025
+F01638,Netherlands,Manufacturing,23,Small (10-49),126.1,Yes,2025
+F01639,Spain,Health and social work,3,Micro (1-9),66.3,No,2025
+F01640,Netherlands,Finance and insurance,17,Small (10-49),33.6,Yes,2025
+F01641,Belgium,Professional services,74,Medium (50-249),70.0,No,2025
+F01642,France,Health and social work,3,Micro (1-9),39.0,No,2025
+F01643,Belgium,Energy and utilities,138,Medium (50-249),70.3,No,2025
+F01644,Sweden,Manufacturing,201,Medium (50-249),63.3,No,2025
+F01645,Germany,Transport and logistics,72,Medium (50-249),49.8,No,2025
+F01646,Spain,Construction,3,Micro (1-9),65.3,No,2025
+F01647,Sweden,Accommodation and food,5,Micro (1-9),81.0,No,2025
+F01648,Germany,Finance and insurance,27,Small (10-49),96.6,No,2025
+F01649,Poland,Energy and utilities,9,Micro (1-9),82.1,Yes,2025
+F01650,Belgium,Professional services,15,Small (10-49),48.5,No,2025
+F01651,Spain,Health and social work,9,Micro (1-9),57.3,No,2025
+F01652,Poland,Energy and utilities,13,Small (10-49),114.0,No,2025
+F01653,Italy,Finance and insurance,5,Micro (1-9),62.7,No,2025
+F01654,Poland,Transport and logistics,98,Medium (50-249),99.2,No,2025
+F01655,Belgium,Construction,1,Micro (1-9),73.7,No,2025
+F01656,Belgium,Construction,10,Small (10-49),41.8,No,2025
+F01657,Sweden,Energy and utilities,13,Small (10-49),59.4,No,2025
+F01658,Belgium,Wholesale and retail,56,Medium (50-249),95.0,No,2025
+F01659,Poland,Manufacturing,12,Small (10-49),61.9,No,2025
+F01660,Germany,Manufacturing,2,Micro (1-9),87.8,No,2025
+F01661,Spain,Construction,2,Micro (1-9),82.6,No,2025
+F01662,Spain,Transport and logistics,2,Micro (1-9),70.0,No,2025
+F01663,Spain,Finance and insurance,18,Small (10-49),78.0,No,2025
+F01664,Poland,Manufacturing,15,Small (10-49),70.1,No,2025
+F01665,France,Health and social work,15,Small (10-49),91.7,No,2025
+F01666,Sweden,Professional services,14,Small (10-49),98.4,No,2025
+F01667,Belgium,Transport and logistics,14,Small (10-49),73.4,Yes,2025
+F01668,Belgium,Finance and insurance,6,Micro (1-9),51.4,No,2025
+F01669,Netherlands,Health and social work,8,Micro (1-9),88.9,No,2025
+F01670,Sweden,Professional services,1,Micro (1-9),44.4,Yes,2025
+F01671,Italy,Finance and insurance,6,Micro (1-9),85.1,No,2025
+F01672,Italy,Professional services,79,Medium (50-249),89.6,No,2025
+F01673,Italy,Finance and insurance,1,Micro (1-9),50.8,No,2025
+F01674,Spain,Finance and insurance,1,Micro (1-9),53.9,No,2025
+F01675,Spain,Transport and logistics,22,Small (10-49),88.1,Yes,2025
+F01676,Belgium,Transport and logistics,125,Medium (50-249),94.3,No,2025
+F01677,France,Energy and utilities,40,Small (10-49),61.1,Yes,2025
+F01678,Belgium,Energy and utilities,2,Micro (1-9),81.6,No,2025
+F01679,Belgium,Accommodation and food,5,Micro (1-9),43.3,No,2025
+F01680,Italy,Professional services,5,Micro (1-9),90.8,No,2025
+F01681,Poland,Transport and logistics,10,Small (10-49),53.5,Yes,2025
+F01682,Poland,Information and communication,50,Medium (50-249),105.0,No,2025
+F01683,France,Energy and utilities,7,Micro (1-9),47.3,Yes,2025
+F01684,Sweden,Health and social work,2,Micro (1-9),85.3,No,2025
+F01685,Poland,Wholesale and retail,10,Small (10-49),82.2,Yes,2025
+F01686,Poland,Wholesale and retail,8,Micro (1-9),29.5,No,2025
+F01687,Germany,Professional services,20,Small (10-49),79.3,No,2025
+F01688,Poland,Accommodation and food,46,Small (10-49),65.4,Yes,2025
+F01689,Sweden,Information and communication,142,Medium (50-249),52.3,Yes,2025
+F01690,Sweden,Construction,30,Small (10-49),65.7,Yes,2025
+F01691,Spain,Energy and utilities,1,Micro (1-9),80.7,No,2025
+F01692,Sweden,Health and social work,9,Micro (1-9),86.2,No,2025
+F01693,Netherlands,Construction,18,Small (10-49),55.4,Yes,2025
+F01694,Poland,Manufacturing,60,Medium (50-249),95.9,Yes,2025
+F01695,Germany,Construction,39,Small (10-49),78.2,No,2025
+F01696,France,Energy and utilities,30,Small (10-49),97.6,Yes,2025
+F01697,Sweden,Accommodation and food,8,Micro (1-9),34.7,No,2025
+F01698,Poland,Manufacturing,83,Medium (50-249),91.6,No,2025
+F01699,Belgium,Health and social work,20,Small (10-49),66.6,No,2025
+F01700,Germany,Health and social work,42,Small (10-49),96.8,No,2025
+F01701,Italy,Accommodation and food,21,Small (10-49),50.2,No,2025
+F01702,Germany,Information and communication,13,Small (10-49),83.3,Yes,2025
+F01703,Germany,Finance and insurance,9,Micro (1-9),56.2,No,2025
+F01704,Sweden,Manufacturing,12,Small (10-49),72.8,No,2025
+F01705,Italy,Energy and utilities,4,Micro (1-9),58.2,No,2025
+F01706,Sweden,Manufacturing,11,Small (10-49),50.3,No,2025
+F01707,Belgium,Construction,26,Small (10-49),97.3,Yes,2025
+F01708,Sweden,Construction,34,Small (10-49),90.7,Yes,2025
+F01709,Spain,Health and social work,25,Small (10-49),68.8,No,2025
+F01710,Germany,Energy and utilities,10,Small (10-49),61.1,No,2025
+F01711,France,Accommodation and food,2,Micro (1-9),70.1,No,2025
+F01712,Poland,Accommodation and food,8,Micro (1-9),98.5,No,2025
+F01713,Spain,Health and social work,8,Micro (1-9),48.4,No,2025
+F01714,Netherlands,Manufacturing,3,Micro (1-9),78.9,No,2025
+F01715,Netherlands,Energy and utilities,34,Small (10-49),76.8,No,2025
+F01716,Sweden,Accommodation and food,4,Micro (1-9),64.6,No,2025
+F01717,Spain,Transport and logistics,29,Small (10-49),90.8,No,2025
+F01718,Germany,Finance and insurance,8,Micro (1-9),22.5,No,2025
+F01719,Sweden,Energy and utilities,11,Small (10-49),99.2,Yes,2025
+F01720,Belgium,Manufacturing,2,Micro (1-9),46.6,No,2025
+F01721,Germany,Information and communication,47,Small (10-49),112.6,No,2025
+F01722,Italy,Information and communication,25,Small (10-49),86.9,Yes,2025
+F01723,Netherlands,Transport and logistics,4,Micro (1-9),54.7,Yes,2025
+F01724,Netherlands,Transport and logistics,25,Small (10-49),96.7,No,2025
+F01725,Sweden,Information and communication,9,Micro (1-9),85.4,Yes,2025
+F01726,Sweden,Wholesale and retail,79,Medium (50-249),69.4,No,2025
+F01727,France,Information and communication,10,Small (10-49),72.2,Yes,2025
+F01728,Sweden,Finance and insurance,41,Small (10-49),61.6,No,2025
+F01729,Italy,Information and communication,9,Micro (1-9),74.5,No,2025
+F01730,Sweden,Finance and insurance,6,Micro (1-9),112.5,Yes,2025
+F01731,Belgium,Professional services,16,Small (10-49),82.8,Yes,2025
+F01732,Poland,Wholesale and retail,8,Micro (1-9),73.8,No,2025
+F01733,Netherlands,Wholesale and retail,96,Medium (50-249),75.0,No,2025
+F01734,Germany,Construction,5,Micro (1-9),91.3,No,2025
+F01735,France,Health and social work,156,Medium (50-249),90.8,No,2025
+F01736,Italy,Transport and logistics,22,Small (10-49),59.3,No,2025
+F01737,Italy,Wholesale and retail,2,Micro (1-9),65.5,Yes,2025
+F01738,Germany,Manufacturing,18,Small (10-49),75.3,No,2025
+F01739,Poland,Wholesale and retail,22,Small (10-49),92.1,Yes,2025
+F01740,Germany,Health and social work,21,Small (10-49),79.6,No,2025
+F01741,Spain,Construction,5,Micro (1-9),69.3,No,2025
+F01742,Belgium,Accommodation and food,97,Medium (50-249),89.9,Yes,2025
+F01743,Spain,Health and social work,14,Small (10-49),49.0,No,2025
+F01744,Belgium,Manufacturing,2,Micro (1-9),55.3,No,2025
+F01745,Italy,Transport and logistics,6,Micro (1-9),69.3,No,2025
+F01746,Spain,Transport and logistics,61,Medium (50-249),91.3,No,2025
+F01747,France,Transport and logistics,1,Micro (1-9),71.8,No,2025
+F01748,France,Wholesale and retail,37,Small (10-49),94.0,Yes,2025
+F01749,Italy,Finance and insurance,16,Small (10-49),55.2,No,2025
+F01750,Belgium,Manufacturing,2,Micro (1-9),70.9,No,2025
+F01751,Germany,Information and communication,2,Micro (1-9),74.3,No,2025
+F01752,Germany,Finance and insurance,18,Small (10-49),72.9,No,2025
+F01753,Belgium,Accommodation and food,37,Small (10-49),81.2,Yes,2025
+F01754,Germany,Construction,3,Micro (1-9),81.6,No,2025
+F01755,Belgium,Construction,16,Small (10-49),57.8,Yes,2025
+F01756,Italy,Health and social work,7,Micro (1-9),50.8,No,2025
+F01757,Spain,Energy and utilities,61,Medium (50-249),74.1,Yes,2025
+F01758,Belgium,Construction,25,Small (10-49),90.2,No,2025
+F01759,Belgium,Manufacturing,1,Micro (1-9),66.3,No,2025
+F01760,Netherlands,Wholesale and retail,5,Micro (1-9),118.8,No,2025
+F01761,Germany,Information and communication,81,Medium (50-249),66.3,No,2025
+F01762,Sweden,Accommodation and food,3,Micro (1-9),62.5,No,2025
+F01763,Sweden,Transport and logistics,8,Micro (1-9),40.4,No,2025
+F01764,France,Wholesale and retail,27,Small (10-49),64.7,No,2025
+F01765,Belgium,Energy and utilities,60,Medium (50-249),83.6,No,2025
+F01766,France,Wholesale and retail,93,Medium (50-249),62.5,Yes,2025
+F01767,Italy,Health and social work,13,Small (10-49),95.1,No,2025
+F01768,Spain,Professional services,12,Small (10-49),84.2,No,2025
+F01769,France,Energy and utilities,10,Small (10-49),54.9,No,2025
+F01770,France,Wholesale and retail,4,Micro (1-9),39.6,No,2025
+F01771,Germany,Construction,148,Medium (50-249),58.6,Yes,2025
+F01772,Sweden,Finance and insurance,4,Micro (1-9),68.2,No,2025
+F01773,Spain,Professional services,20,Small (10-49),50.0,No,2025
+F01774,Sweden,Transport and logistics,19,Small (10-49),83.2,No,2025
+F01775,Netherlands,Accommodation and food,10,Small (10-49),67.7,No,2025
+F01776,Spain,Information and communication,3,Micro (1-9),91.0,No,2025
+F01777,Italy,Health and social work,57,Medium (50-249),83.4,No,2025
+F01778,Belgium,Professional services,1,Micro (1-9),43.3,No,2025
+F01779,Germany,Manufacturing,3,Micro (1-9),64.7,No,2025
+F01780,Spain,Construction,10,Small (10-49),85.4,No,2025
+F01781,Sweden,Accommodation and food,5,Micro (1-9),85.0,No,2025
+F01782,Sweden,Finance and insurance,16,Small (10-49),40.7,Yes,2025
+F01783,Germany,Professional services,39,Small (10-49),95.9,No,2025
+F01784,Italy,Accommodation and food,25,Small (10-49),95.2,No,2025
+F01785,Germany,Wholesale and retail,62,Medium (50-249),98.1,Yes,2025
+F01786,Poland,Accommodation and food,28,Small (10-49),77.5,No,2025
+F01787,Germany,Construction,155,Medium (50-249),78.3,No,2025
+F01788,Poland,Finance and insurance,1,Micro (1-9),83.1,No,2025
+F01789,Netherlands,Wholesale and retail,3,Micro (1-9),48.5,Yes,2025
+F01790,France,Professional services,5,Micro (1-9),67.3,No,2025
+F01791,Poland,Wholesale and retail,29,Small (10-49),85.5,Yes,2025
+F01792,Poland,Manufacturing,4,Micro (1-9),53.5,No,2025
+F01793,Italy,Wholesale and retail,1,Micro (1-9),91.6,No,2025
+F01794,Spain,Transport and logistics,9,Micro (1-9),59.0,No,2025
+F01795,Italy,Construction,106,Medium (50-249),69.4,No,2025
+F01796,Spain,Health and social work,2,Micro (1-9),52.3,No,2025
+F01797,Italy,Information and communication,13,Small (10-49),65.2,No,2025
+F01798,Sweden,Finance and insurance,2,Micro (1-9),47.5,No,2025
+F01799,Netherlands,Energy and utilities,10,Small (10-49),79.0,Yes,2025
+F01800,Italy,Construction,14,Small (10-49),50.9,No,2025
+F01801,Belgium,Transport and logistics,3,Micro (1-9),58.7,No,2025
+F01802,Belgium,Manufacturing,9,Micro (1-9),70.3,Yes,2025
+F01803,Sweden,Health and social work,7,Micro (1-9),52.1,Yes,2025
+F01804,Germany,Transport and logistics,210,Medium (50-249),61.1,No,2025
+F01805,Sweden,Finance and insurance,15,Small (10-49),81.0,No,2025
+F01806,Netherlands,Wholesale and retail,4,Micro (1-9),67.8,No,2025
+F01807,Italy,Manufacturing,6,Micro (1-9),82.3,No,2025
+F01808,France,Health and social work,2,Micro (1-9),47.4,No,2025
+F01809,Spain,Information and communication,3,Micro (1-9),72.3,No,2025
+F01810,Italy,Energy and utilities,4,Micro (1-9),39.1,Yes,2025
+F01811,Belgium,Manufacturing,3,Micro (1-9),70.3,Yes,2025
+F01812,Italy,Health and social work,2,Micro (1-9),68.3,No,2025
+F01813,Poland,Wholesale and retail,27,Small (10-49),71.5,No,2025
+F01814,Germany,Accommodation and food,10,Small (10-49),28.7,No,2025
+F01815,Spain,Wholesale and retail,4,Micro (1-9),57.5,Yes,2025
+F01816,Netherlands,Transport and logistics,118,Medium (50-249),86.8,No,2025
+F01817,Sweden,Construction,18,Small (10-49),44.2,Yes,2025
+F01818,Poland,Finance and insurance,17,Small (10-49),65.6,No,2025
+F01819,Belgium,Wholesale and retail,9,Micro (1-9),47.8,No,2025
+F01820,Belgium,Finance and insurance,6,Micro (1-9),97.1,No,2025
+F01821,Sweden,Construction,5,Micro (1-9),37.3,No,2025
+F01822,Italy,Finance and insurance,8,Micro (1-9),71.1,No,2025
+F01823,France,Information and communication,3,Micro (1-9),60.2,No,2025
+F01824,Spain,Professional services,72,Medium (50-249),102.8,Yes,2025
+F01825,Italy,Information and communication,10,Small (10-49),76.6,No,2025
+F01826,Italy,Construction,61,Medium (50-249),80.0,No,2025
+F01827,Italy,Transport and logistics,10,Small (10-49),99.3,No,2025
+F01828,France,Transport and logistics,66,Medium (50-249),76.3,No,2025
+F01829,Sweden,Energy and utilities,11,Small (10-49),78.9,Yes,2025
+F01830,France,Construction,5,Micro (1-9),83.9,No,2025
+F01831,France,Wholesale and retail,10,Small (10-49),68.3,Yes,2025
+F01832,Italy,Health and social work,26,Small (10-49),70.0,No,2025
+F01833,Netherlands,Energy and utilities,8,Micro (1-9),60.8,Yes,2025
+F01834,Sweden,Information and communication,38,Small (10-49),70.6,No,2025
+F01835,Netherlands,Construction,1,Micro (1-9),51.6,No,2025
+F01836,Italy,Transport and logistics,28,Small (10-49),77.6,Yes,2025
+F01837,Italy,Professional services,10,Small (10-49),43.0,No,2025
+F01838,Poland,Health and social work,1,Micro (1-9),15,No,2025
+F01839,Poland,Manufacturing,32,Small (10-49),74.3,No,2025
+F01840,France,Manufacturing,36,Small (10-49),66.2,No,2025
+F01841,Netherlands,Manufacturing,21,Small (10-49),58.2,No,2025
+F01842,Poland,Manufacturing,1,Micro (1-9),59.7,No,2025
+F01843,Netherlands,Manufacturing,2,Micro (1-9),53.6,No,2025
+F01844,Netherlands,Health and social work,91,Medium (50-249),98.4,Yes,2025
+F01845,Netherlands,Energy and utilities,14,Small (10-49),75.1,Yes,2025
+F01846,Germany,Health and social work,86,Medium (50-249),61.2,Yes,2025
+F01847,Sweden,Transport and logistics,31,Small (10-49),72.0,No,2025
+F01848,France,Health and social work,11,Small (10-49),100.6,No,2025
+F01849,Netherlands,Finance and insurance,93,Medium (50-249),83.7,Yes,2025
+F01850,Netherlands,Finance and insurance,24,Small (10-49),70.6,Yes,2025
+F01851,Poland,Health and social work,1,Micro (1-9),48.3,No,2025
+F01852,Belgium,Construction,20,Small (10-49),35.3,Yes,2025
+F01853,Spain,Wholesale and retail,5,Micro (1-9),82.8,No,2025
+F01854,Belgium,Accommodation and food,55,Medium (50-249),74.6,Yes,2025
+F01855,Netherlands,Energy and utilities,6,Micro (1-9),73.2,No,2025
+F01856,Poland,Professional services,15,Small (10-49),99.7,No,2025
+F01857,Germany,Information and communication,20,Small (10-49),96.0,No,2025
+F01858,France,Finance and insurance,4,Micro (1-9),50.1,No,2025
+F01859,Netherlands,Transport and logistics,1,Micro (1-9),61.7,No,2025
+F01860,Sweden,Accommodation and food,21,Small (10-49),53.0,No,2025
+F01861,Spain,Accommodation and food,3,Micro (1-9),61.3,No,2025
+F01862,Spain,Health and social work,4,Micro (1-9),74.5,Yes,2025
+F01863,Sweden,Transport and logistics,4,Micro (1-9),57.9,No,2025
+F01864,Spain,Energy and utilities,5,Micro (1-9),40.0,No,2025
+F01865,Sweden,Finance and insurance,12,Small (10-49),96.2,No,2025
+F01866,Poland,Information and communication,20,Small (10-49),60.1,No,2025
+F01867,France,Construction,28,Small (10-49),66.4,No,2025
+F01868,Belgium,Manufacturing,14,Small (10-49),87.1,No,2025
+F01869,Sweden,Wholesale and retail,77,Medium (50-249),50.5,No,2025
+F01870,Italy,Construction,5,Micro (1-9),74.0,No,2025
+F01871,Poland,Manufacturing,1,Micro (1-9),46.7,No,2025
+F01872,Italy,Health and social work,206,Medium (50-249),85.6,No,2025
+F01873,Netherlands,Health and social work,4,Micro (1-9),82.5,No,2025
+F01874,Netherlands,Energy and utilities,4,Micro (1-9),85.9,No,2025
+F01875,Belgium,Professional services,48,Small (10-49),69.3,No,2025
+F01876,Italy,Health and social work,8,Micro (1-9),86.8,No,2025
+F01877,France,Professional services,34,Small (10-49),81.9,No,2025
+F01878,Netherlands,Transport and logistics,15,Small (10-49),63.0,No,2025
+F01879,Sweden,Wholesale and retail,11,Small (10-49),113.6,No,2025
+F01880,Spain,Wholesale and retail,6,Micro (1-9),76.6,No,2025
+F01881,Netherlands,Accommodation and food,17,Small (10-49),69.9,Yes,2025
+F01882,Netherlands,Health and social work,10,Small (10-49),73.8,No,2025
+F01883,France,Construction,21,Small (10-49),85.9,No,2025
+F01884,Sweden,Manufacturing,36,Small (10-49),40.9,No,2025
+F01885,Poland,Manufacturing,5,Micro (1-9),45.2,No,2025
+F01886,France,Manufacturing,2,Micro (1-9),38.3,No,2025
+F01887,Sweden,Accommodation and food,11,Small (10-49),75.9,No,2025
+F01888,Belgium,Information and communication,2,Micro (1-9),28.9,No,2025
+F01889,Poland,Information and communication,19,Small (10-49),68.1,Yes,2025
+F01890,Netherlands,Manufacturing,4,Micro (1-9),86.9,No,2025
+F01891,Netherlands,Health and social work,10,Small (10-49),48.0,No,2025
+F01892,Italy,Energy and utilities,2,Micro (1-9),62.3,No,2025
+F01893,Spain,Energy and utilities,3,Micro (1-9),50.0,Yes,2025
+F01894,Spain,Manufacturing,31,Small (10-49),90.9,No,2025
+F01895,Italy,Health and social work,56,Medium (50-249),61.9,Yes,2025
+F01896,Poland,Wholesale and retail,25,Small (10-49),70.4,No,2025
+F01897,Italy,Wholesale and retail,54,Medium (50-249),70.6,No,2025
+F01898,Italy,Finance and insurance,5,Micro (1-9),87.7,No,2025
+F01899,Netherlands,Wholesale and retail,10,Small (10-49),72.0,Yes,2025
+F01900,Netherlands,Construction,2,Micro (1-9),50.9,No,2025
+F01901,Germany,Finance and insurance,18,Small (10-49),76.6,No,2025
+F01902,Poland,Accommodation and food,9,Micro (1-9),103.8,Yes,2025
+F01903,Italy,Accommodation and food,2,Micro (1-9),80.5,No,2025
+F01904,Belgium,Energy and utilities,24,Small (10-49),68.7,Yes,2025
+F01905,Netherlands,Wholesale and retail,3,Micro (1-9),85.5,No,2025
+F01906,Netherlands,Manufacturing,7,Micro (1-9),83.7,Yes,2025
+F01907,Netherlands,Wholesale and retail,25,Small (10-49),91.2,Yes,2025
+F01908,Germany,Finance and insurance,3,Micro (1-9),75.1,No,2025
+F01909,France,Information and communication,9,Micro (1-9),82.2,No,2025
+F01910,Sweden,Transport and logistics,50,Medium (50-249),69.3,No,2025
+F01911,Belgium,Manufacturing,3,Micro (1-9),70.1,No,2025
+F01912,Netherlands,Information and communication,10,Small (10-49),89.5,No,2025
+F01913,Sweden,Transport and logistics,5,Micro (1-9),45.1,No,2025
+F01914,Poland,Construction,69,Medium (50-249),63.1,No,2025
+F01915,France,Transport and logistics,113,Medium (50-249),52.3,Yes,2025
+F01916,Belgium,Accommodation and food,3,Micro (1-9),60.1,No,2025
+F01917,France,Manufacturing,2,Micro (1-9),44.8,No,2025
+F01918,Germany,Professional services,27,Small (10-49),84.3,Yes,2025
+F01919,Belgium,Professional services,1,Micro (1-9),49.3,No,2025
+F01920,Netherlands,Wholesale and retail,182,Medium (50-249),90.0,No,2025
+F01921,Sweden,Professional services,4,Micro (1-9),100.9,No,2025
+F01922,Spain,Wholesale and retail,20,Small (10-49),63.5,No,2025
+F01923,Netherlands,Finance and insurance,12,Small (10-49),70.2,No,2025
+F01924,Sweden,Wholesale and retail,9,Micro (1-9),66.2,No,2025
+F01925,Italy,Health and social work,11,Small (10-49),73.7,No,2025
+F01926,Netherlands,Manufacturing,18,Small (10-49),82.7,No,2025
+F01927,Poland,Professional services,8,Micro (1-9),74.4,No,2025
+F01928,Netherlands,Energy and utilities,59,Medium (50-249),102.2,Yes,2025
+F01929,Spain,Accommodation and food,7,Micro (1-9),80.2,No,2025
+F01930,France,Energy and utilities,4,Micro (1-9),51.8,No,2025
+F01931,Spain,Accommodation and food,4,Micro (1-9),71.6,No,2025
+F01932,Germany,Construction,13,Small (10-49),79.1,Yes,2025
+F01933,France,Transport and logistics,7,Micro (1-9),46.2,No,2025
+F01934,Sweden,Transport and logistics,15,Small (10-49),76.5,Yes,2025
+F01935,Spain,Manufacturing,1,Micro (1-9),38.9,No,2025
+F01936,Sweden,Transport and logistics,12,Small (10-49),68.9,No,2025
+F01937,Germany,Health and social work,909,Large (250+),89.6,Yes,2025
+F01938,Poland,Manufacturing,22,Small (10-49),86.9,No,2025
+F01939,Belgium,Construction,43,Small (10-49),70.0,No,2025
+F01940,Spain,Transport and logistics,5,Micro (1-9),43.2,Yes,2025
+F01941,France,Accommodation and food,18,Small (10-49),53.0,No,2025
+F01942,Poland,Energy and utilities,33,Small (10-49),83.0,Yes,2025
+F01943,France,Professional services,11,Small (10-49),79.3,No,2025
+F01944,France,Manufacturing,24,Small (10-49),61.6,Yes,2025
+F01945,Sweden,Finance and insurance,4,Micro (1-9),77.7,No,2025
+F01946,Netherlands,Finance and insurance,8,Micro (1-9),96.5,No,2025
+F01947,Netherlands,Finance and insurance,30,Small (10-49),72.8,No,2025
+F01948,Spain,Energy and utilities,6,Micro (1-9),77.4,No,2025
+F01949,Germany,Information and communication,41,Small (10-49),87.4,No,2025
+F01950,Spain,Transport and logistics,4,Micro (1-9),33.4,No,2025
+F01951,Italy,Construction,11,Small (10-49),95.9,No,2025
+F01952,Netherlands,Manufacturing,22,Small (10-49),76.2,No,2025
+F01953,Spain,Information and communication,2,Micro (1-9),55.5,No,2025
+F01954,Spain,Transport and logistics,15,Small (10-49),76.8,No,2025
+F01955,Spain,Manufacturing,26,Small (10-49),73.5,No,2025
+F01956,Italy,Manufacturing,19,Small (10-49),88.6,No,2025
+F01957,Germany,Wholesale and retail,6,Micro (1-9),82.1,Yes,2025
+F01958,Italy,Energy and utilities,2,Micro (1-9),55.1,No,2025
+F01959,Spain,Wholesale and retail,12,Small (10-49),81.1,No,2025
+F01960,Belgium,Wholesale and retail,4,Micro (1-9),37.9,Yes,2025
+F01961,Italy,Professional services,5,Micro (1-9),66.8,No,2025
+F01962,Germany,Accommodation and food,14,Small (10-49),100.3,No,2025
+F01963,France,Wholesale and retail,4,Micro (1-9),58.3,Yes,2025
+F01964,France,Accommodation and food,14,Small (10-49),79.8,No,2025
+F01965,Poland,Wholesale and retail,6,Micro (1-9),52.0,No,2025
+F01966,Poland,Wholesale and retail,17,Small (10-49),51.6,Yes,2025
+F01967,Spain,Information and communication,5,Micro (1-9),83.3,Yes,2025
+F01968,Spain,Manufacturing,1,Micro (1-9),67.1,No,2025
+F01969,Spain,Accommodation and food,12,Small (10-49),61.9,No,2025
+F01970,Spain,Manufacturing,18,Small (10-49),62.4,No,2025
+F01971,Germany,Wholesale and retail,5,Micro (1-9),76.2,No,2025
+F01972,Belgium,Information and communication,30,Small (10-49),84.2,No,2025
+F01973,France,Energy and utilities,2,Micro (1-9),64.1,No,2025
+F01974,France,Transport and logistics,39,Small (10-49),92.0,No,2025
+F01975,France,Transport and logistics,23,Small (10-49),68.1,No,2025
+F01976,Italy,Finance and insurance,15,Small (10-49),90.3,Yes,2025
+F01977,France,Finance and insurance,14,Small (10-49),63.3,No,2025
+F01978,France,Transport and logistics,44,Small (10-49),64.7,No,2025
+F01979,France,Health and social work,13,Small (10-49),75.0,No,2025
+F01980,France,Accommodation and food,33,Small (10-49),42.0,No,2025
+F01981,Spain,Health and social work,5,Micro (1-9),77.9,No,2025
+F01982,Sweden,Construction,40,Small (10-49),67.7,No,2025
+F01983,Belgium,Energy and utilities,6,Micro (1-9),43.8,Yes,2025
+F01984,Sweden,Transport and logistics,3,Micro (1-9),75.4,No,2025
+F01985,Poland,Professional services,76,Medium (50-249),76.9,No,2025
+F01986,Belgium,Energy and utilities,86,Medium (50-249),65.4,Yes,2025
+F01987,Netherlands,Information and communication,5,Micro (1-9),65.6,No,2025
+F01988,Poland,Professional services,38,Small (10-49),77.1,Yes,2025
+F01989,Spain,Professional services,40,Small (10-49),114.5,No,2025
+F01990,Germany,Construction,4,Micro (1-9),105.0,No,2025
+F01991,Italy,Transport and logistics,6,Micro (1-9),33.8,No,2025
+F01992,France,Finance and insurance,51,Medium (50-249),72.9,No,2025
+F01993,France,Finance and insurance,3,Micro (1-9),62.7,No,2025
+F01994,Sweden,Wholesale and retail,5,Micro (1-9),75.6,No,2025
+F01995,Italy,Wholesale and retail,23,Small (10-49),77.5,Yes,2025
+F01996,Netherlands,Professional services,64,Medium (50-249),87.5,No,2025
+F01997,Belgium,Health and social work,11,Small (10-49),97.7,No,2025
+F01998,Poland,Professional services,1,Micro (1-9),38.6,No,2025
+F01999,Spain,Finance and insurance,1,Micro (1-9),28.1,No,2025
+F02000,Italy,Wholesale and retail,14,Small (10-49),57.0,Yes,2025
+"Source: mock data for testing, not real figures"

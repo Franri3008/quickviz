@@ -1,0 +1,99 @@
+{
+ "about": "Legacy OECD.Stat CSV, code and label column pairs, mostly empty flag columns",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "LOCATION",
+   "category"
+  ],
+  [
+   "Country",
+   "category"
+  ],
+  [
+   "SUBJECT",
+   "category"
+  ],
+  [
+   "Subject",
+   "category"
+  ],
+  [
+   "MEASURE",
+   "category"
+  ],
+  [
+   "Measure",
+   "category"
+  ],
+  [
+   "FREQUENCY",
+   "category"
+  ],
+  [
+   "Frequency",
+   "category"
+  ],
+  [
+   "TIME",
+   "time"
+  ],
+  [
+   "Time",
+   "time"
+  ],
+  [
+   "Unit Code",
+   "category"
+  ],
+  [
+   "Unit",
+   "category"
+  ],
+  [
+   "PowerCode Code",
+   "number"
+  ],
+  [
+   "PowerCode",
+   "category"
+  ],
+  [
+   "Value",
+   "number"
+  ],
+  [
+   "Flag Codes",
+   "category"
+  ],
+  [
+   "Flags",
+   "category"
+  ]
+ ],
+ "n_rows": 40,
+ "rows": [
+  {
+   "LOCATION": "AUT",
+   "Country": "Austria",
+   "TIME": "2015",
+   "Value": 1.971,
+   "Flag Codes": ""
+  },
+  {
+   "LOCATION": "FRA",
+   "Country": "France",
+   "TIME": "2022",
+   "Value": 1.869,
+   "Flag Codes": "E"
+  }
+ ],
+ "aggregates": [
+  "OECD",
+  "OECD - Total"
+ ],
+ "not_aggregates": [
+  "FRA"
+ ]
+}

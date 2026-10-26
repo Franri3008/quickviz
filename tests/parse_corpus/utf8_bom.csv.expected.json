@@ -1,0 +1,32 @@
+{
+ "about": "UTF-8 with a byte order mark before the first header",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "Région",
+   "category"
+  ],
+  [
+   "Année",
+   "time"
+  ],
+  [
+   "Valeur",
+   "number"
+  ]
+ ],
+ "n_rows": 6,
+ "rows": [
+  {
+   "Région": "Bruxelles",
+   "Année": "2023",
+   "Valeur": 4.02
+  },
+  {
+   "Région": "Bruxelles",
+   "Année": "2024",
+   "Valeur": 8.41
+  }
+ ]
+}

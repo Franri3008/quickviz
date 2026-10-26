@@ -3,8 +3,30 @@ services:
     name: quickviz
     runtime: python
     plan: free
-    buildCommand: "true"
-    startCommand: python server.py
+    branch: master
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/version
     envVars:
       - key: OPENROUTER_API_KEY
         sync: false
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: DATABASE_URL
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: PUBLIC_URL
+        value: https://quickviz.franri.dev
+      - key: PRODUCTION
+        value: "true"
+      - key: CREDITS_ANON_DAY
+        value: "100"
+      - key: CREDITS_USER_DAY
+        value: "1000"
+      - key: GLOBAL_DAY_USD
+        value: "3"

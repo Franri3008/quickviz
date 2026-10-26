@@ -1,0 +1,38 @@
+{
+ "about": "French export. Semicolons, decimal comma, thousands with narrow no-break spaces, month names in French, n.d.",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "Mois",
+   "time"
+  ],
+  [
+   "Région",
+   "category"
+  ],
+  [
+   "Offres d'emploi",
+   "number"
+  ],
+  [
+   "Part IA (%)",
+   "number"
+  ]
+ ],
+ "n_rows": 60,
+ "rows": [
+  {
+   "Mois": "2024-02",
+   "Région": "Île-de-France",
+   "Offres d'emploi": 32619,
+   "Part IA (%)": 1.1
+  },
+  {
+   "Mois": "2024-04",
+   "Région": "Bretagne",
+   "Offres d'emploi": 3657,
+   "Part IA (%)": null
+  }
+ ]
+}

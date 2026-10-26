@@ -1,0 +1,58 @@
+{
+ "about": "50,000 rows of online job ads, long format",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "nuts2",
+   "category"
+  ],
+  [
+   "isco08",
+   "category"
+  ],
+  [
+   "year",
+   "time"
+  ],
+  [
+   "postings",
+   "number"
+  ],
+  [
+   "ai_postings",
+   "number"
+  ]
+ ],
+ "n_rows": 50000,
+ "rows": [
+  {
+   "nuts2": "DE34",
+   "isco08": "OC2",
+   "year": "2021",
+   "postings": 5536,
+   "ai_postings": 306
+  },
+  {
+   "nuts2": "DE34",
+   "isco08": "OC2",
+   "year": "2022",
+   "postings": 19503,
+   "ai_postings": 381
+  },
+  {
+   "nuts2": "DE34",
+   "isco08": "OC2",
+   "year": "2023",
+   "postings": 16005,
+   "ai_postings": 1283
+  },
+  {
+   "nuts2": "DE34",
+   "isco08": "OC2",
+   "year": "2024",
+   "postings": 447,
+   "ai_postings": 17
+  }
+ ]
+}

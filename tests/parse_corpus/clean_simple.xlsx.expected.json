@@ -1,0 +1,44 @@
+{
+ "about": "A clean Excel sheet with the header in row 1",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "Company",
+   "category"
+  ],
+  [
+   "Country",
+   "category"
+  ],
+  [
+   "Founded",
+   "time"
+  ],
+  [
+   "Employees",
+   "number"
+  ],
+  [
+   "Funding (EUR m)",
+   "number"
+  ]
+ ],
+ "n_rows": 40,
+ "rows": [
+  {
+   "Company": "Startup 01",
+   "Country": "Bulgaria",
+   "Founded": "2015",
+   "Employees": 27,
+   "Funding (EUR m)": 184.0
+  },
+  {
+   "Company": "Startup 40",
+   "Country": "Czechia",
+   "Founded": "2011",
+   "Employees": 755,
+   "Funding (EUR m)": 272.5
+  }
+ ]
+}

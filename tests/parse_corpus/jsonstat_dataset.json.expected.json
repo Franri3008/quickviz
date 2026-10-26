@@ -1,0 +1,49 @@
+{
+ "about": "JSON-stat 2.0 dataset as the Eurostat API returns it",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "Unit of measure",
+   "category"
+  ],
+  [
+   "Geopolitical entity",
+   "category"
+  ],
+  [
+   "Time",
+   "time"
+  ],
+  [
+   "Value",
+   "number"
+  ]
+ ],
+ "n_rows": 12,
+ "rows": [
+  {
+   "Geopolitical entity": "Germany",
+   "Time": "2022",
+   "Value": 25.0
+  },
+  {
+   "Geopolitical entity": "Germany",
+   "Time": "2023",
+   "Value": 8.9
+  },
+  {
+   "Geopolitical entity": "Germany",
+   "Time": "2024",
+   "Value": 18.4
+  },
+  {
+   "Geopolitical entity": "France",
+   "Time": "2022",
+   "Value": null
+  }
+ ],
+ "aggregates": [
+  "European Union - 27 countries (from 2020)"
+ ]
+}

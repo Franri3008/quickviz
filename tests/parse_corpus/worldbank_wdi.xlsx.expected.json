@@ -1,0 +1,65 @@
+{
+ "about": "World Bank Excel download. Data sheet first, two metadata sheets",
+ "sheet": "Data",
+ "needs_ai": false,
+ "columns": [
+  [
+   "Country Name",
+   "category"
+  ],
+  [
+   "Country Code",
+   "category"
+  ],
+  [
+   "Indicator Name",
+   "category"
+  ],
+  [
+   "Indicator Code",
+   "category"
+  ],
+  [
+   "Year",
+   "time"
+  ],
+  [
+   "Value",
+   "number"
+  ]
+ ],
+ "n_rows": 645,
+ "rows": [
+  {
+   "Country Name": "Belgium",
+   "Country Code": "BEL",
+   "Year": "2020",
+   "Value": 4.372088
+  },
+  {
+   "Country Name": "World",
+   "Country Code": "WLD",
+   "Year": "2020",
+   "Value": 0.788985
+  }
+ ],
+ "aggregates": [
+  "Africa Eastern and Southern",
+  "Central Europe and the Baltics",
+  "Euro area",
+  "East Asia & Pacific",
+  "European Union",
+  "High income",
+  "Low & middle income",
+  "Middle income",
+  "OECD members",
+  "Sub-Saharan Africa",
+  "World",
+  "Upper middle income",
+  "Small states",
+  "Heavily indebted poor countries (HIPC)"
+ ],
+ "not_aggregates": [
+  "Belgium"
+ ]
+}

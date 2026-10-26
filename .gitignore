@@ -1,3 +1,10 @@
 .env
 __pycache__/
 .DS_Store
+.venv/
+.pytest_cache/
+node_modules/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm

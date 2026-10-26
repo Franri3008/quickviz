@@ -1,0 +1,27 @@
+{
+ "about": "Two unrelated tables one under the other. The first is read and the second is offered as an alternative",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "country",
+   "category"
+  ],
+  [
+   "enterprises",
+   "number"
+  ],
+  [
+   "employees",
+   "number"
+  ]
+ ],
+ "n_rows": 6,
+ "rows": [
+  {
+   "country": "Denmark",
+   "enterprises": 30256,
+   "employees": 156316
+  }
+ ]
+}

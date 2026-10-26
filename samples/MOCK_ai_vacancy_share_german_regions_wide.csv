@@ -1,0 +1,20 @@
+"MOCK DATA. AI job vacancies as a share of all online job ads, German Länder (%)"
+""
+region,iso_3166_2,nuts1,2019,2020,2021,2022,2023,2024,2025
+Baden-Württemberg,DE-BW,DE1,2.1,2.49,2.95,3.5,4.15,4.92,5.83
+Bayern,DE-BY,DE2,1.15,1.45,1.83,2.3,2.9,3.65,4.6
+Berlin,DE-BE,DE3,1.87,2.25,2.71,3.26,3.93,4.73,5.69
+Brandenburg,DE-BB,DE4,0.67,0.76,0.87,1.0,1.14,1.31,1.5
+Bremen,DE-HB,DE5,1.35,1.58,1.83,2.14,2.49,2.89,3.37
+Hamburg,DE-HH,DE6,1.72,2.01,2.35,2.74,3.2,3.74,4.37
+Hessen,DE-HE,DE7,0.87,1.09,1.36,1.7,2.13,2.67,3.34
+Mecklenburg-Vorpommern,DE-MV,DE8,:,0.8,1.02,1.3,1.66,2.11,2.68
+Niedersachsen,DE-NI,DE9,1.31,1.59,1.93,2.35,2.86,3.48,4.23
+Nordrhein-Westfalen,DE-NW,DEA,0.71,0.8,0.9,1.01,1.14,1.29,1.45
+Rheinland-Pfalz,DE-RP,DEB,0.68,0.83,1.0,1.22,1.48,1.79,2.17
+Saarland,DE-SL,DEC,0.44,,0.57,0.65,0.74,0.84,0.95
+Sachsen,DE-SN,DED,0.85,1.01,1.21,1.44,1.72,2.06,2.46
+Sachsen-Anhalt,DE-ST,DEE,0.62,0.73,0.87,1.03,1.22,1.45,1.72
+Schleswig-Holstein,DE-SH,DEF,0.55,0.71,0.92,1.19,1.54,2.0,2.59
+Thüringen,DE-TH,DEG,0.61,0.79,1.01,1.31,1.69,2.18,2.81
+"Source: mock data for testing, not real figures"

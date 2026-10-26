@@ -1,0 +1,84 @@
+{
+ "about": "Statbel-style table. Title, two-row header with merged cells, footnote marks in names and values, subtotals",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "Région / Province",
+   "category"
+  ],
+  [
+   "Nombre d'entreprises 10-49",
+   "number"
+  ],
+  [
+   "Nombre d'entreprises 50-249",
+   "number"
+  ],
+  [
+   "Nombre d'entreprises 250+",
+   "number"
+  ],
+  [
+   "Part utilisant l'IA (%) 10-49",
+   "number"
+  ],
+  [
+   "Part utilisant l'IA (%) 50-249",
+   "number"
+  ],
+  [
+   "Part utilisant l'IA (%) 250+",
+   "number"
+  ]
+ ],
+ "n_rows": 14,
+ "rows": [
+  {
+   "Région / Province": "Belgique",
+   "Nombre d'entreprises 10-49": 23594,
+   "Nombre d'entreprises 50-249": 3121,
+   "Nombre d'entreprises 250+": 737,
+   "Part utilisant l'IA (%) 10-49": 40.7,
+   "Part utilisant l'IA (%) 50-249": 16.6,
+   "Part utilisant l'IA (%) 250+": 43.2
+  },
+  {
+   "Région / Province": "Région de Bruxelles-Capitale",
+   "Nombre d'entreprises 10-49": 2147,
+   "Nombre d'entreprises 50-249": 487,
+   "Nombre d'entreprises 250+": 22,
+   "Part utilisant l'IA (%) 10-49": 26.9,
+   "Part utilisant l'IA (%) 50-249": 39.0,
+   "Part utilisant l'IA (%) 250+": 30.4
+  },
+  {
+   "Région / Province": "Hainaut",
+   "Nombre d'entreprises 10-49": 2067,
+   "Nombre d'entreprises 50-249": 169,
+   "Nombre d'entreprises 250+": 112,
+   "Part utilisant l'IA (%) 10-49": 15.6,
+   "Part utilisant l'IA (%) 50-249": 13.8,
+   "Part utilisant l'IA (%) 250+": 21.5
+  },
+  {
+   "Région / Province": "Namur",
+   "Nombre d'entreprises 10-49": 3868,
+   "Nombre d'entreprises 50-249": 308,
+   "Nombre d'entreprises 250+": 110,
+   "Part utilisant l'IA (%) 10-49": 6.9,
+   "Part utilisant l'IA (%) 50-249": 11.4,
+   "Part utilisant l'IA (%) 250+": null
+  }
+ ],
+ "aggregates": [
+  "Belgique",
+  "Région flamande",
+  "Région wallonne"
+ ],
+ "not_aggregates": [
+  "Région de Bruxelles-Capitale",
+  "Hainaut",
+  "Anvers"
+ ]
+}

@@ -1,0 +1,62 @@
+{
+ "about": "Eurostat bulk TSV with five code dimensions and no flags",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "freq",
+   "category"
+  ],
+  [
+   "indic_is",
+   "category"
+  ],
+  [
+   "unit",
+   "category"
+  ],
+  [
+   "size_emp",
+   "category"
+  ],
+  [
+   "geo",
+   "category"
+  ],
+  [
+   "Year",
+   "time"
+  ],
+  [
+   "Value",
+   "number"
+  ]
+ ],
+ "n_rows": 36,
+ "rows": [
+  {
+   "size_emp": "GE10",
+   "geo": "DK",
+   "Year": "2024",
+   "Value": 55.49,
+   "indic_is": "E_AI_TANY"
+  },
+  {
+   "size_emp": "GE250",
+   "geo": "DK",
+   "Year": "2024",
+   "Value": 14.57,
+   "indic_is": "E_AI_TANY"
+  },
+  {
+   "size_emp": "S10_49",
+   "geo": "DK",
+   "Year": "2024",
+   "Value": 14.5,
+   "indic_is": "E_AI_TANY"
+  }
+ ],
+ "aggregates": [
+  "EU27_2020"
+ ]
+}

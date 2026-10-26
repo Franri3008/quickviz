@@ -1,0 +1,42 @@
+{
+ "about": "Dates stored as raw Excel serial numbers in a column named date",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "date",
+   "time"
+  ],
+  [
+   "series",
+   "category"
+  ],
+  [
+   "index_value",
+   "number"
+  ]
+ ],
+ "n_rows": 48,
+ "rows": [
+  {
+   "date": "2024-01-01",
+   "series": "AI stocks",
+   "index_value": 99.06
+  },
+  {
+   "date": "2024-01-01",
+   "series": "Market",
+   "index_value": 123.07
+  },
+  {
+   "date": "2024-03-11",
+   "series": "AI stocks",
+   "index_value": 100.09
+  },
+  {
+   "date": "2024-03-11",
+   "series": "Market",
+   "index_value": 123.88
+  }
+ ]
+}

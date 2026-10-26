@@ -1,0 +1,55 @@
+{
+ "about": "Excel report. A read-me sheet comes first, title block, an empty spacer column, dates as Excel dates, percent as text, a totals row",
+ "sheet": "Data",
+ "needs_ai": false,
+ "columns": [
+  [
+   "Region",
+   "category"
+  ],
+  [
+   "Date",
+   "time"
+  ],
+  [
+   "Share",
+   "number"
+  ],
+  [
+   "Firms",
+   "number"
+  ]
+ ],
+ "n_rows": 16,
+ "rows": [
+  {
+   "Region": "Wallonia",
+   "Date": "2025-03-31",
+   "Share": 12.6,
+   "Firms": 8318
+  },
+  {
+   "Region": "Wallonia",
+   "Date": "2025-06-30",
+   "Share": 29.1,
+   "Firms": 6679
+  },
+  {
+   "Region": "Wallonia",
+   "Date": "2025-09-30",
+   "Share": 9.1,
+   "Firms": 1118
+  },
+  {
+   "Region": "Total",
+   "Firms": 99999,
+   "Share": null
+  }
+ ],
+ "aggregates": [
+  "Total"
+ ],
+ "not_aggregates": [
+  "Wallonia"
+ ]
+}

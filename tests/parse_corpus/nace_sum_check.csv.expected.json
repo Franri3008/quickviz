@@ -1,0 +1,43 @@
+{
+ "about": "Enterprises by NACE section with a B-S row that only a sum check reveals",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "nace_r2",
+   "category"
+  ],
+  [
+   "sector",
+   "category"
+  ],
+  [
+   "Year",
+   "time"
+  ],
+  [
+   "Value",
+   "number"
+  ]
+ ],
+ "n_rows": 21,
+ "rows": [
+  {
+   "nace_r2": "B-S",
+   "Year": "2023",
+   "Value": 259990
+  },
+  {
+   "nace_r2": "J",
+   "Year": "2024",
+   "Value": 68066
+  }
+ ],
+ "aggregates": [
+  "B-S"
+ ],
+ "not_aggregates": [
+  "J",
+  "C"
+ ]
+}

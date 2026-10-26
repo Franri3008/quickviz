@@ -1,0 +1,56 @@
+{
+ "about": "Crosstab in Excel with merged year cells over three sex columns",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "Country",
+   "category"
+  ],
+  [
+   "Year",
+   "time"
+  ],
+  [
+   "Sex",
+   "category"
+  ],
+  [
+   "Value",
+   "number"
+  ]
+ ],
+ "n_rows": 48,
+ "rows": [
+  {
+   "Country": "Italy",
+   "Year": "2021",
+   "Sex": "Females",
+   "Value": 2478
+  },
+  {
+   "Country": "Italy",
+   "Year": "2021",
+   "Sex": "Total",
+   "Value": 10750
+  },
+  {
+   "Country": "Italy",
+   "Year": "2022",
+   "Sex": "Females",
+   "Value": 1787
+  },
+  {
+   "Country": "Italy",
+   "Year": "2022",
+   "Sex": "Total",
+   "Value": 9649
+  }
+ ],
+ "aggregates": [
+  "Total"
+ ],
+ "not_aggregates": [
+  "Italy"
+ ]
+}

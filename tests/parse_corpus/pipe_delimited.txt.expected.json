@@ -1,0 +1,42 @@
+{
+ "about": "Pipe-delimited text export",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "patent_office",
+   "category"
+  ],
+  [
+   "applicant_country",
+   "category"
+  ],
+  [
+   "ipc_class",
+   "category"
+  ],
+  [
+   "year",
+   "time"
+  ],
+  [
+   "applications",
+   "number"
+  ]
+ ],
+ "n_rows": 16,
+ "rows": [
+  {
+   "patent_office": "EPO",
+   "applicant_country": "CN",
+   "year": "2021",
+   "applications": 3034
+  },
+  {
+   "patent_office": "EPO",
+   "applicant_country": "CN",
+   "year": "2022",
+   "applications": 3595
+  }
+ ]
+}

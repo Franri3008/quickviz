@@ -1,0 +1,44 @@
+{
+ "about": "Crosstab with two header rows. Years span two columns each, sex below",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "Country",
+   "category"
+  ],
+  [
+   "Year",
+   "time"
+  ],
+  [
+   "Sex",
+   "category"
+  ],
+  [
+   "Value",
+   "number"
+  ]
+ ],
+ "n_rows": 53,
+ "rows": [
+  {
+   "Country": "Germany",
+   "Year": "2023",
+   "Sex": "Men",
+   "Value": 77.7
+  },
+  {
+   "Country": "Germany",
+   "Year": "2023",
+   "Sex": "Women",
+   "Value": 66.9
+  }
+ ],
+ "aggregates": [
+  "EU27"
+ ],
+ "not_aggregates": [
+  "Germany"
+ ]
+}

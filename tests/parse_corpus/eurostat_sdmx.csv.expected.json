@@ -1,0 +1,57 @@
+{
+ "about": "Eurostat SDMX-CSV, already long. CONF_STATUS is empty and dropped",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "DATAFLOW",
+   "category"
+  ],
+  [
+   "LAST UPDATE",
+   "time"
+  ],
+  [
+   "freq",
+   "category"
+  ],
+  [
+   "unit",
+   "category"
+  ],
+  [
+   "geo",
+   "category"
+  ],
+  [
+   "TIME_PERIOD",
+   "time"
+  ],
+  [
+   "OBS_VALUE",
+   "number"
+  ],
+  [
+   "OBS_FLAG",
+   "category"
+  ]
+ ],
+ "n_rows": 24,
+ "rows": [
+  {
+   "geo": "AT",
+   "TIME_PERIOD": "2018",
+   "OBS_VALUE": 7.3,
+   "OBS_FLAG": ""
+  },
+  {
+   "geo": "DE",
+   "TIME_PERIOD": "2020",
+   "OBS_VALUE": 5.3,
+   "OBS_FLAG": "e"
+  }
+ ],
+ "aggregates": [
+  "EU27_2020"
+ ]
+}

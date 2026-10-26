@@ -1,0 +1,71 @@
+{
+ "about": "ILOSTAT bulk CSV, long, with label columns and a mostly empty status column",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "ref_area.label",
+   "category"
+  ],
+  [
+   "source.label",
+   "category"
+  ],
+  [
+   "indicator.label",
+   "category"
+  ],
+  [
+   "sex.label",
+   "category"
+  ],
+  [
+   "classif1.label",
+   "category"
+  ],
+  [
+   "time",
+   "time"
+  ],
+  [
+   "obs_value",
+   "number"
+  ],
+  [
+   "obs_status.label",
+   "category"
+  ],
+  [
+   "note_indicator.label",
+   "category"
+  ],
+  [
+   "note_source.label",
+   "category"
+  ]
+ ],
+ "n_rows": 72,
+ "rows": [
+  {
+   "ref_area.label": "France",
+   "sex.label": "Sex: Female",
+   "classif1.label": "Age (Youth, adults): 15+",
+   "time": "2023",
+   "obs_value": 13.85
+  },
+  {
+   "ref_area.label": "France",
+   "sex.label": "Sex: Female",
+   "classif1.label": "Age (Youth, adults): 15-24",
+   "time": "2023",
+   "obs_value": 19.401
+  }
+ ],
+ "aggregates": [
+  "Sex: Total"
+ ],
+ "not_aggregates": [
+  "Sex: Male",
+  "Belgium"
+ ]
+}

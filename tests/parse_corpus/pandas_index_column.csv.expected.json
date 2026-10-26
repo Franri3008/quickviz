@@ -1,0 +1,27 @@
+{
+ "about": "pandas to_csv with the index written as an unnamed first column",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "country",
+   "category"
+  ],
+  [
+   "score",
+   "number"
+  ],
+  [
+   "rank",
+   "number"
+  ]
+ ],
+ "n_rows": 12,
+ "rows": [
+  {
+   "country": "Estonia",
+   "score": 87.59,
+   "rank": 6
+  }
+ ]
+}

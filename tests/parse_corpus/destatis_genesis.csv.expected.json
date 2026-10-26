@@ -1,0 +1,38 @@
+{
+ "about": "Destatis GENESIS CSV in cp1252. Semicolons, decimal comma, title lines, three header rows with constant measure and unit rows",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "Wirtschaftszweige (WZ2008)",
+   "category"
+  ],
+  [
+   "Year",
+   "time"
+  ],
+  [
+   "Value",
+   "number"
+  ]
+ ],
+ "n_rows": 18,
+ "rows": [
+  {
+   "Wirtschaftszweige (WZ2008)": "WZ08-J Information und Kommunikation",
+   "Year": "2023",
+   "Value": 11.3
+  },
+  {
+   "Wirtschaftszweige (WZ2008)": "Insgesamt",
+   "Year": "2023",
+   "Value": 8.5
+  }
+ ],
+ "aggregates": [
+  "Insgesamt"
+ ],
+ "not_aggregates": [
+  "WZ08-G Handel"
+ ]
+}

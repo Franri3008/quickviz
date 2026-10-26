@@ -1,0 +1,68 @@
+{
+ "about": "Eurostat bulk TSV. Comma-joined codes in the first column, flags inside the cell like '12.3 p', ': ' for missing",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "freq",
+   "category"
+  ],
+  [
+   "unit",
+   "category"
+  ],
+  [
+   "geo",
+   "category"
+  ],
+  [
+   "Year",
+   "time"
+  ],
+  [
+   "Value",
+   "number"
+  ],
+  [
+   "flag",
+   "category"
+  ]
+ ],
+ "n_rows": 43,
+ "rows": [
+  {
+   "geo": "AT",
+   "Year": "2019",
+   "Value": 13.3,
+   "flag": "",
+   "freq": "A",
+   "unit": "PC_ENT"
+  },
+  {
+   "geo": "DE",
+   "Year": "2020",
+   "Value": 34.0,
+   "flag": "b"
+  },
+  {
+   "geo": "FR",
+   "Year": "2023",
+   "Value": 24.2,
+   "flag": "p"
+  },
+  {
+   "geo": "NL",
+   "Year": "2022",
+   "Value": 20.1,
+   "flag": "bp"
+  }
+ ],
+ "aggregates": [
+  "EA20",
+  "EU27_2020"
+ ],
+ "not_aggregates": [
+  "AT",
+  "FR"
+ ]
+}

@@ -1,0 +1,38 @@
+{
+ "about": "A category merged down several rows. Every row needs the cluster name",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "Cluster",
+   "category"
+  ],
+  [
+   "Destination",
+   "category"
+  ],
+  [
+   "Year",
+   "time"
+  ],
+  [
+   "Value",
+   "number"
+  ]
+ ],
+ "n_rows": 24,
+ "rows": [
+  {
+   "Cluster": "Digital, Industry and Space",
+   "Destination": "Data and computing",
+   "Year": "2026",
+   "Value": 721.4
+  },
+  {
+   "Cluster": "Climate, Energy and Mobility",
+   "Destination": "Batteries",
+   "Year": "2026",
+   "Value": 700.0
+  }
+ ]
+}

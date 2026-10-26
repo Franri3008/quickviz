@@ -1,0 +1,51 @@
+{
+ "about": "Lightcast-style regional extract with thousands commas and a total row",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "NUTS2",
+   "category"
+  ],
+  [
+   "Region",
+   "category"
+  ],
+  [
+   "Year",
+   "time"
+  ],
+  [
+   "Postings",
+   "number"
+  ],
+  [
+   "AI postings",
+   "number"
+  ],
+  [
+   "AI share (%)",
+   "number"
+  ]
+ ],
+ "n_rows": 7,
+ "rows": [
+  {
+   "NUTS2": "BE22",
+   "Region": "Prov. Limburg (BE)",
+   "Postings": 165380,
+   "AI postings": 8047
+  },
+  {
+   "NUTS2": "BE",
+   "Region": "Total",
+   "Postings": 1855810
+  }
+ ],
+ "aggregates": [
+  "BE"
+ ],
+ "not_aggregates": [
+  "BE22"
+ ]
+}

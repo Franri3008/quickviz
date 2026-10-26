@@ -1,0 +1,34 @@
+"MOCK DATA. Business R&D spending versus AI patent applications, 2024"
+country,iso3,country_group,rd_spending_pct_gdp,ai_patents_per_million,gdp_trillion_eur
+Austria,AUT,North and West,3.59,242.4,3.9
+Belgium,BEL,North and West,3.23,377.6,10.7
+Bulgaria,BGR,Central and East,1.02,79.6,7.8
+Croatia,HRV,Central and East,1.68,90.1,8.1
+Cyprus,CYP,South,0.74,42.6,1.1
+Czechia,CZE,Central and East,1.95,79.0,11.0
+Denmark,DNK,North and West,3.38,290.4,8.5
+Estonia,EST,Central and East,1.4,99.5,2.5
+Finland,FIN,North and West,2.43,179.8,9.0
+France,FRA,North and West,3.48,344.7,9.2
+Germany,DEU,North and West,2.85,267.0,8.2
+Greece,GRC,South,2.7,234.8,11.1
+Hungary,HUN,Central and East,2.92,278.3,8.6
+Ireland,IRL,North and West,2.4,244.5,10.2
+Italy,ITA,South,3.55,448.8,3.9
+Latvia,LVA,Central and East,3.25,184.7,3.6
+Lithuania,LTU,Central and East,3.41,383.4,11.0
+Luxembourg,LUX,North and West,3.55,237.4,5.4
+Malta,MLT,South,1.93,119.5,4.8
+Netherlands,NLD,North and West,2.36,194.7,5.6
+Poland,POL,Central and East,2.68,248.9,1.2
+Portugal,PRT,South,1.39,91.8,7.8
+Romania,ROU,Central and East,2.4,212.7,7.8
+Slovakia,SVK,Central and East,2.8,232.8,8.9
+Slovenia,SVN,Central and East,2.48,186.2,5.3
+Spain,ESP,South,1.9,103.5,11.4
+Sweden,SWE,North and West,2.49,160.6,8.8
+United States,USA,Non-EU,3.45,268.4,14.2
+Japan,JPN,Non-EU,3.3,241.7,8.9
+South Korea,KOR,Non-EU,4.9,312.5,11.3
+China,CHN,Non-EU,2.55,98.6,7.4
+"Source: mock data for testing, not real figures"

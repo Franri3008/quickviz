@@ -1,0 +1,42 @@
+{
+ "about": "Latin-1 text with accents, semicolons and decimal commas",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "Département",
+   "category"
+  ],
+  [
+   "Année",
+   "time"
+  ],
+  [
+   "Taux de chômage",
+   "number"
+  ]
+ ],
+ "n_rows": 8,
+ "rows": [
+  {
+   "Département": "Côte-d'Or",
+   "Année": "2023",
+   "Taux de chômage": 10.2
+  },
+  {
+   "Département": "Côte-d'Or",
+   "Année": "2024",
+   "Taux de chômage": 6.4
+  },
+  {
+   "Département": "Hérault",
+   "Année": "2023",
+   "Taux de chômage": 6.4
+  },
+  {
+   "Département": "Hérault",
+   "Année": "2024",
+   "Taux de chômage": 9.2
+  }
+ ]
+}

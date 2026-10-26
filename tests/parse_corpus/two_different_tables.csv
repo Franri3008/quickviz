@@ -1,0 +1,14 @@
+Table A. Enterprises by country
+country,enterprises,employees
+Belgium,84810,126739
+Bulgaria,4278,787572
+Czechia,37048,266787
+Denmark,30256,156316
+Germany,14434,719570
+Estonia,72482,101161
+
+Table B. Enterprises by size class
+size_class,share_pct
+10-49,47.6
+50-249,3.5
+250+,8.4

@@ -1,0 +1,31 @@
+{
+ "about": "No numbers at all",
+ "sheet": null,
+ "needs_ai": false,
+ "columns": [
+  [
+   "country",
+   "category"
+  ],
+  [
+   "capital",
+   "category"
+  ],
+  [
+   "region",
+   "category"
+  ],
+  [
+   "eu_member",
+   "category"
+  ]
+ ],
+ "n_rows": 5,
+ "rows": [
+  {
+   "country": "Norway",
+   "capital": "Oslo",
+   "eu_member": "no"
+  }
+ ]
+}

@@ -1,0 +1,21 @@
+{
+ "about": "Data with no header row at all. Only a reader of the content can name the columns",
+ "sheet": null,
+ "needs_ai": true,
+ "columns": [
+  [
+   "country",
+   "category"
+  ],
+  [
+   "year",
+   "time"
+  ],
+  [
+   "value",
+   "number"
+  ]
+ ],
+ "n_rows": 12,
+ "rows": []
+}

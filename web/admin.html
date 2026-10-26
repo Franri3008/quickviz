@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>People / QuickViz</title>
+  <script src="theme-mode.js?v=__VERSION__"></script>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="fonts/carlito.css?v=__VERSION__">
+  <link rel="stylesheet" href="style.css?v=__VERSION__">
+  <style>
+    .admin { max-width: 1040px; margin: 0 auto; padding: 24px clamp(16px, 3vw, 40px) 60px; }
+    .admin h1 { margin: 0 0 6px; font-size: 28px; }
+    .admin .lead { margin: 0 0 20px; color: var(--muted); }
+    .admin table { width: 100%; border-collapse: collapse; font-size: 15px; }
+    .admin th, .admin td { padding: 8px 10px; border-bottom: 1px solid var(--grid); text-align: left; vertical-align: middle; }
+    .admin th { color: var(--muted); font-weight: 700; font-size: 13px; }
+    .admin .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .admin input[type="number"] { width: 96px; padding: 4px 6px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); font: inherit; text-align: right; }
+    .admin .tag { display: inline-block; margin-left: 6px; padding: 1px 6px; border: 1px solid var(--rule); font-size: 12px; color: var(--muted); }
+    .admin .tag.off { border-color: var(--red); color: var(--red); }
+    .admin button.small { min-height: 30px; padding: 3px 10px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); font-size: 14px; }
+    .admin button.small:hover { border-color: var(--accent); color: var(--link); }
+    .admin button.danger { border-color: var(--red); color: var(--red); }
+    .admin .msg { min-height: 22px; margin-top: 12px; font-size: 15px; }
+    .admin .msg.error { color: var(--red); }
+    .admin .note { margin-top: 16px; color: var(--muted); font-size: 14px; }
+    .table-scroll { overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-name"><span class="brand-app">QuickViz</span><span class="brand-version" title="Version">v__VERSION__</span></span></div>
+    <nav class="account" aria-label="Page">
+      <span id="me" class="credits"></span>
+      <a href="/">Back to charts</a>
+      <button id="logout" class="linkish" type="button">Sign out</button>
+    </nav>
+  </header>
+  <main class="admin">
+    <h1>People</h1>
+    <p class="lead" id="lead">Loading...</p>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Email</th><th class="num">Daily credits</th><th class="num">Used today</th><th class="num">Last 7 days</th><th>Last sign-in</th><th></th></tr>
+        </thead>
+        <tbody id="people"><tr><td colspan="6" class="muted">Loading...</td></tr></tbody>
+      </table>
+    </div>
+    <div id="msg" class="msg" role="status"></div>
+    <p class="note">One credit is USD 0.001 of real model cost. Days run from midnight to midnight UTC. Leave daily credits empty to use the default. Blocking signs a person out at once and stops them signing in. They can still use the site without signing in.</p>
+  </main>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const $ = id => document.getElementById(id);
+      const esc = s => String(s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+      const n = v => Number(v || 0).toLocaleString("en");
+      const when = t => (t ? new Date(t * 1000).toLocaleString("en-GB", {day: "numeric", month: "short", hour: "2-digit", minute: "2-digit"}) : "");
+      const say = (text, kind) => { $("msg").textContent = text || ""; $("msg").className = "msg" + (kind ? " " + kind : ""); };
+
+      async function api(path, method = "GET", body) {
+        const opts = {method, credentials: "same-origin", headers: {}};
+        if (body !== undefined) { opts.body = JSON.stringify(body); opts.headers["Content-Type"] = "application/json"; }
+        const r = await fetch(path, opts);
+        let j = null;
+        try { j = await r.json(); } catch (e) { }
+        if (!r.ok) {
+          const d = j && j.detail;
+          const e = new Error(typeof d === "string" ? d : `Something went wrong (${r.status}).`);
+          e.status = r.status;
+          throw e;
+        }
+        return j;
+      }
+
+      async function load() {
+        try {
+          const d = await api("/api/admin/users");
+          const site = d.site;
+          $("lead").textContent = `Signed-in people get ${n(d.credits_user_day)} credits a day. Visitors who are not signed in get ${n(d.credits_anon_day)} per IP. The whole site has spent USD ${site.spent_usd.toFixed(3)} of its USD ${site.cap_usd} today.`;
+          $("people").innerHTML = d.users.map(u => `
+            <tr>
+              <td>${esc(u.email)}${u.is_admin ? '<span class="tag">admin</span>' : ""}${u.active ? "" : '<span class="tag off">blocked</span>'}</td>
+              <td class="num"><input type="number" min="0" max="1000000" step="1" data-credits="${esc(u.id)}" value="${u.credits_own ? u.credits_day : ""}" placeholder="${d.credits_user_day}" aria-label="Daily credits for ${esc(u.email)}"></td>
+              <td class="num">${n(u.used_today)}</td>
+              <td class="num">${n(u.used_week)}</td>
+              <td>${esc(when(u.last_seen))}</td>
+              <td class="num">${u.is_admin ? "" : u.active
+                ? `<button class="small danger" data-block="${esc(u.id)}" type="button">Block</button>`
+                : `<button class="small" data-unblock="${esc(u.id)}" type="button">Unblock</button>`}</td>
+            </tr>`).join("") || '<tr><td colspan="6" class="muted">Nobody has signed in yet.</td></tr>';
+          const me = d.users.find(u => u.me);
+          $("me").textContent = me ? me.email : "";
+        } catch (e) {
+          if (e.status === 401 || e.status === 403) return location.replace("/");
+          say(e.message, "error");
+        }
+      }
+
+      document.body.addEventListener("click", async ev => {
+        const b = ev.target.closest("button[data-block], button[data-unblock]");
+        if (!b) return;
+        const id = b.dataset.block || b.dataset.unblock, active = !b.dataset.block;
+        if (!active && !confirm("Block this person? They are signed out at once.")) return;
+        try {
+          await api(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", {active});
+          say(active ? "Unblocked." : "Blocked.", "ok");
+        } catch (e) {
+          say(e.message, "error");
+        }
+        load();
+      });
+
+      document.body.addEventListener("change", async ev => {
+        const box = ev.target.closest("input[data-credits]");
+        if (!box) return;
+        const raw = box.value.trim();
+        if (raw !== "" && !(Number.isInteger(+raw) && +raw >= 0 && +raw <= 1000000)) return say("Daily credits must be a whole number from 0 to 1,000,000.", "error");
+        try {
+          await api(`/api/admin/users/${encodeURIComponent(box.dataset.credits)}/credits`, "PATCH", {credits_day: raw === "" ? null : +raw});
+          say(raw === "" ? "Daily credits set back to the default." : "Daily credits saved.", "ok");
+        } catch (e) {
+          say(e.message, "error");
+        }
+        load();
+      });
+
+      $("logout").addEventListener("click", async () => {
+        try { await api("/api/logout", "POST"); } catch (e) { }
+        location.replace("/");
+      });
+
+      load();
+    });
+  </script>
+</body>
+</html>
