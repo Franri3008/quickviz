@@ -281,6 +281,7 @@ Python talks to Chromium over a pipe with the DevTools protocol. Playwright only
 Its Node driver costs 130 to 250 MB more, so it never runs.
 
 Chromium starts on the first render, not at boot. It runs as one process.
+Its error output goes to the server log. When it stops, the log shows its last 20 lines.
 One chart is drawn at a time, with a fresh page each time.
 The browser shuts after `RENDER_IDLE_S` seconds with no render. It restarts after every `RENDER_RECYCLE` renders.
 The page can only load files from `web/`. Every other address is blocked.
@@ -390,7 +391,8 @@ To try sign-in locally, put `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.e
 
 ## Version
 
-The version lives in `VERSION`. It is 3.1.2, where the chat picks which value columns a wide chart shows.
+The version lives in `VERSION`. It is 3.1.3, where the server render works in the Docker image again.
+3.1.2 let the chat pick which value columns a wide chart shows.
 3.1.1 drew rank tables as a ranking chart.
 3.1.0 added the MCP server and personal API keys.
 The server writes it into the page and adds it to every script and style URL.

@@ -1,5 +1,6 @@
 import asyncio
 import base64
+import fcntl
 import json
 import logging
 import mimetypes
@@ -7,6 +8,7 @@ import os
 import shutil
 import tempfile
 import time
+from collections import deque
 from functools import lru_cache
 from pathlib import Path
 
@@ -118,12 +120,26 @@ def asset_b64(path: str) -> str | None:
     return None if body is None else base64.b64encode(body).decode("ascii")
 
 
+def fd_mover(read_fd: int, write_fd: int):
+    def move():
+        r = fcntl.fcntl(read_fd, fcntl.F_DUPFD, 5)
+        w = fcntl.fcntl(write_fd, fcntl.F_DUPFD, 5)
+        os.dup2(r, 3)
+        os.dup2(w, 4)
+        os.close(r)
+        os.close(w)
+    return move
+
+
 class Browser:
     def __init__(self):
         self.proc = None
         self.profile = None
         self.writer = None
         self.reader_task = None
+        self.err_task = None
+        self.err_tail = deque(maxlen=20)
+        self.closing = False
         self.seq = 0
         self.waits: dict[int, asyncio.Future] = {}
         self.events: dict[str, asyncio.Queue] = {}
@@ -138,18 +154,30 @@ class Browser:
         self.profile = tempfile.mkdtemp(prefix="qv-chrome-")
         args = [chrome_path(), "--headless", "--remote-debugging-pipe", "--no-sandbox", "--hide-scrollbars", "--force-color-profile=srgb",
                 f"--user-data-dir={self.profile}", *FLAGS, *(["--single-process"] if SINGLE else []), "about:blank"]
-        cmd = 'exec "$@" 3<&' + str(to_chrome_r) + " 4>&" + str(from_chrome_w)
-        self.proc = await asyncio.create_subprocess_exec("/bin/sh", "-c", cmd, "sh", *args, pass_fds=(to_chrome_r, from_chrome_w),
-                                                         stdin=asyncio.subprocess.DEVNULL, stdout=asyncio.subprocess.DEVNULL,
-                                                         stderr=asyncio.subprocess.DEVNULL)
-        os.close(to_chrome_r)
-        os.close(from_chrome_w)
+        try:
+            self.proc = await asyncio.create_subprocess_exec(*args, preexec_fn=fd_mover(to_chrome_r, from_chrome_w), pass_fds=(3, 4),
+                                                             stdin=asyncio.subprocess.DEVNULL, stdout=asyncio.subprocess.DEVNULL,
+                                                             stderr=asyncio.subprocess.PIPE)
+        except BaseException:
+            for fd in (to_chrome_w, from_chrome_r):
+                os.close(fd)
+            raise
+        finally:
+            os.close(to_chrome_r)
+            os.close(from_chrome_w)
+        self.err_task = asyncio.create_task(self._drain_err(self.proc.stderr))
         reader = asyncio.StreamReader(limit=64 * 2**20)
         await loop.connect_read_pipe(lambda: asyncio.StreamReaderProtocol(reader), os.fdopen(from_chrome_r, "rb", 0))
         transport, protocol = await loop.connect_write_pipe(asyncio.streams.FlowControlMixin, os.fdopen(to_chrome_w, "wb", 0))
         self.writer = asyncio.StreamWriter(transport, protocol, None, loop)
         self.reader_task = asyncio.create_task(self._read(reader))
         await self.send("Browser.getVersion")
+
+    async def _drain_err(self, stream):
+        while line := await stream.readline():
+            self.err_tail.append(line.decode("utf-8", "replace").rstrip()[:500])
+        if not self.closing:
+            log.warning("Chromium stopped. Last stderr lines:\n%s", "\n".join(self.err_tail) or "(none)")
 
     async def _read(self, reader):
         try:
@@ -189,6 +217,7 @@ class Browser:
         return await fut
 
     async def close(self):
+        self.closing = True
         if self.reader_task:
             self.reader_task.cancel()
         if self.writer:
@@ -196,6 +225,8 @@ class Browser:
         if self.proc and self.proc.returncode is None:
             self.proc.kill()
             await self.proc.wait()
+        if self.err_task:
+            self.err_task.cancel()
         if self.profile:
             shutil.rmtree(self.profile, ignore_errors=True)
         self.proc = self.writer = self.reader_task = self.profile = None

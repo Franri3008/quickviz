@@ -1180,7 +1180,22 @@ A 760 px chart at scale 2 is 1520 px wide.
 The style check is one call, `pick_style(user, style)` in `app/render.py`.
 
 Memory, measured on 2026-10-30 on macOS with uvicorn and Chromium together. It is the sum of resident memory of
-every process. Linux may differ. The Docker check with a 512 MB limit is still to run.
+every process. Linux may differ.
+
+Docker check, run 2026-11-06 on 3.1.3. The image ran natively on arm64 with a hard 512 MB cap and no swap.
+`docker stats` was sampled every 1.5 to 2.5 seconds, so a short spike between samples can be missed.
+All 26 renders and one real MCP `make_chart` succeeded. No container was killed for memory.
+
+| Step | Peak MiB |
+|---|---|
+| Idle, no browser | 102 |
+| First render, browser starts | 315 |
+| 20 renders at scale 2, 13 chart types | 357 |
+| MCP make_chart with a real model call | 342 |
+
+The peak was 357 MiB, which leaves 155 MiB. Renders took a median of 133 ms and at most 297 ms.
+Four scale 4 renders also passed, but memory was sampled only once during them. So `RENDER_MAX_SCALE` stays 2.
+The image is 1041 MB.
 
 | Step | Peak MB |
 |---|---|
@@ -1192,6 +1207,17 @@ every process. Linux may differ. The Docker check with a 512 MB limit is still t
 | 30 mixed renders | 463 |
 
 Playwright's own driver added 130 to 250 MB on top, so the code talks to Chromium directly.
+
+Chromium gets the DevTools pipe on fds 3 and 4, as `--remote-debugging-pipe` expects.
+Python moves the pipe ends onto 3 and 4 in the child, just before exec. This is `fd_mover` in `app/render.py`.
+It first copies both ends to fds of 5 or above. So it still works when an end already sits on 3 or 4.
+Up to 3.1.2 a `/bin/sh -c 'exec "$@" 3<&N 4>&M'` line did this job.
+On macOS `/bin/sh` is bash, and it worked. In the Debian image `/bin/sh` is dash.
+Dash only takes one-digit fd numbers in a redirect. A running server hands out pipe fds above 9.
+So dash failed with "Bad fd number" and every render answered "The browser stopped".
+Chromium's error output went to /dev/null, which hid the reason.
+It now goes to the server log. The last 20 lines are logged when the browser stops on its own.
+`tests/test_render.py` checks the move with pipe fds above 9 and with the two ends swapped on 3 and 4.
 Scale 4 peaked at 566 MB, so `RENDER_MAX_SCALE` is 2.
 
 ## API keys

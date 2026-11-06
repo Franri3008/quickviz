@@ -1,5 +1,9 @@
 import asyncio
 import base64
+import os
+import subprocess
+import sys
+from pathlib import Path
 
 import pytest
 
@@ -86,3 +90,62 @@ def test_server_draws_each_style_and_a_map():
     assert outs[0]["width"] == 760 and int.from_bytes(outs[0]["png"][16:20], "big") == 1520
     assert outs[3]["geo"] == "world" and int.from_bytes(outs[3]["png"][16:20], "big") == 600
     assert len({o["png"] for o in outs[:3]}) == 3
+
+
+FD_SCRIPT = """
+import fcntl, os, subprocess, sys
+from app import render
+mode = sys.argv[1]
+if mode == "high":
+    junk = [os.open(os.devnull, os.O_RDONLY) for _ in range(12)]
+    to_r, to_w = os.pipe()
+    from_r, from_w = os.pipe()
+    assert min(to_r, to_w, from_r, from_w) > 9
+else:
+    ar, aw = os.pipe()
+    br, bw = os.pipe()
+    assert (ar, aw) == (3, 4)
+    to_r, to_w, from_r, from_w = (fcntl.fcntl(f, fcntl.F_DUPFD, 20) for f in (ar, aw, br, bw))
+    for f in (ar, aw, br, bw):
+        os.close(f)
+    os.dup2(to_r, 4, inheritable=False)
+    os.dup2(from_w, 3, inheritable=False)
+    os.close(to_r)
+    os.close(from_w)
+    to_r, from_w = 4, 3
+child = "import os; os.write(4, os.read(3, 100).upper())"
+proc = subprocess.Popen([sys.executable, "-c", child], preexec_fn=render.fd_mover(to_r, from_w), pass_fds=(3, 4))
+os.close(to_r)
+os.close(from_w)
+os.write(to_w, b"ping")
+os.close(to_w)
+print(os.read(from_r, 100).decode(), proc.wait())
+"""
+
+
+@pytest.mark.parametrize("mode", ["high", "swapped"])
+def test_pipe_ends_land_on_fd_3_and_4(mode):
+    root = Path(__file__).resolve().parents[1]
+    env = {**os.environ, "PYTHONPATH": str(root)}
+    out = subprocess.run([sys.executable, "-c", FD_SCRIPT, mode], cwd=root, env=env, capture_output=True, text=True, timeout=60)
+    assert out.returncode == 0, out.stderr
+    assert out.stdout.split() == ["PING", "0"]
+
+
+@pytest.mark.skipif(_chrome() is None, reason="needs chromium")
+def test_server_draws_when_pipe_fds_are_above_9():
+    junk = [os.open(os.devnull, os.O_RDONLY) for _ in range(12)]
+
+    async def run():
+        try:
+            out = await render.render_chart(BAR, "franri", scale=1)
+            return out, render.RENDERER.browser.err_task is not None
+        finally:
+            await render.RENDERER.stop()
+
+    try:
+        out, logs_stderr = asyncio.run(run())
+    finally:
+        for fd in junk:
+            os.close(fd)
+    assert out["png"].startswith(PNG) and logs_stderr
