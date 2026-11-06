@@ -72,6 +72,7 @@ class Column(BaseModel):
     values: list | None = Field(None, max_length=80)
     min: float | None = None
     max: float | None = None
+    rank: bool = False
 
 
 class DecideIn(BaseModel):
@@ -195,6 +196,11 @@ def _clean_name(s: str) -> str:
     return re.sub(r"[\x00-\x1f\"]", " ", s or "").strip()[:120]
 
 
+def rank_hint(c: Column) -> str:
+    named = viz_reading.RANK_NAME.search(c.name) and (c.min is None or c.min >= 1)
+    return ", looks like ranks where 1 is the best and lower is better" if c.type == "number" and (c.rank or named) else ""
+
+
 def file_context(file: str, sheet: str = "") -> str:
     file, sheet = _clean_name(file), _clean_name(sheet)
     out = (f"The file is called {file}. " if file else "") + (f"The sheet is called {sheet}. " if sheet else "")
@@ -208,7 +214,7 @@ async def decide(body: DecideIn, user: Visitor = Depends(visitor)):
     if not cols:
         raise HTTPException(400, detail="No columns")
     summary = "; ".join(
-        f"{c.name} ({c.type}, {c.distinct} distinct, e.g. " + ", ".join(str(x)[:20] for x in c.samples[:3]) + ")" for c in cols)
+        f"{c.name} ({c.type}, {c.distinct} distinct, e.g. " + ", ".join(str(x)[:20] for x in c.samples[:3]) + rank_hint(c) + ")" for c in cols)
     ctx = (f"The user says: {body.text[:1500]}\n" if body.text.strip() else "") + file_context(body.file, body.sheet) + f"The data has these columns: {summary}.\n"
     qs = {"kind": {
         "type": "choice",

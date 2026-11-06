@@ -349,6 +349,22 @@ kinds stacks number columns that pass the same name and range test. A stacked ba
 columns that fail it, when every one has a bare name with no unit word, such as LNG, Oil, Coal and Nuclear. Words
 like pct, per, share, eur or million, and columns named like a total, keep a column out.
 
+A ranking chart draws `v` as it is when the column looks like ranks. Otherwise it ranks the values in each period,
+highest first. A column looks like ranks when its name says rank, position or place, or when its values pass the
+rank check. The check is `looksRanked` in `app.js` and `looks_ranked` in `app/viz_reading.py`, with the same rules.
+The values are split into groups, one per period, or one per period and group such as a region.
+Every value is a whole number of 1 or more, and no group repeats a value.
+With N the size of the largest group, no value is above 2N or N + 5, whichever is larger.
+At least half of each group is N or less, and some group holds a 1.
+There are at least 6 values, and one group has at least 3. So 15 and 17 among 10 banks pass, and counts do not.
+Rank 1 draws at the top and the axis reads Rank.
+
+When a number column passes the check by period, `rankFirst` puts the ranking chart first and the heatmap second,
+ahead of what Jev ranked. It does not when the kind came from a typed description, the `described` kind.
+The page also sends `rank: true` for that column to `/api/viz/decide`. The column summary
+Jev reads then says the column looks like ranks where 1 is the best. A number column named like a rank gets the
+same line. The MCP path runs the same `rankFirst`, see "MCP server".
+
 Maps match countries by name, ISO2, ISO3 and the Eurostat codes `EL` and `UK`. Regions match by name, ISO 3166-2
 code such as `DE-BY`, and NUTS 1 or NUTS 2 code such as `DE2` or `DE21`. The NUTS shapes are GISCO NUTS 2024
 for the EU, EFTA and candidate countries, and NUTS 2021 for the United Kingdom. Changed 2021 codes match when the
@@ -1044,11 +1060,17 @@ median of its values. It is unsure when the values spread more than 5% of the me
 samples that answered had it. When no sample gave a value, the answer is 422 with "We could not read any values
 from this picture. Try a sharper picture, or upload the data as a file."
 
-The cells become a CSV with `Label` and `Value`, plus `Series` when there is more than one series. It goes through
+A second line, `value_name: Rank` or a name such as `Share of firms (%)`, says what the numbers are.
+`picture_value_name` reads it like the bars line, and Label or Series do not count. `name_vote` takes the name most
+samples gave. When none gave one, or the name is Value, the column is called Rank if the values pass the rank check
+by series, else Value. The prompt also says a picture of a table is data to read, not a chart to copy. Each number
+cell becomes an item, with the row name as label and the column header as series. Text columns are left out.
+
+The cells become a CSV with `Label` and the value name, plus `Series` when there is more than one series. It goes through
 `read_grid` and `first_reading` like an uploaded CSV, with no AI fallback. The grid is kept for the user like a parse.
 `reading.source` is `picture`, there are no alternatives, and `reading.summary` is the plain line, such as
 "Read from a chart picture, 4 values unsure, check them". `reading.picture` holds `{model, cost, samples, read,
-unsure, flagged, bars}`. `flagged` lists `{row, column}` for each unsure cell. `reading.confidence` is 1, or 0.5 when a
+unsure, flagged, bars, value_name}`. `flagged` lists `{row, column}` for each unsure cell. `reading.confidence` is 1, or 0.5 when a
 cell is unsure.
 
 The table also carries `orientation_hint`, the voted direction or null. It follows `source_hint`. `autoChart` in
@@ -1229,7 +1251,8 @@ the same functions the page calls. Python calls the same route functions as the 
 1. `viz_reading.read` reads the CSV, as `POST /api/viz/parse` does.
 2. In the page, `namesColumns` gives the columns. `decide` in `app/viz.py` picks the chart and the roles.
    The description goes in as the user's text. A `chart_type` skips this call.
-3. In the page, `firstRecipe` and `withAutoControls` make the recipe, as `autoChart` does. `namesBody` builds the names call.
+3. In the page, `rankFirst`, `firstRecipe` and `withAutoControls` make the recipe, as `autoChart` does. `rankFirst` is
+   skipped when `chart_type` is set. `namesBody` builds the names call.
 4. `names` in `app/viz.py` gives the title, the unit and any role fix. A failed names call leaves the title empty, as on the page.
 5. In the page, `namedRecipe` applies the role fix and `buildSpec` makes the spec.
 6. `render_chart` draws it.

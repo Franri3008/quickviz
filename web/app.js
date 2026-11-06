@@ -496,13 +496,54 @@ function aggregate(kind, rows, map, agg, unit) {
     case "histogram": return rows.filter(r => isNum(r[map.v])).slice(0, 50000).map(r => ({v: r[map.v]}));
     case "bump": {
       let a = group(["t", "cat"]);
-      if (!/rank|position|place|pos\b/i.test(map.v || "")) {
+      if (!RANK_NAME.test(map.v || "") && !looksRanked([...d3.group(a, d => d.t).values()].map(g => g.map(d => d.v)))) {
         a = [...d3.group(a, d => d.t).values()].flatMap(g => g.sort((x, y) => y.v - x.v).map((d, i) => ({...d, v: i + 1})));
       }
       return sortT(a);
     }
   }
   return [];
+}
+
+const RANK_NAME = /rank|position|place|pos\b/i;
+function looksRanked(groups) {
+  groups = groups.filter(g => g.length);
+  const n = Math.max(0, ...groups.map(g => g.length));
+  if (!groups.length || groups.reduce((a, g) => a + g.length, 0) < 6 || n < 3) return false;
+  let one = false;
+  for (const g of groups) {
+    if (g.some(v => !Number.isInteger(v) || v < 1)) return false;
+    if (new Set(g).size < g.length || Math.max(...g) > Math.max(2 * n, n + 5) || g.filter(v => v <= n).length * 2 < g.length) return false;
+    one = one || Math.min(...g) === 1;
+  }
+  return one;
+}
+
+function valueGroups(rows, v, by) {
+  const m = new Map();
+  for (const r of rows) {
+    if (!isNum(r[v])) continue;
+    const k = JSON.stringify(by.map(f => String(r[f] ?? "")));
+    if (!m.has(k)) m.set(k, []);
+    m.get(k).push(r[v]);
+  }
+  return [...m.values()];
+}
+
+function rankedBy(col) {
+  const d = state.data;
+  if (!d || !col || col.type !== "number") return null;
+  const groups = d.cols.filter(c => c.type !== "number" && c.type !== "time" && !isFlagCol(c) && (c.distinct ?? 0) <= 50).map(c => c.name);
+  const times = d.cols.filter(c => c.type === "time").map(c => c.name);
+  for (const t of times) if ([[t], ...groups.map(g => [t, g])].some(by => looksRanked(valueGroups(d.rows, col.name, by)))) return "time";
+  return [[], ...groups.map(g => [g])].some(by => looksRanked(valueGroups(d.rows, col.name, by))) ? "plain" : null;
+}
+
+function rankFirst(p) {
+  if (!state.data.cols.some(c => rankedBy(c) === "time")) return p;
+  const rest = (p.ranked || []).filter(r => Array.isArray(r) && !["bump", "heatmap"].includes(r[0]));
+  const top = Math.max(1, ...rest.map(r => r[1] ?? 0));
+  return {...p, choice: "bump", ranked: [["bump", top + 0.002], ["heatmap", top + 0.001], ...rest]};
 }
 
 const KEY_FIELD = {bar: "cat", treemap: "cat", donut: "cat", map: "cat", sankey: "cat", stacked_bar: "cat", heatmap: "cat", dot_range: "cat",
@@ -688,7 +729,7 @@ function namesContext(r) {
   return {filters, years: y.drawn, data_years: [...y.known].sort((a, b) => a - b).slice(0, 400)};
 }
 
-function namesColumns() { return state.data.cols.map(c => ({name: c.name, type: c.type, distinct: c.distinct, samples: (c.samples || []).map(String)})); }
+function namesColumns() { return state.data.cols.map(c => ({name: c.name, type: c.type, distinct: c.distinct, samples: (c.samples || []).map(String), ...(rankedBy(c) ? {rank: true} : {})})); }
 
 function namesBody(r) {
   const roles = Object.fromEntries(Object.entries(r.roles).filter(([q, v]) => ["cat", "series", "t", "v", "v2"].includes(q) && v && !String(v).startsWith("(")));
@@ -2041,6 +2082,7 @@ async function autoChart() {
     p = guessKind();
   }
   if (my !== seq) return;
+  if (!(told && KIND_NAMES[told.kind])) p = rankFirst(p);
   state.decide = p.guess ? null : p;
   const desc = state.data.described;
   if (desc) state.names = {title: desc.title || "", unit: desc.unit || "", columns: {}};

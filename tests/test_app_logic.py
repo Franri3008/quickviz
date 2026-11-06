@@ -225,3 +225,124 @@ globalThis.AbortController = class { constructor() { this.signal = {}; } abort()
     assert out["part"] == {"source": "italic"} and out["all"] is None
     assert out["sent"] == {"fontStyle": {"note": "bold"}}
     assert out["dim"] == 11 and out["dimSent"] == {"dimSize": "small"} and out["dimOff"] is None
+
+
+BANKS = [("JPMorganChase", "USA", 1, 1, 1, 1), ("Capital One", "USA", 2, 2, 2, 2), ("Royal Bank of Canada", "Canada", 3, 3, 3, 3),
+         ("CommBank", "APAC", 6, 5, 4, 4), ("Wells Fargo", "USA", 4, 4, 6, 5), ("UBS", "Europe", 5, 6, 7, 6),
+         ("Bank of America", "USA", 15, 15, 10, 7), ("Citigroup", "USA", 9, 8, 12, 8), ("Morgan Stanley", "USA", 17, 10, 5, 9),
+         ("TD Bank", "Canada", 11, 9, 13, 10)]
+YEARS = ["2023", "2024", "2025", "2026"]
+
+
+def table(raw, name):
+    out = parse_file(raw, name)
+    names = [c["name"] for c in out["columns"]]
+    rows = [{n: ("" if v is None else v) for n, v in zip(names, r)} for r in out["rows"]]
+    return {**out, "rows": rows, "cols": out["columns"], "name": name}
+
+
+def banks_long(value="Value"):
+    lines = [f"Bank,Region,Year,{value}"] + [f"{b},{g},{y},{v}" for b, g, *vals in BANKS for y, v in zip(YEARS, vals)]
+    return table(("\n".join(lines) + "\n").encode(), "banks.csv")
+
+
+def banks_wide():
+    import io
+
+    import openpyxl
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.append(["Bank", "Region", 2023, 2024, 2025, 2026])
+    for r in BANKS:
+        ws.append(list(r))
+    buf = io.BytesIO()
+    wb.save(buf)
+    return table(buf.getvalue(), "banks.xlsx")
+
+
+BANK_FIT = """
+globalThis.AbortController = class { constructor() { this.signal = {}; } abort() {} };
+(async () => {
+  await autoChart();
+  const s = buildSpec(state.recipe);
+  const at = (c, t) => s.rows.find(r => r.cat === c && String(r.t) === t)?.v;
+  return {kind: state.recipe.kind, opts: state.opts.slice(0, 2), ms: at("Morgan Stanley", "2023"), jp: at("JPMorganChase", "2023"),
+    boa: at("Bank of America", "2026"), yLabel: s.yLabel, sent: namesColumns().filter(c => c.rank).map(c => c.name)};
+})()
+"""
+
+
+@pytest.mark.parametrize("data", [banks_long(), banks_wide()], ids=["long_csv", "wide_xlsx"])
+def test_bank_ranks_draw_as_a_ranking_with_rank_one_on_top(data):
+    out = js(data, BANK_FIT)
+    assert out["kind"] == "bump" and out["opts"] == ["bump", "heatmap"]
+    assert out["ms"] == 17 and out["jp"] == 1 and out["boa"] == 7
+    assert out["yLabel"] == "Rank" and out["sent"] == [data["cols"][-1]["name"]]
+
+
+def test_rank_check_edge_cases():
+    out = js(banks_long(), """
+({banks: looksRanked([[1, 2, 3, 6, 4, 5, 15, 9, 17, 11], [1, 2, 3, 5, 4, 6, 15, 8, 10, 9]]),
+  repeat: looksRanked([[1, 2, 2, 3], [1, 2, 3, 4]]),
+  zero: looksRanked([[0, 1, 2, 3], [1, 2, 3, 4]]),
+  decimal: looksRanked([[1, 2.5, 3, 4], [1, 2, 3, 4]]),
+  counts: looksRanked([[120, 45, 33, 7], [98, 51, 30, 2]]),
+  noOne: looksRanked([[2, 3, 4, 5], [3, 4, 5, 6]]),
+  far: looksRanked([[1, 2, 30, 4], [1, 2, 3, 4]]),
+  few: looksRanked([[1, 2, 3]]),
+  perGroup: rankedBy(colByName("Value"))})
+""")
+    assert out == {"banks": True, "repeat": False, "zero": False, "decimal": False, "counts": False, "noOne": False,
+                   "far": False, "few": False, "perGroup": "time"}
+
+
+def test_counts_are_still_reranked_high_to_low():
+    data = banks_long("Assets")
+    for r in data["rows"]:
+        r["Assets"] = r["Assets"] * 100 + 7
+    for c in data["cols"]:
+        if c["name"] == "Assets":
+            c["min"], c["max"] = 107, 1707
+    out = js(data, """
+const r = fitsKind("bump", {filters: []});
+const s = buildSpec(r);
+({rank: rankedBy(colByName("Assets")), top: s.rows.find(x => x.cat === "Morgan Stanley" && String(x.t) === "2023").v, order: rankFirst({choice: "line", ranked: [["line", 0.9]]}).choice})
+""")
+    assert out == {"rank": None, "top": 1, "order": "line"}
+
+
+def test_picture_of_a_rank_table_draws_a_ranking():
+    lines = ["Label,Series,Rank"] + [f"{b},{y},{v}" for b, _, *vals in BANKS for y, v in zip(YEARS, vals)]
+    data = {**table(("\n".join(lines) + "\n").encode(), "picture.csv"), "name": "banks.png"}
+    out = js(data, BANK_FIT)
+    assert out["kind"] == "bump" and out["opts"] == ["bump", "heatmap"]
+    assert out["ms"] == 17 and out["jp"] == 1 and out["sent"] == ["Rank"]
+
+
+PIPE = """
+(async () => {
+  (0, eval)(%s);
+  QVPipe.boot(%s);
+  const data = %s;
+  const jev = {choice: "line", ranked: [["line", 0.7], ["bar", 0.2]]};
+  const picked = await QVPipe.plan({data, style: "franri", decide: jev, text: ""});
+  const told = await QVPipe.plan({data, style: "franri", decide: {choice: "line", ranked: [], guess: true}, text: ""});
+  const cols = await QVPipe.columns({data, style: "franri", text: ""});
+  const done = await QVPipe.finish({data, style: "franri", recipe: picked.recipe, names: null, first: false});
+  const at = (c, t) => done.spec.rows.find(r => r.cat === c && String(r.t) === t)?.v;
+  return {kind: picked.recipe.kind, kinds: picked.kinds.slice(0, 2), told: told.recipe.kind, sent: cols.columns.filter(c => c.rank).map(c => c.name),
+    ms: at("Morgan Stanley", "2023"), boa: at("Bank of America", "2026")};
+})()
+"""
+
+
+def test_server_pipeline_puts_the_ranking_first_like_the_page():
+    data = banks_long()
+    raw = {k: data[k] for k in ("name", "columns", "rows") if k in data}
+    raw["rows"] = [[r[c["name"]] for c in data["columns"]] for r in data["rows"]]
+    pipe = (ROOT / "app" / "pipeline.js").read_text(encoding="utf-8")
+    app = (ROOT / "web" / "app.js").read_text(encoding="utf-8")
+    out = js(data, PIPE % (json.dumps(pipe), json.dumps(app), json.dumps(raw)))
+    assert out["kind"] == "bump" and out["kinds"][:2] == ["bump", "heatmap"]
+    assert out["told"] == "line" and out["sent"] == ["Value"]
+    assert out["ms"] == 17 and out["boa"] == 7

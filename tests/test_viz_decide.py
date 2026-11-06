@@ -54,3 +54,18 @@ def test_decide_without_file_has_no_name_line(client, monkeypatch):
     sent = fake_jev(monkeypatch)
     assert c.post("/api/viz/decide", json={"text": "", "columns": COLS}).status_code == 200
     assert "The file is called" not in sent[0]["questions"]["kind"]["instructions"]
+
+
+def test_decide_tells_jev_a_column_looks_like_ranks(client, monkeypatch):
+    c = client
+    sent = fake_jev(monkeypatch)
+    cols = [{"name": "Bank", "type": "category", "distinct": 10, "samples": ["UBS"]},
+            {"name": "Year", "type": "time", "distinct": 4, "samples": ["2023"]},
+            {"name": "Value", "type": "number", "distinct": 15, "samples": [1, 17], "min": 1, "max": 17, "rank": True},
+            {"name": "position", "type": "number", "distinct": 5, "samples": [1], "min": 1, "max": 5},
+            {"name": "Assets", "type": "number", "distinct": 40, "samples": [120], "min": 7, "max": 1707}]
+    assert c.post("/api/viz/decide", json={"text": "", "columns": cols}).status_code == 200
+    text = sent[0]["questions"]["kind"]["instructions"]
+    hint = ", looks like ranks where 1 is the best and lower is better)"
+    assert f"Value (number, 15 distinct, e.g. 1, 17{hint}" in text and f"position (number, 5 distinct, e.g. 1{hint}" in text
+    assert "Assets (number, 40 distinct, e.g. 120)" in text

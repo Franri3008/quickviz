@@ -12,7 +12,7 @@
   const frame = {mount: () => ({render: () => Promise.resolve({errors: []}), clear: () => Promise.resolve(null), settled: () => Promise.resolve(),
     png: () => Promise.resolve(null), state: () => Promise.resolve({}), outline: () => Promise.resolve(""), sig: () => Promise.resolve(null)})};
   const USES = ["state", "toData", "namesColumns", "namesBody", "firstRecipe", "namedRecipe", "withAutoControls", "applyChange", "buildSpec",
-    "kindOptions", "chatBody", "catKey", "rateText", "KIND_NAMES", "NO_CHANGE"];
+    "kindOptions", "chatBody", "catKey", "rateText", "rankFirst", "KIND_NAMES", "NO_CHANGE"];
   const PATCH_ONLY = "That change needs code that runs in the browser, and the server cannot run it, so nothing changed. Try saying it another way.";
   const PATCH_LEFT = "Part of that change needs code that runs in the browser, so that part was left out.";
   let app = null;
@@ -40,7 +40,7 @@
   }
 
   async function plan(input) {
-    const s = await load(input), p = input.decide;
+    const s = await load(input), p = input.decide.guess ? input.decide : app.rankFirst(input.decide);
     s.decide = p.guess ? null : p;
     const first = app.firstRecipe(p, null);
     if (!first) return {recipe: null, kinds: []};
