@@ -1,3 +1,7 @@
+import pytest
+
+from app.viz_chat import ChangeError, validate_change
+from app.viz_parse import parse_file
 from tests.test_no_blending import STRESS, load, run
 
 SIZE = "Size classes in number of persons employed"
@@ -116,3 +120,37 @@ def test_refused_change_reply_says_only_what_happened():
     assert out["text"].startswith("GEO has 32 values")
     assert not out["applied"]
     assert out["roles"]["cat"] == "GEO"
+
+
+def companies():
+    rows = ["country,ai_companies,all_companies,ai_recent_companies,recent_companies",
+            "Belgium,120,9000,40,2100", "France,800,61000,260,15000", "Germany,950,72000,300,17000", "Spain,400,38000,150,9800"]
+    out = parse_file("\n".join(rows).encode(), "companies.csv", None)
+    names = [c["name"] for c in out["columns"]]
+    return {**out, "rows": [dict(zip(names, r)) for r in out["rows"]], "cols": out["columns"], "name": "companies.csv"}
+
+
+def test_chat_picks_the_value_columns_of_a_sankey():
+    out = run(companies(), """
+      const ALL = ["ai_companies", "all_companies", "ai_recent_companies", "recent_companies"];
+      const r = withAutoControls(applyChange(fitsKind("sankey", {filters: []}), {ops: [{op: "roles", cat: "country", columns: ALL}]}));
+      const two = applyChange(r, {ops: [{op: "roles", columns: ["ai_recent_companies", "recent_companies"]}]});
+      const s = buildSpec(two);
+      ({before: r.roles.wide, seen: recipeForAI(two).value_columns, roles: two.roles, targets: [...new Set(s.rows.map(x => x.series))]})
+    """)
+    assert len(out["before"]) == 4
+    assert out["roles"]["cat"] == "country" and out["roles"]["series"] == "(columns)"
+    assert out["roles"]["wide"] == ["ai_recent_companies", "recent_companies"]
+    assert out["seen"] == ["ai_recent_companies", "recent_companies"]
+    assert len(out["targets"]) == 2
+
+
+def test_value_columns_must_be_numbers():
+    cols = [{"name": "country", "type": "category"}, {"name": "ai_companies", "type": "number"}, {"name": "recent_companies", "type": "number"}]
+    with pytest.raises(ChangeError) as e:
+        validate_change({"reply": "ok", "ops": [{"op": "roles", "columns": ["country", "ai_companies"]}]}, cols, [], "sankey")
+    assert '"country"' in str(e.value)
+    with pytest.raises(ChangeError):
+        validate_change({"reply": "ok", "ops": [{"op": "roles", "columns": ["ai_companies"]}]}, cols, [], "sankey")
+    ok = validate_change({"reply": "ok", "ops": [{"op": "roles", "columns": ["AI companies", "recent_companies"]}]}, cols, [], "sankey")
+    assert ok["ops"][0]["columns"] == ["ai_companies", "recent_companies"]

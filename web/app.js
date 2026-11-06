@@ -317,10 +317,12 @@ function heuristicMap(kind, cols, hints = {}) {
   const map = {}, used = new Set();
   const need = NEED[kind] || [];
   const byName = Object.fromEntries(cols.map(c => [c.name, c]));
+  const askedWide = () => Array.isArray(hints.wide) && hints.wide.length >= 2 && hints.wide.length <= 8 && hints.wide.every(n => byName[n] && byName[n].type === "number" && !used.has(n));
   for (const spec of need) {
     const r = spec.replace("?", ""), opt = spec.endsWith("?");
     if (r === "v" || r === "v2") continue;
     const j = hints[r];
+    if (r === "series" && j === "(columns)" && askedWide()) { map.series = "(columns)"; continue; }
     if (j === null && opt) continue;
     if (j && fits(r, byName[j], kind) && !used.has(j) && (r !== "series" || splitsCat(kind, map.cat, j))) { map[r] = j; used.add(j); continue; }
     if (opt) {
@@ -334,7 +336,8 @@ function heuristicMap(kind, cols, hints = {}) {
   }
   if (need.includes("v")) {
     const j = hints.v;
-    if (map.series === "(columns)") {
+    if (map.series === "(columns)" && askedWide()) { map.wide = hints.wide.slice(); map.v = "(value)"; }
+    else if (map.series === "(columns)") {
       const nums = cols.filter(c => c.type === "number" && !used.has(c.name) && !ID_NAME.test(c.name));
       const first = nums.find(c => nums.some(o => pairOK(c, o)));
       const paired = first ? nums.filter(c => c === first || pairOK(first, c)) : [];
@@ -1139,6 +1142,7 @@ function applyChange(recipe, change) {
         if (op[k]) rolesHint[k] = op[k]; else rolesHint[k] = null;
       }
       if ("series" in op || "v" in op || "v2" in op) delete rolesHint.wide;
+      if (op.columns) { rolesHint.wide = op.columns.slice(); rolesHint.series = "(columns)"; rolesHint.v = "(value)"; delete rolesHint.v2; }
     }
   }
   const kind = set.kind || r.kind;
@@ -1161,6 +1165,9 @@ function applyChange(recipe, change) {
     if (!want || String(want).startsWith("(") || !colByName(want) || r.roles[k] === want || (kind === "dot_range" && r.roles.wide)) continue;
     throw new Error(roleRefusal(kind, k, want, room));
   }
+  const askedCols = (change.ops || []).filter(x => x.op === "roles" && x.columns).map(x => x.columns).pop();
+  if (askedCols && !(r.roles.wide && r.roles.wide.length === askedCols.length && askedCols.every(c => r.roles.wide.includes(c))))
+    throw new Error(`A ${(KIND_NAMES[kind] || kind).toLowerCase()} chart cannot show ${askedCols.join(", ")} as its value columns. Nothing was changed.`);
   if (topOp && r.top && r.top.n) r.top.column = topColumn(kind, r.roles, r.filters);
   if (!sameKind) {
     for (const k of AXIS_FIELDS) if (set[k] === undefined) delete r[k];
@@ -1383,6 +1390,7 @@ function recipeForAI(r) {
     unit: s.unit, decimals: r.decimals ?? null, filters: r.filters || [], top: r.top && r.top.n ? topForAI(r.top) : null, sort: r.sort || defaultSort(r.kind), aggregate: r.agg || "auto",
     percent_share: r.percent || "none", highlight: r.highlight || [], colors: r.colors || {}, source: r.source || "", note: r.note || "", what_is_shown: s.autoNote || "",
     legendTitle: r.legendTitle || ""};
+  if (r.roles && r.roles.wide) out.value_columns = r.roles.wide.slice();
   if (r.kind && isRate(r)) out.values_are = "rates";
   if (r.kind === "bar") out.orientation = (r === state.recipe && state.orient) || r.orientation || "auto";
   if (r.kind === "stacked_bar") out.orientation = r.orientation === "vertical" ? "vertical" : "horizontal";

@@ -361,6 +361,7 @@ class RolesOp(Strict):
     t: str | None = None
     v: str | None = None
     v2: str | None = None
+    columns: list[str] | None = None
 
 
 Op = Annotated[Union[FilterOp, ClearFiltersOp, TopNOp, SortOp, AggregateOp, PercentOp, RenameOp, RolesOp], Field(discriminator="op")]
@@ -564,6 +565,7 @@ Data operations, applied to the full table on top of what is already there:
 {"op": "percent_share", "within": "total" or "group" or "none"}  turn values into % shares of the whole, or within each group or time step. Also set unit "%"
 {"op": "rename", "column": C, "map": {"old value": "new label"}}  relabel items
 {"op": "roles", "cat": C, "series": C, "t": C, "v": C, "v2": C}  choose which column plays which role. Give only the roles you change. null clears a role
+{"op": "roles", "columns": [C, C]}  pick which 2 to 8 number columns a chart drawn from several value columns shows. chart.value_columns lists the ones shown now
 
 Roles per chart kind. cat = the items compared, series = sub-groups, t = time steps, v = the main number, v2 = second number:
 bar, treemap, donut, map: cat, v. line: t, v, optional series. stacked_area: t, series, v. stacked_bar, heatmap: cat, series, v.
@@ -600,6 +602,7 @@ Examples:
 "Bold the highlighted names" when a highlight is set -> no change, reply that the highlighted and EU names are already bold
 "Add a year slider" with a time column "year" -> "set": {"controls": [{"type": "slider", "column": "year", "label": "Year", "play": true}]}
 "Let readers switch between all firms and large firms" -> "set": {"controls": [{"type": "switch", "options": [{"label": "All firms", "ops": [{"op": "roles", "v": "ai_use_pct_all_firms"}]}, {"label": "Large firms", "ops": [{"op": "roles", "v": "ai_use_pct_large_firms"}]}]}]}
+"Keep only recent AI and recent all companies" when value_columns is ["ai_companies", "all_companies", "ai_recent_companies", "recent_companies"] -> "ops": [{"op": "roles", "columns": ["ai_recent_companies", "recent_companies"]}]
 "Let readers turn lines on and off" -> "set": {"controls": [{"type": "legend"}]}
 "Top 10 by average over the period" on a line chart -> "ops": [{"op": "top_n", "n": 10, "by": "mean"}]
 "Top 5 plus other" on amounts -> "ops": [{"op": "top_n", "n": 5, "other": true}]
@@ -870,6 +873,14 @@ def _fix_ops(raw_ops, by_exact, by_norm, renamed_to: list) -> list[dict]:
                     d[k] = _fix_col(val, by_exact, by_norm, allow_special=True) if val else None
                     if k in ("v", "v2") and d[k] and d[k] not in SPECIAL_COLUMNS and by_exact[d[k]].get("type") != "number":
                         raise ChangeError(f'role {k} needs a column of numbers, "{d[k]}" is not')
+            if op.columns is not None:
+                names = list(dict.fromkeys(_fix_col(c, by_exact, by_norm) for c in op.columns))
+                bad = [n for n in names if by_exact[n].get("type") != "number"]
+                if bad:
+                    raise ChangeError("roles columns must all be number columns, " + ", ".join(f'"{b}"' for b in bad) + " is not")
+                if not 2 <= len(names) <= 8:
+                    raise ChangeError(f"roles columns needs 2 to 8 number columns, it has {len(names)}")
+                d["columns"] = names
         ops.append(d)
     return ops
 

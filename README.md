@@ -390,7 +390,8 @@ To try sign-in locally, put `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.e
 
 ## Version
 
-The version lives in `VERSION`. It is 3.1.1, which draws rank tables as a ranking chart.
+The version lives in `VERSION`. It is 3.1.2, where the chat picks which value columns a wide chart shows.
+3.1.1 drew rank tables as a ranking chart.
 3.1.0 added the MCP server and personal API keys.
 The server writes it into the page and adds it to every script and style URL.
 So a new release is never served from an old browser cache.
