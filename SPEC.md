@@ -350,8 +350,9 @@ columns that fail it, when every one has a bare name with no unit word, such as 
 like pct, per, share, eur or million, and columns named like a total, keep a column out.
 
 A ranking chart draws `v` as it is when the column looks like ranks. Otherwise it ranks the values in each period,
-highest first. A column looks like ranks when its name says rank, position or place, or when its values pass the
-rank check. The check is `looksRanked` in `app.js` and `looks_ranked` in `app/viz_reading.py`, with the same rules.
+highest first. A column looks like ranks when its name says rank, ranking, position, place or pos as a whole word,
+or when its values pass the rank check. `RANK_NAME` is the same pattern in `app.js` and `app/viz_reading.py`.
+The check is `looksRanked` in `app.js` and `looks_ranked` in `app/viz_reading.py`, with the same rules.
 The values are split into groups, one per period, or one per period and group such as a region.
 Every value is a whole number of 1 or more, and no group repeats a value.
 With N the size of the largest group, no value is above 2N or N + 5, whichever is larger.
@@ -808,6 +809,16 @@ The chart type tabs switch the chart in step 2 and step 3. Both call `localChang
 `{set: {kind}, autoTime: true}`. In step 2 the switch adds no chat line. Its undo entry has no chat message, so an
 undo of it later adds a grey "Undone" line. Jev's pick stays first in the tabs and keeps a small green dot.
 
+The columns row under the tabs is built by `colBlocks`. For each column `colChange` gives the change a click makes,
+a `roles` op, or the reason it cannot go in the chart. Each change is tried on a copy with `applyChange` first,
+so a block is only live when the click would really put that column in the chart. A click goes through
+`localChange` like a tab click. A value change also drops a hand-set title, the axis titles, the unit and the value
+axis range. The AI title and unit carry `forKey`, made by `namesKey` from the value columns and the other roles.
+When the roles no longer match it, `localTitle` writes a plain title such as "Profit by company" and the unit is
+left out. The AI title comes back when its columns do. A described sample chart keys its title the same way.
+`drawRow` lays out both rows. It measures them with the class `measuring` and moves blocks from the end into a
+"+N" menu until the row fits. It runs again when the stage width changes.
+
 The suggestion chips above the chat input are built from the current chart. A kind switch is only offered when
 `fitsKind` can feed it from the data. Sort, top 10, percentages, highlight, a time range and a shorter
 title only appear when they would change something.
@@ -1060,11 +1071,23 @@ median of its values. It is unsure when the values spread more than 5% of the me
 samples that answered had it. When no sample gave a value, the answer is 422 with "We could not read any values
 from this picture. Try a sharper picture, or upload the data as a file."
 
-A second line, `value_name: Rank` or a name such as `Share of firms (%)`, says what the numbers are.
+A second line, `source: table` or `source: chart`, says what the picture is. `picture_source` reads it and
+`source_vote` keeps it when more than half the samples agree.
+A third line, such as `value_name: Share of firms (%)`, says what the numbers are. The prompt's example is neutral
+since 3.2.0. It used to be `value_name: Rank`, and the model copied that onto a table of company revenue.
 `picture_value_name` reads it like the bars line, and Label or Series do not count. `name_vote` takes the name most
-samples gave. When none gave one, or the name is Value, the column is called Rank if the values pass the rank check
-by series, else Value. The prompt also says a picture of a table is data to read, not a chart to copy. Each number
+samples gave. A name that says rank is kept only when the values can be ranks. They pass the rank check, or they are
+whole numbers of 1 or more whose smallest value is at most the size of the largest series (`may_be_ranks`).
+So 713, 716 and 545 among 12 companies are not ranks, and 1, 2, 2, 4 still are.
+When no name is left, or the name is Value, the column is called Rank if the values pass the rank check by series,
+else Value. The prompt also says a picture of a table is data to read, not a chart to copy. Each number
 cell becomes an item, with the row name as label and the column header as series. Text columns are left out.
+Every number column keeps its own header, so Revenue, Profit and Employees stay three series.
+
+When the vote says table and the series are not all periods such as 2023 or 2024-Q1, `table_columns` keeps the table
+wide. `wide_csv` writes `Label` and one column per header, in the order read, and a missing cell stays empty.
+`value_name` is then null, and each unsure cell is flagged under its own header. A table of ranks by year stays long,
+with `Label`, `Series` and the value name, as below.
 
 The cells become a CSV with `Label` and the value name, plus `Series` when there is more than one series. It goes through
 `read_grid` and `first_reading` like an uploaded CSV, with no AI fallback. The grid is kept for the user like a parse.

@@ -11,7 +11,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from app import guard, viz_reading
 from app.auth import check_style
 from app.llm import DEFAULT_REASONING, Visitor, openrouter, visitor
-from app.viz_chat import STYLE_PROMPT, ChangeError, _norm, KINDS, build_messages, dropped_error, extract_json, honest_reply, validate_change
+from app.viz_chat import STYLE_PROMPT, TITLE_ASK, ChangeError, _norm, KINDS, build_messages, dropped_error, extract_json, honest_reply, needs_title, validate_change
 from app.viz_parse import ParseError
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -351,6 +351,12 @@ def no_logo(change: dict, message: str) -> dict:
     return change
 
 
+def shown_columns(recipe: dict) -> dict:
+    wide = [str(c) for c in recipe.get("value_columns") or [] if isinstance(c, str)]
+    labels = recipe.get("value_column_labels") if isinstance(recipe.get("value_column_labels"), dict) else {}
+    return {c: str(labels.get(c) or c)[:80] for c in wide[:8]}
+
+
 @router.post("/chat")
 async def chat(body: ChatIn, user: Visitor = Depends(visitor)):
     t0 = time.time()
@@ -372,7 +378,10 @@ async def chat(body: ChatIn, user: Visitor = Depends(visitor)):
         raw = _content(data)
         try:
             kind = body.recipe.get("kind")
-            change = validate_change(extract_json(raw), columns, body.chart_names, kind=kind, caps=True, style=style, logo=layout.get("logo"))
+            change = validate_change(extract_json(raw), columns, body.chart_names, kind=kind, caps=True, style=style, logo=layout.get("logo"),
+                                     shown=shown_columns(body.recipe))
+            if attempt == 0 and needs_title(change, body.recipe):
+                raise ChangeError(TITLE_ASK)
             dropped = change.pop("dropped", [])
             target = change["set"].get("kind") or kind
             if dropped and attempt == 0:

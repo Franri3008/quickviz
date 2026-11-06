@@ -58,6 +58,20 @@ When it is not sure how to read a file, it asks Claude Haiku 5.5 once.
 A chart picture goes to Claude Haiku 5.5 three times.
 Each value is the middle of the three answers.
 Values the answers disagree on are marked unsure, and you can edit them.
+A table picture keeps one column per number header, so Revenue, Profit and Employees stay three columns.
+The value is called Rank only when the numbers can be ranks.
+
+Above the chart, steps 2 and 3 show two rows of blocks. The first holds the chart types.
+The second holds every column of the data, in the data's own order.
+The columns the chart draws are selected, like the active chart type.
+Clicking a number column makes it the value of a one-value chart such as bar.
+On a chart drawn from several value columns it adds or removes that column, from 2 up to 8, or exactly 2 on a dot range.
+Clicking a text column makes it the labels. On line and stacked area it makes it the lines.
+A column that cannot go in the chart is greyed out with a dashed border. Its tip says why.
+Each click redraws on the page with no AI call, and the title and axis titles follow the new column.
+The chat can still swap columns, and the row follows.
+Each row stays one line at any width. Blocks that do not fit go into a grey "+N" block with a menu.
+"+N" is selected when it hides a selected item.
 
 ## Mockup data
 
@@ -391,7 +405,8 @@ To try sign-in locally, put `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.e
 
 ## Version
 
-The version lives in `VERSION`. It is 3.1.3, where the server render works in the Docker image again.
+The version lives in `VERSION`. It is 3.2.0, which adds the columns row above the chart and keeps table pictures wide.
+3.1.3 made the server render work in the Docker image again.
 3.1.2 let the chat pick which value columns a wide chart shows.
 3.1.1 drew rank tables as a ranking chart.
 3.1.0 added the MCP server and personal API keys.

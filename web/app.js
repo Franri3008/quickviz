@@ -322,7 +322,7 @@ function heuristicMap(kind, cols, hints = {}) {
     const r = spec.replace("?", ""), opt = spec.endsWith("?");
     if (r === "v" || r === "v2") continue;
     const j = hints[r];
-    if (r === "series" && j === "(columns)" && askedWide()) { map.series = "(columns)"; continue; }
+    if (r === "series" && j === "(columns)" && kind !== "sankey" && askedWide()) { map.series = "(columns)"; continue; }
     if (j === null && opt) continue;
     if (j && fits(r, byName[j], kind) && !used.has(j) && (r !== "series" || splitsCat(kind, map.cat, j))) { map[r] = j; used.add(j); continue; }
     if (opt) {
@@ -331,7 +331,7 @@ function heuristicMap(kind, cols, hints = {}) {
     }
     const g = guess(r, cols, used, kind, map.cat);
     if (g) { map[r] = g; used.add(g); continue; }
-    if (r === "series") { map.series = "(columns)"; continue; }
+    if (r === "series" && kind !== "sankey") { map.series = "(columns)"; continue; }
     return null;
   }
   if (need.includes("v")) {
@@ -508,7 +508,7 @@ function aggregate(kind, rows, map, agg, unit) {
   return [];
 }
 
-const RANK_NAME = /rank|position|place|pos\b/i;
+const RANK_NAME = /\b(rank|ranking|position|place|pos)\b/i;
 function looksRanked(groups) {
   groups = groups.filter(g => g.length);
   const n = Math.max(0, ...groups.map(g => g.length));
@@ -573,7 +573,7 @@ function isRate(recipe) {
   if (map.v === "(count)" || recipe.agg === "count" || recipe.agg === "sum") return false;
   if (recipe.agg === "mean" || recipe.agg === "median") return true;
   const cols = map.wide || [map.v];
-  const text = [...cols, ...cols.map(c => (state.data && colByName(c)?.unit) || ""), recipe.unit || "", (state.names && state.names.unit) || ""].join(" ");
+  const text = [...cols, ...cols.map(c => (state.data && colByName(c)?.unit) || ""), recipe.unit || "", namesUnit(map)].join(" ");
   return RATE_TEXT.test(text);
 }
 
@@ -683,6 +683,25 @@ function autoLabels(kind, map) {
   }[kind] || [lab(map.cat), lab(map.v)]);
 }
 
+const lowFirst = s => (/^[A-Z][a-z]/.test(s) ? s.charAt(0).toLowerCase() + s.slice(1) : s);
+function namesKey(map) {
+  const values = map.wide ? map.wide : [map.v, map.v2].filter(Boolean);
+  const others = ["cat", "series", "t"].map(k => map[k]).filter(c => c && !String(c).startsWith("(")).sort();
+  return JSON.stringify([values, others]);
+}
+function namesFit(map) { return !state.names || state.names.forKey == null || state.names.forKey === namesKey(map); }
+function namesUnit(map) { return (namesFit(map) && state.names && state.names.unit) || ""; }
+function localTitle(kind, map) {
+  const nm = map.wide ? wideNames(map.wide) : {};
+  const vals = map.wide ? map.wide.map(w => nm[w]) : [lab(map.v)].filter(Boolean);
+  if (!vals.length) return "";
+  const what = vals.length > 3 ? `${vals[0]}, ${lowFirst(vals[1])} and ${vals.length - 2} more` : vals.length > 1 ? vals.slice(0, -1).join(", ") + " and " + lowFirst(vals.at(-1)) : vals[0];
+  if (kind === "scatter") return `${lab(map.v2)} and ${lowFirst(lab(map.v))}`;
+  if (kind === "histogram") return `Spread of ${lowFirst(what)}`;
+  const by = ["line", "stacked_area"].includes(kind) ? (map.series && !map.wide ? map.series : null) : map.cat;
+  return by && !String(by).startsWith("(") ? `${what} by ${lowFirst(lab(by))}` : what;
+}
+
 function defaultSort(kind) { return kind === "bar" ? {by: "value", order: "desc"} : null; }
 
 const YEARISH = /^\d{4}([-_ ]?([qQsShHmMwW]\d{1,2}|\d{2}))?$/;
@@ -754,7 +773,7 @@ async function refreshTitle() {
   try {
     const w = await api("/api/viz/names", {json: namesBody(r)});
     if (my !== seq || !state.recipe || catKey(state.recipe) !== k || !w || !w.title) return;
-    state.names = {...state.names, title: w.title};
+    state.names = {...state.names, title: w.title, forKey: namesKey(state.recipe.roles)};
     render();
   } catch (e) { }
 }
@@ -795,7 +814,7 @@ function buildSpec(recipe) {
   const years = drawnYears(rows);
   rows = renameRows(rows, recipe.rename);
   blended.n = 0;
-  let out = aggregate(kind, rows, map, recipe.agg, recipe.unit ?? (state.names && state.names.unit));
+  let out = aggregate(kind, rows, map, recipe.agg, recipe.unit ?? namesUnit(map));
   const blend = blended.n;
   if (blend) out = [];
   out = percentShare(kind, out, recipe.percent);
@@ -810,11 +829,11 @@ function buildSpec(recipe) {
   if (one) { if (yl) yl += ", " + one.keep[0]; else if (xl) xl += ", " + one.keep[0]; }
   const pct = recipe.percent && recipe.percent !== "none";
   const vName = map.wide ? map.wide.join(" ") : map.v || "";
-  const autoUnit = pct ? "%" : /%|pct|percent/i.test(vName) ? "%" : /€|eur\b|_eur|euro/i.test(vName) ? "€" : /\$|usd|dollar/i.test(vName) ? "$" : (state.names && state.names.unit) || "";
+  const autoUnit = pct ? "%" : /%|pct|percent/i.test(vName) ? "%" : /€|eur\b|_eur|euro/i.test(vName) ? "€" : /\$|usd|dollar/i.test(vName) ? "$" : namesUnit(map);
   const pick = (k, auto) => (recipe[k] != null ? recipe[k] : auto);
   const showing = showingNote(recipe);
   const spec = {
-    kind, title: trueYears(pick("title", (state.names && state.names.title) || ""), years), xLabel: pick("xLabel", xl), yLabel: pick("yLabel", pct && yl ? "Share of " + yl.replace(/^./, c => c.toLowerCase()) + " (%)" : yl),
+    kind, title: trueYears(pick("title", namesFit(map) ? (state.names && state.names.title) || "" : localTitle(kind, map)), years), xLabel: pick("xLabel", xl), yLabel: pick("yLabel", pct && yl ? "Share of " + yl.replace(/^./, c => c.toLowerCase()) + " (%)" : yl),
     unit: pick("unit", kind === "bump" ? "" : autoUnit), decimals: recipe.decimals ?? null, orientation: recipe.orientation || (kind === "bar" && recipe.top && recipe.top.auto ? "horizontal" : "auto"),
     valueLabels: recipe.valueLabels || "auto", stack: recipe.stack || "percent", highlight: recipe.highlight || [], colors: recipe.colors || {},
     legendTitle: recipe.legendTitle || "", note: recipe.note || "", autoNote: [showing, topText].filter(Boolean).join(" "), source: isMock() && QV.MOCK_SOURCE ? QV.MOCK_SOURCE : recipe.source || "", sourceUrl: isMock() ? "" : recipe.sourceUrl || "", rows: out,
@@ -1065,35 +1084,198 @@ function fitTop(d) {
 }
 
 function drawKinds() {
-  const box = $("kinds");
-  if (!state.recipe) { box.replaceChildren(); return; }
+  if (!state.recipe) { closeMore(); $("kinds").replaceChildren(); $("colpick").replaceChildren(); return; }
   const list = state.opts.includes(state.recipe.kind) ? state.opts : [state.recipe.kind, ...state.opts];
   const preview = state.view === 2, best = state.opts[0];
-  box.classList.remove("locked");
-  box.setAttribute("aria-label", preview ? "Chart types that fit this data. The first is the best fit." : "Chart type");
-  box.replaceChildren(...list.map(k => {
-    const b = document.createElement("button");
-    b.type = "button"; b.role = "tab"; b.textContent = KIND_NAMES[k] || k;
-    const on = k === state.recipe.kind;
-    b.className = (on ? "active" : "") + (k === best ? " best" : "");
-    b.setAttribute("aria-selected", String(on));
-    if (k === best) b.title = "Best fit for this data";
-    b.onclick = () => { if (!on) localChange({set: {kind: k}, autoTime: true}, `Switched to ${(KIND_NAMES[k] || k).toLowerCase()} chart`, state.view === 2); };
-    return b;
-  }));
-  const act = box.querySelector(".active");
-  if (act && box.scrollWidth > box.clientWidth + 1) {
-    const l = act.offsetLeft - box.offsetLeft, r = l + act.offsetWidth;
-    if (l < box.scrollLeft || r > box.scrollLeft + box.clientWidth) box.scrollLeft = Math.max(0, l - 24);
-  }
-  kindsEdge();
+  $("kinds").setAttribute("aria-label", preview ? "Chart types that fit this data. The first is the best fit." : "Chart type");
+  drawRow($("kinds"), list.map(k => ({key: k, text: KIND_NAMES[k] || k, on: k === state.recipe.kind, best: k === best,
+    tip: k === best ? "Best fit for this data" : "",
+    pick: () => localChange({set: {kind: k}, autoTime: true}, `Switched to ${(KIND_NAMES[k] || k).toLowerCase()} chart`, state.view === 2)})), "chart types");
+  drawRow($("colpick"), colBlocks(state.recipe).map(b => ({key: b.name, text: b.name, on: b.on, off: !!b.tip, tip: b.tip,
+    label: b.name + (b.on ? ", in the chart" : "") + (b.tip ? ". " + b.tip : ""),
+    pick: b.change ? () => localChange(b.change, b.label, state.view === 2) : null})), "columns");
 }
 
-function kindsEdge() {
-  const box = $("kinds");
-  box.classList.toggle("at-end", box.scrollLeft + box.clientWidth >= box.scrollWidth - 2);
+const ROLE_WORD = {cat: "the labels", series: "the groups", t: "the time axis"};
+function tidyTip(msg) {
+  const m = String(msg || "");
+  if (m.startsWith("That would add up")) return "Each label would mix several rows. Ask in the chat to sum or average them.";
+  return m.replace(/\s*Nothing was changed\.?$/, "").trim();
 }
-$("kinds").addEventListener("scroll", kindsEdge, {passive: true});
+
+function colChange(r, c) {
+  const kind = r.kind, map = r.roles || {}, need = (NEED[kind] || []).map(n => n.replace("?", ""));
+  const used = Object.entries(map).filter(([k, v]) => k !== "wide" && v === c.name).map(([k]) => k);
+  const on = used.length > 0 || (map.wide || []).includes(c.name);
+  if (isFlagCol(c)) return {on, tip: "A flag column. Charts do not draw it."};
+  const clearOf = keys => Object.fromEntries(keys.filter(k => r[k] != null).map(k => [k, null]));
+  const clear = clearOf(["title", "xLabel", "yLabel"]);
+  const valueClear = clearOf(["title", "xLabel", "yLabel", "unit", ...AXIS_FIELDS]);
+  if (c.type === "number") {
+    if (map.wide) {
+      const max = kind === "dot_range" ? 2 : 8, n = map.wide.length;
+      if (on && n <= 2) return {on, tip: kind === "dot_range" ? "A dot range shows exactly two value columns." : "This chart needs at least two value columns."};
+      if (!on && n >= max) return {on, tip: kind === "dot_range" ? "A dot range shows exactly two value columns." : `This chart shows at most ${max} value columns. Remove one first.`};
+      const columns = on ? map.wide.filter(w => w !== c.name) : [...map.wide, c.name];
+      return {on, change: {set: valueClear, ops: [{op: "roles", columns}]}, label: `${on ? "Removed" : "Added"} ${c.name}`, want: !on};
+    }
+    if (!need.includes("v")) return {on, tip: `A ${(KIND_NAMES[kind] || kind).toLowerCase()} chart has no number to pick.`};
+    if (on) return {on};
+    const role = kind === "scatter" ? "v2" : "v";
+    return {on, change: {set: valueClear, ops: [{op: "roles", [role]: c.name}]}, label: kind === "scatter" ? `Put ${c.name} on the y axis` : `Showing ${c.name}`, want: true};
+  }
+  const role = c.type === "time" && need.includes("t") ? "t" : need.includes("cat") ? "cat" : need.includes("series") ? "series" : null;
+  if (!role) return {on, tip: `A ${(KIND_NAMES[kind] || kind).toLowerCase()} chart draws numbers only.`};
+  if (map[role] === c.name) return {on};
+  const op = {op: "roles", [role]: c.name};
+  for (const k of used) if (k !== role && ROLE_WORD[k] && map[role] && !String(map[role]).startsWith("(")) op[k] = map[role];
+  const set = {...clear};
+  if (r.top && r.top.auto) set.top = null;
+  return {on, change: {set, ops: [op]}, label: `${c.name} as ${ROLE_WORD[role]}`, want: true};
+}
+
+const colCache = new WeakMap();
+function colBlocks(r) {
+  if (!state.data || !r || !r.kind) return [];
+  let m = colCache.get(state.data);
+  if (!m) { m = new Map(); colCache.set(state.data, m); }
+  const key = JSON.stringify(r);
+  if (m.has(key)) return m.get(key);
+  const out = state.data.cols.map(c => {
+    const b = {name: c.name, ...colChange(r, c)};
+    if (!b.change) return b;
+    try {
+      const next = applyChange(r, b.change);
+      const has = Object.entries(next.roles).some(([k, v]) => (k === "wide" ? v.includes(c.name) : v === c.name));
+      if (has !== b.want) return {name: c.name, on: b.on, tip: `It does not fit a ${(KIND_NAMES[r.kind] || r.kind).toLowerCase()} chart.`};
+    } catch (e) { return {name: c.name, on: b.on, tip: tidyTip(e.message)}; }
+    return b;
+  });
+  if (m.size > 40) m.clear();
+  m.set(key, out);
+  return out;
+}
+
+function closeMore(focus) {
+  const menu = document.querySelector(".kinds .menu:not([hidden])");
+  if (!menu) return;
+  menu.hidden = true;
+  const btn = menu.parentElement.querySelector(".more");
+  if (btn) { btn.setAttribute("aria-expanded", "false"); if (focus) btn.focus(); }
+}
+
+function blockButton(it) {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.dataset.key = it.key;
+  b.textContent = it.text;
+  b.className = (it.on ? "active" : "") + (it.best ? " best" : "") + (it.off ? " off" : "");
+  b.setAttribute("aria-pressed", String(!!it.on));
+  if (it.off) b.setAttribute("aria-disabled", "true");
+  if (it.tip || it.text.length > 24) b.title = [it.text.length > 24 ? it.text : "", it.tip].filter(Boolean).join(". ");
+  if (it.label) b.setAttribute("aria-label", it.label);
+  b.onclick = () => act(it);
+  return b;
+}
+
+function act(it) {
+  if (it.off) { setErr(it.tip); return; }
+  if (!it.on && it.pick) it.pick();
+}
+
+function moreMenu(wrap, hidden, what) {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "more" + (hidden.some(it => it.on) ? " active" : "");
+  btn.dataset.key = "\u0000more";
+  btn.textContent = `+${hidden.length}`;
+  const on = hidden.filter(it => it.on).map(it => it.text);
+  btn.setAttribute("aria-label", `${hidden.length} more ${what}${on.length ? ", including the selected " + on.join(", ") : ""}`);
+  btn.setAttribute("aria-haspopup", "menu");
+  btn.setAttribute("aria-expanded", "false");
+  const menu = document.createElement("div");
+  menu.className = "menu";
+  menu.setAttribute("role", "menu");
+  menu.setAttribute("aria-label", `More ${what}`);
+  menu.hidden = true;
+  menu.replaceChildren(...hidden.map(it => {
+    const m = document.createElement("button");
+    m.type = "button";
+    m.setAttribute("role", what === "columns" ? "menuitemcheckbox" : "menuitemradio");
+    m.setAttribute("aria-checked", String(!!it.on));
+    m.dataset.key = it.key;
+    m.textContent = it.text;
+    if (it.off) {
+      m.setAttribute("aria-disabled", "true");
+      m.classList.add("off");
+      const why = document.createElement("span");
+      why.className = "why";
+      why.textContent = it.tip;
+      m.append(why);
+    }
+    m.onclick = e => { e.stopPropagation(); closeMore(!it.on && !it.off ? false : true); act(it); };
+    return m;
+  }));
+  btn.onclick = e => {
+    e.stopPropagation();
+    if (!menu.hidden) { closeMore(); return; }
+    closeMore();
+    menu.hidden = false;
+    btn.setAttribute("aria-expanded", "true");
+    menu.classList.remove("to-left");
+    if (menu.getBoundingClientRect().left < 8) menu.classList.add("to-left");
+    (menu.querySelector('[aria-checked="true"]') || menu.querySelector("button")).focus();
+  };
+  btn.addEventListener("keydown", e => { if (e.key === "ArrowDown" && menu.hidden) { e.preventDefault(); btn.click(); } });
+  menu.addEventListener("keydown", e => {
+    const items = [...menu.querySelectorAll("button")], i = items.indexOf(document.activeElement);
+    if (e.key === "Escape") { e.preventDefault(); closeMore(true); }
+    else if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); items[(i + (e.key === "ArrowDown" ? 1 : items.length - 1)) % items.length].focus(); }
+    else if (e.key === "Home" || e.key === "End") { e.preventDefault(); items[e.key === "Home" ? 0 : items.length - 1].focus(); }
+    else if (e.key === "Tab") closeMore();
+  });
+  wrap.replaceChildren(btn, menu);
+}
+
+function drawRow(box, items, what) {
+  const had = box.contains(document.activeElement) ? document.activeElement.dataset.key : null;
+  closeMore();
+  const blocks = items.map(blockButton);
+  const title = document.createElement("span");
+  title.className = "row-title";
+  title.setAttribute("aria-hidden", "true");
+  title.textContent = what === "columns" ? "Columns" : "Chart";
+  box.replaceChildren(title, ...blocks);
+  box.classList.add("measuring");
+  const over = () => box.scrollWidth > box.clientWidth + 1;
+  if (over()) {
+    const wrap = document.createElement("span");
+    wrap.className = "more-wrap";
+    box.append(wrap);
+    let keep = blocks.length - 1;
+    do {
+      blocks[keep].remove();
+      moreMenu(wrap, items.slice(keep), what);
+      keep--;
+    } while (keep > 0 && over());
+  }
+  box.classList.remove("measuring");
+  if (typeof had === "string") (blocks.find(x => x.dataset.key === had && x.isConnected) || box.querySelector(".more") || blocks[0]).focus();
+}
+
+let rowsW = 0, rowsFrame = 0;
+function refitRows() {
+  cancelAnimationFrame(rowsFrame);
+  rowsFrame = requestAnimationFrame(() => {
+    const w = $("kinds").clientWidth;
+    if (w === rowsW) return;
+    rowsW = w;
+    drawKinds();
+  });
+}
+window.addEventListener("resize", refitRows);
+if (window.ResizeObserver) new ResizeObserver(refitRows).observe($("stage"));
+document.addEventListener("click", e => { if (!e.target.closest(".more-wrap")) closeMore(); });
 
 function mergeFilter(filters, op) {
   const out = filters.filter(f => !(f.auto && f.column === op.column)).map(f => ({...f}));
@@ -1390,7 +1572,7 @@ function recipeForAI(r) {
     unit: s.unit, decimals: r.decimals ?? null, filters: r.filters || [], top: r.top && r.top.n ? topForAI(r.top) : null, sort: r.sort || defaultSort(r.kind), aggregate: r.agg || "auto",
     percent_share: r.percent || "none", highlight: r.highlight || [], colors: r.colors || {}, source: r.source || "", note: r.note || "", what_is_shown: s.autoNote || "",
     legendTitle: r.legendTitle || ""};
-  if (r.roles && r.roles.wide) out.value_columns = r.roles.wide.slice();
+  if (r.roles && r.roles.wide) { out.value_columns = r.roles.wide.slice(); out.value_column_labels = wideNames(r.roles.wide); }
   if (r.kind && isRate(r)) out.values_are = "rates";
   if (r.kind === "bar") out.orientation = (r === state.recipe && state.orient) || r.orientation || "auto";
   if (r.kind === "stacked_bar") out.orientation = r.orientation === "vertical" ? "vertical" : "horizontal";
@@ -2104,6 +2286,7 @@ async function autoChart() {
     return;
   }
   state.recipe = withAutoControls(recipe);
+  if (desc) state.names.forKey = namesKey(state.recipe.roles);
   state.opts = kindOptions(recipe.kind, p.ranked);
   if (failed instanceof CapError) pickMsg("The AI budget is used up, so this is a simple first guess. You can switch the chart type above it.", "Here is a first guess at your chart");
   else if (failed) pickMsg("The AI could not be reached, so this is a simple first guess. You can switch the chart type above it.", "Here is a first guess at your chart");
@@ -2121,6 +2304,7 @@ async function autoChart() {
     state.names = w;
     state.namesFor = catKey(state.recipe);
     state.recipe = namedRecipe(state.recipe, w);
+    state.names.forKey = namesKey(state.recipe.roles);
     render();
   } catch (e) {
   } finally {

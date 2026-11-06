@@ -1639,7 +1639,8 @@
       const b = box(C, top, {left: PAD + lwL, bottom: 10, right: PAD + lwR});
       function layout(shared) {
         const id = (side, n) => (shared ? n : side + n);
-        const names = uniq(pairs.flatMap(p => [id("s:", p.s), id("t:", p.t)]));
+        const all = uniq(pairs.flatMap(p => [id("s:", p.s), id("t:", p.t)])), rest = n => [OTHER, "s:" + OTHER, "t:" + OTHER].includes(n);
+        const names = [...all.filter(n => !rest(n)), ...all.filter(rest)];
         const idx = new Map(names.map((n, i) => [n, i]));
         const links = pairs.filter(p => !shared || p.s !== p.t).map(p => ({source: idx.get(id("s:", p.s)), target: idx.get(id("t:", p.t)), value: p.v}));
         const nodes = names.map(n => ({id: n, name: shared ? n : n.slice(2)}));
@@ -1660,7 +1661,7 @@
       const nodes = b.g.selectAll("rect.node").data(sk.nodes).join("rect").attr("class", "node").attr("x", n => n.x0).attr("y", n => n.y0)
         .attr("width", n => n.x1 - n.x0).attr("height", n => Math.max(1, n.y1 - n.y0)).attr("fill", nodeColor);
       nodes.append("title").text(n => `${n.name}: ${fmtFull(n.value, spec.unit)}`);
-      const show = sk.nodes.filter(n => n.y1 - n.y0 >= 6 || sk.nodes.length < 16);
+      const show = sk.nodes;
       const side = n => (n.x0 < 1 ? "L" : "R");
       ["L", "R"].forEach(sd => {
         const items = show.filter(n => side(n) === sd).sort((a, c) => (a.y0 + a.y1) - (c.y0 + c.y1));

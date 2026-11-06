@@ -130,27 +130,96 @@ def companies():
     return {**out, "rows": [dict(zip(names, r)) for r in out["rows"]], "cols": out["columns"], "name": "companies.csv"}
 
 
-def test_chat_picks_the_value_columns_of_a_sankey():
+def test_chat_picks_the_value_columns_of_a_stacked_bar():
     out = run(companies(), """
       const ALL = ["ai_companies", "all_companies", "ai_recent_companies", "recent_companies"];
-      const r = withAutoControls(applyChange(fitsKind("sankey", {filters: []}), {ops: [{op: "roles", cat: "country", columns: ALL}]}));
+      const r = withAutoControls(applyChange(fitsKind("stacked_bar", {filters: []}), {ops: [{op: "roles", cat: "country", columns: ALL}]}));
       const two = applyChange(r, {ops: [{op: "roles", columns: ["ai_recent_companies", "recent_companies"]}]});
       const s = buildSpec(two);
-      ({before: r.roles.wide, seen: recipeForAI(two).value_columns, roles: two.roles, targets: [...new Set(s.rows.map(x => x.series))]})
+      ({before: r.roles.wide, seen: recipeForAI(two).value_columns, labels: recipeForAI(two).value_column_labels, roles: two.roles,
+        targets: [...new Set(s.rows.map(x => x.series))]})
     """)
     assert len(out["before"]) == 4
     assert out["roles"]["cat"] == "country" and out["roles"]["series"] == "(columns)"
     assert out["roles"]["wide"] == ["ai_recent_companies", "recent_companies"]
     assert out["seen"] == ["ai_recent_companies", "recent_companies"]
-    assert len(out["targets"]) == 2
+    assert sorted(out["labels"].values()) == sorted(out["targets"]) and len(out["targets"]) == 2
+
+
+def test_sankey_is_not_offered_for_overlapping_value_columns():
+    out = run(companies(), """
+      const ALL = ["ai_companies", "all_companies", "ai_recent_companies", "recent_companies"];
+      const bar = fitsKind("stacked_bar", {filters: []});
+      let asked = null;
+      try { applyChange(bar, {set: {kind: "sankey"}, ops: [{op: "roles", cat: "country", columns: ALL}]}); } catch (e) { asked = e.message; }
+      ({sankey: fitsKind("sankey", {filters: []}), opts: kindOptions("bar", [["sankey", 0.9]]), asked})
+    """)
+    assert out["sankey"] is None and "sankey" not in out["opts"]
+    assert out["asked"]
+
+
+def test_long_form_sankey_is_still_offered():
+    rows = ["source,target,amount"] + [f"{s},{t},{i + j + 1}" for i, s in enumerate(["Belgium", "France", "Spain"]) for j, t in enumerate(["Software", "Hardware"])]
+    out = parse_file("\n".join(rows).encode(), "flows.csv", None)
+    names = [c["name"] for c in out["columns"]]
+    data = {**out, "rows": [dict(zip(names, r)) for r in out["rows"]], "cols": out["columns"], "name": "flows.csv"}
+    got = run(data, """const r = fitsKind("sankey", {filters: []}); ({roles: r && r.roles, opts: kindOptions("bar", [])})""")
+    assert got["roles"] == {"cat": "source", "series": "target", "v": "amount"}
+    assert "sankey" in got["opts"]
 
 
 def test_value_columns_must_be_numbers():
     cols = [{"name": "country", "type": "category"}, {"name": "ai_companies", "type": "number"}, {"name": "recent_companies", "type": "number"}]
     with pytest.raises(ChangeError) as e:
-        validate_change({"reply": "ok", "ops": [{"op": "roles", "columns": ["country", "ai_companies"]}]}, cols, [], "sankey")
+        validate_change({"reply": "ok", "ops": [{"op": "roles", "columns": ["country", "ai_companies"]}]}, cols, [], "stacked_bar")
     assert '"country"' in str(e.value)
     with pytest.raises(ChangeError):
-        validate_change({"reply": "ok", "ops": [{"op": "roles", "columns": ["ai_companies"]}]}, cols, [], "sankey")
-    ok = validate_change({"reply": "ok", "ops": [{"op": "roles", "columns": ["AI companies", "recent_companies"]}]}, cols, [], "sankey")
+        validate_change({"reply": "ok", "ops": [{"op": "roles", "columns": ["ai_companies"]}]}, cols, [], "stacked_bar")
+    ok = validate_change({"reply": "ok", "ops": [{"op": "roles", "columns": ["AI companies", "recent_companies"]}]}, cols, [], "stacked_bar")
     assert ok["ops"][0]["columns"] == ["ai_companies", "recent_companies"]
+
+
+WIDE_COLS = [{"name": "country", "type": "category"}] + [{"name": n, "type": "number"} for n in ("ai_use_small", "ai_use_large", "ai_use_all")]
+SHOWN = {"ai_use_small": "Small firms", "ai_use_large": "Large firms", "ai_use_all": "All firms"}
+
+
+def test_chat_drops_a_drawn_series_by_its_chart_name():
+    for column in ("(columns)", "series"):
+        out = validate_change({"reply": "ok", "ops": [{"op": "filter", "column": column, "drop": ["All firms"]}]}, WIDE_COLS, [], "stacked_bar", shown=SHOWN)
+        assert out["ops"] == [{"op": "roles", "columns": ["ai_use_small", "ai_use_large"]}]
+    out = validate_change({"reply": "ok", "ops": [{"op": "filter", "column": "(columns)", "keep": ["small firms", "ai_use_all"]}]}, WIDE_COLS, [], "stacked_bar", shown=SHOWN)
+    assert out["ops"] == [{"op": "roles", "columns": ["ai_use_small", "ai_use_all"]}]
+    out = validate_change({"reply": "ok", "ops": [{"op": "roles", "columns": ["Small firms", "Large firms"]}]}, WIDE_COLS, [], "stacked_bar", shown=SHOWN)
+    assert out["ops"][0]["columns"] == ["ai_use_small", "ai_use_large"]
+    with pytest.raises(ChangeError, match="Small firms"):
+        validate_change({"reply": "ok", "ops": [{"op": "filter", "column": "(columns)", "drop": ["Tiny firms"]}]}, WIDE_COLS, [], "stacked_bar", shown=SHOWN)
+    with pytest.raises(ChangeError, match="roles op with v"):
+        validate_change({"reply": "ok", "ops": [{"op": "filter", "column": "(columns)", "keep": ["Small firms"]}]}, WIDE_COLS, [], "stacked_bar", shown=SHOWN)
+    with pytest.raises(ChangeError, match="no column"):
+        validate_change({"reply": "ok", "ops": [{"op": "filter", "column": "(columns)", "drop": ["All firms"]}]}, WIDE_COLS, [], "stacked_bar")
+
+
+def test_chat_cannot_draw_a_sankey_from_value_columns():
+    with pytest.raises(ChangeError, match="source column and one target column"):
+        validate_change({"reply": "ok", "set": {"kind": "sankey"}, "ops": [{"op": "roles", "columns": ["ai_use_small", "ai_use_large"]}]}, WIDE_COLS, [], "stacked_bar")
+
+
+WIDE_CHAT = {"message": "Drop all firms", "columns": WIDE_COLS, "chart_names": list(SHOWN.values()),
+             "recipe": {"kind": "stacked_bar", "title": "AI use by firm size, all firms included", "roles": {"cat": "country", "series": "(columns)", "v": "(value)"},
+                        "value_columns": list(SHOWN), "value_column_labels": SHOWN}}
+
+
+def test_chat_asks_for_a_title_when_it_hides_series(client, monkeypatch):
+    from tests.test_patches import fake_chat
+    c = client
+    drop = {"reply": "Dropped all firms.", "ops": [{"op": "filter", "column": "(columns)", "drop": ["All firms"]}]}
+    titled = {**drop, "set": {"title": "AI use in small and large firms"}}
+    sent = fake_chat(monkeypatch, [drop, titled])
+    j = c.post("/api/viz/chat", json=WIDE_CHAT).json()
+    assert j["tries"] == 2 and j["set"]["title"] == "AI use in small and large firms"
+    assert j["ops"] == [{"op": "roles", "columns": ["ai_use_small", "ai_use_large"]}]
+    assert "title" in sent[1]["messages"][-1]["content"]
+    sent = fake_chat(monkeypatch, [titled])
+    assert c.post("/api/viz/chat", json=WIDE_CHAT).json()["tries"] == 1
+    sent = fake_chat(monkeypatch, [{"reply": "Bigger font.", "set": {"fontSize": "large"}}])
+    assert c.post("/api/viz/chat", json=WIDE_CHAT).json()["tries"] == 1

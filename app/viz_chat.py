@@ -1,3 +1,4 @@
+import difflib
 import json
 import re
 from pathlib import Path
@@ -464,7 +465,7 @@ You reply with one JSON object only, no prose around it, in this shape:
 
 Content fields you may put in "set":
 kind: one of bar, line, stacked_area, stacked_bar, scatter, histogram, heatmap, treemap, donut, sankey, bump, dot_range, map
-title, xLabel, yLabel, legendTitle, note, source: text. The chart shows no note unless the user asks for one. "what_is_shown" in the recipe says which filters and top N are drawn, use it when the user asks for a note on what is shown. Titles in sentence case, no final period, at most 10 words. "" removes a text.
+title, xLabel, yLabel, legendTitle, note, source: text. When a change hides or swaps series, targets, value columns or the value shown, also set a title that names only what is still drawn. The chart shows no note unless the user asks for one. "what_is_shown" in the recipe says which filters and top N are drawn, use it when the user asks for a note on what is shown. Titles in sentence case, no final period, at most 10 words. "" removes a text.
   xLabel names the category or time axis, yLabel the value axis, whatever the orientation. In a scatter xLabel is the x axis and yLabel the y axis.
 unit: a short unit symbol such as "%", "€", "$", "bn", "bcm", or "".
 decimals: 0 to 3, or null for automatic.
@@ -542,6 +543,7 @@ They let readers of the chart and of the HTML download change what is shown. The
   Each option holds data operations and fields like the main reply, never kind or controls. E.g. two value columns are two roles ops with v set to each column,
   absolute against percent is percent_share "none" against "total", or stack "absolute" against "percent" for a stacked bar.
 {"type": "select", "column": C, "style": "dropdown" or "buttons"}  pick one value of category column C. Or "options" like a switch, 2 to 12 of them.
+A switch between three or more things is a select with style "buttons".
 "label" names the control. All controls sit in one row at the bottom of the chart, above the source. Column controls draw each step with the other filters kept.
 
 Data operations, applied to the full table on top of what is already there:
@@ -565,12 +567,12 @@ Data operations, applied to the full table on top of what is already there:
 {"op": "percent_share", "within": "total" or "group" or "none"}  turn values into % shares of the whole, or within each group or time step. Also set unit "%"
 {"op": "rename", "column": C, "map": {"old value": "new label"}}  relabel items
 {"op": "roles", "cat": C, "series": C, "t": C, "v": C, "v2": C}  choose which column plays which role. Give only the roles you change. null clears a role
-{"op": "roles", "columns": [C, C]}  pick which 2 to 8 number columns a chart drawn from several value columns shows. chart.value_columns lists the ones shown now
+{"op": "roles", "columns": [C, C]}  pick which 2 to 8 number columns a chart drawn from several value columns shows. chart.value_columns lists the ones shown now and chart.value_column_labels the name each has on the chart. Hide or bring back one of these series with this op, never with a filter
 
 Roles per chart kind. cat = the items compared, series = sub-groups, t = time steps, v = the main number, v2 = second number:
 bar, treemap, donut, map: cat, v. line: t, v, optional series. stacked_area: t, series, v. stacked_bar, heatmap: cat, series, v.
 dot_range: cat, a series with exactly two values, v. Or cat, v and v2 when the two dots are two number columns in the same unit.
-sankey: cat is the source, series the target, v. scatter: v on x, v2 on y, optional series, optional cat to name points. histogram: v. bump: t, cat, v as rank.
+sankey: cat is the source, series the target, v. Its targets must be separate parts of one whole, so nothing is counted twice. Never draw a sankey from several value columns, such as AI companies and all companies, because they overlap. scatter: v on x, v2 on y, optional series, optional cat to name points. histogram: v. bump: t, cat, v as rank.
 Swapping the rows and columns of a heatmap, or the bars and segments of a stacked bar, is a roles op that swaps cat and series.
 
 Examples:
@@ -601,8 +603,10 @@ Examples:
 "Decrease the size of the unhighlighted labels" when no highlight is set -> no change, reply that no names are highlighted yet, so there are no other names to shrink
 "Bold the highlighted names" when a highlight is set -> no change, reply that the highlighted and EU names are already bold
 "Add a year slider" with a time column "year" -> "set": {"controls": [{"type": "slider", "column": "year", "label": "Year", "play": true}]}
+"Add a button to switch between Revenue, Proft, Employees" when these are number columns -> "set": {"controls": [{"type": "select", "style": "buttons", "label": "Measure", "options": [{"label": "Revenue", "ops": [{"op": "roles", "v": "Revenue"}]}, {"label": "Profit", "ops": [{"op": "roles", "v": "Profit"}]}, {"label": "Employees", "ops": [{"op": "roles", "v": "Employees"}]}]}]}
+The same request when Revenue, Profit and Employees are values of a column "Series" -> "set": {"controls": [{"type": "select", "column": "Series", "style": "buttons", "label": "Measure"}]}
 "Let readers switch between all firms and large firms" -> "set": {"controls": [{"type": "switch", "options": [{"label": "All firms", "ops": [{"op": "roles", "v": "ai_use_pct_all_firms"}]}, {"label": "Large firms", "ops": [{"op": "roles", "v": "ai_use_pct_large_firms"}]}]}]}
-"Keep only recent AI and recent all companies" when value_columns is ["ai_companies", "all_companies", "ai_recent_companies", "recent_companies"] -> "ops": [{"op": "roles", "columns": ["ai_recent_companies", "recent_companies"]}]
+"Keep only recent AI and recent all companies" when value_columns is ["ai_companies", "all_companies", "ai_recent_companies", "recent_companies"] -> "set": {"title": "Recent AI and recent companies by country"}, "ops": [{"op": "roles", "columns": ["ai_recent_companies", "recent_companies"]}]
 "Let readers turn lines on and off" -> "set": {"controls": [{"type": "legend"}]}
 "Top 10 by average over the period" on a line chart -> "ops": [{"op": "top_n", "n": 10, "by": "mean"}]
 "Top 5 plus other" on amounts -> "ops": [{"op": "top_n", "n": 5, "other": true}]
@@ -757,6 +761,23 @@ def _col_lookup(columns: list[dict]):
     return by_exact, by_norm
 
 
+def _bare(s) -> str:
+    return _norm(re.sub(r"\([^()]*\)", "", str(s))) or _norm(s)
+
+
+def _near(name, known: list[str]) -> str | None:
+    bare = [k for k in known if _bare(k) == _bare(name)]
+    if len(bare) == 1:
+        return bare[0]
+    keys = {}
+    for k in known:
+        keys.setdefault(_bare(k), []).append(k)
+    close = difflib.get_close_matches(_bare(name), list(keys), n=2, cutoff=0.8)
+    if len(close) == 1 and len(keys[close[0]]) == 1 and len(_bare(name)) >= 4:
+        return keys[close[0]][0]
+    return None
+
+
 def _fix_col(name, by_exact, by_norm, allow_special=False):
     if name is None:
         return None
@@ -767,6 +788,9 @@ def _fix_col(name, by_exact, by_norm, allow_special=False):
     hit = by_norm.get(_norm(name))
     if hit:
         return hit["name"]
+    near = _near(name, list(by_exact))
+    if near:
+        return near
     raise ChangeError(f'There is no column "{name}". Columns are: ' + ", ".join(by_exact)[:400])
 
 
@@ -783,7 +807,7 @@ def _fix_values(values, col: dict, what: str):
         s = str(v[0] if isinstance(v, list) and v else v)
         if isinstance(v, float) and v.is_integer():
             s = str(int(v))
-        hit = exact.get(s) or norm.get(_norm(s))
+        hit = exact.get(s) or norm.get(_norm(s)) or _near(s, list(exact))
         if hit is None:
             bad.append(s)
         else:
@@ -841,10 +865,64 @@ def no_map_labels(change: dict, kind: str | None) -> dict:
     return {**change, "set": edits, "reply": reply}
 
 
-def _fix_ops(raw_ops, by_exact, by_norm, renamed_to: list) -> list[dict]:
+SERIES_WORDS = {"series", "columns", "valuecolumns", "value", "target", "targets"}
+
+
+def _fix_wide(name, by_exact, by_norm, shown: dict):
+    s = str(name)
+    labels = {str(v): k for k, v in shown.items()}
+    norm_labels = {_norm(v): k for k, v in shown.items()}
+    if s in by_exact:
+        return s
+    if s in labels:
+        return labels[s]
+    hit = by_norm.get(_norm(s))
+    if hit:
+        return hit["name"]
+    if _norm(s) in norm_labels:
+        return norm_labels[_norm(s)]
+    raise ChangeError(f'There is no column "{s}". The value columns shown now are: '
+                      + ", ".join(f'{k} (drawn as "{v}")' for k, v in shown.items())[:400])
+
+
+def _wide_count(names: list) -> list:
+    if not 2 <= len(names) <= 8:
+        raise ChangeError(f"roles columns needs 2 to 8 number columns, it has {len(names)}. To show one value column, use a roles op with v")
+    return names
+
+
+def _series_filter(op, by_exact, by_norm, shown: dict) -> dict | None:
+    if not shown or op.column in by_exact or not (op.column in SPECIAL_COLUMNS or _norm(op.column) in SERIES_WORDS):
+        return None
+    if op.min is not None or op.max is not None or (op.keep is None and op.drop is None):
+        raise ChangeError("The series of this chart are value columns. Pick them with a roles op with columns")
+    picked = [_fix_wide(v, by_exact, by_norm, shown) for v in (op.keep if op.keep is not None else op.drop or [])]
+    names = [c for c in shown if (c in picked) == (op.keep is not None)]
+    return {"op": "roles", "columns": _wide_count(names)}
+
+
+def _value_as_filter(op, by_exact, by_norm) -> dict | None:
+    if op.model_fields_set & set(ROLE_KEYS) != {"v"} or op.columns is not None or not op.v or op.v in SPECIAL_COLUMNS:
+        return None
+    if op.v in by_exact or _norm(op.v) in by_norm or _near(op.v, list(by_exact)):
+        return None
+    cats = [c for c in by_exact.values() if c.get("type") != "number" and c.get("values")]
+    hits = [(c, _near(op.v, [str(x) for x in c["values"]]) or next((str(x) for x in c["values"] if _norm(x) == _norm(op.v)), None)) for c in cats]
+    hits = [(c, h) for c, h in hits if h]
+    if len(hits) != 1:
+        return None
+    return {"op": "filter", "column": hits[0][0]["name"], "keep": [hits[0][1]]}
+
+
+def _fix_ops(raw_ops, by_exact, by_norm, renamed_to: list, shown: dict | None = None) -> list[dict]:
     ops = []
+    shown = shown or {}
     for op in raw_ops:
         d = op.model_dump(exclude_none=True)
+        wide = _series_filter(op, by_exact, by_norm, shown) if op.op == "filter" else None
+        if wide:
+            ops.append(wide)
+            continue
         if op.op == "filter":
             col = by_exact[_fix_col(op.column, by_exact, by_norm)]
             d["column"] = col["name"]
@@ -866,6 +944,8 @@ def _fix_ops(raw_ops, by_exact, by_norm, renamed_to: list) -> list[dict]:
             olds = _fix_values(list(op.map.keys()), col, "rename")
             d["map"] = {o: str(n).strip() for o, n in zip(olds, op.map.values())}
             renamed_to += list(d["map"].values())
+        elif op.op == "roles" and (as_filter := _value_as_filter(op, by_exact, by_norm)):
+            d = as_filter
         elif op.op == "roles":
             for k in ROLE_KEYS:
                 if k in op.model_fields_set:
@@ -874,13 +954,11 @@ def _fix_ops(raw_ops, by_exact, by_norm, renamed_to: list) -> list[dict]:
                     if k in ("v", "v2") and d[k] and d[k] not in SPECIAL_COLUMNS and by_exact[d[k]].get("type") != "number":
                         raise ChangeError(f'role {k} needs a column of numbers, "{d[k]}" is not')
             if op.columns is not None:
-                names = list(dict.fromkeys(_fix_col(c, by_exact, by_norm) for c in op.columns))
+                names = list(dict.fromkeys(_fix_wide(c, by_exact, by_norm, shown) for c in op.columns))
                 bad = [n for n in names if by_exact[n].get("type") != "number"]
                 if bad:
                     raise ChangeError("roles columns must all be number columns, " + ", ".join(f'"{b}"' for b in bad) + " is not")
-                if not 2 <= len(names) <= 8:
-                    raise ChangeError(f"roles columns needs 2 to 8 number columns, it has {len(names)}")
-                d["columns"] = names
+                d["columns"] = _wide_count(names)
         ops.append(d)
     return ops
 
@@ -905,6 +983,16 @@ def _fix_shade(shade: list[dict], known: list[str]) -> list[dict]:
     return out
 
 
+def _fixed_label(o, fixed: list[dict]) -> str:
+    label = o.label.strip()
+    if len(o.ops) != 1 or len(fixed) != 1 or _norm(label) != _norm(getattr(o.ops[0], "v", None) or ""):
+        return label
+    name = fixed[0].get("v") or (fixed[0].get("keep") or [None])[0]
+    if not name or _norm(name) == _norm(label):
+        return label
+    return re.sub(r"\s*\([^()]*\)\s*$", "", str(name)).strip() or label
+
+
 def _fix_controls(controls: list, by_exact, by_norm, renamed_to: list, style: str = "ceps") -> list[dict]:
     out, seen = [], set()
     for i, c in enumerate(controls):
@@ -923,14 +1011,18 @@ def _fix_controls(controls: list, by_exact, by_norm, renamed_to: list, style: st
                 col = by_exact[_fix_col(c.column, by_exact, by_norm)]
                 d["column"] = col["name"]
                 n = col.get("distinct") or len(col.get("values") or [])
-                if c.type == "switch" and n != 2:
+                if c.type == "switch" and n > 2 and col.get("type") != "number" and n <= 24:
+                    d.update(type="select", style="buttons")
+                elif c.type == "switch" and n != 2:
                     raise ChangeError(f'{where}: a switch on a column needs exactly 2 values, "{col["name"]}" has {n}. Use a select instead')
                 if c.type == "select" and (col.get("type") == "number" or not 2 <= n <= 24):
                     raise ChangeError(f'{where}: a select needs a column of 2 to 24 names, "{col["name"]}" has {n} {col.get("type")} values')
                 if c.type == "slider" and (n < 2 or (col.get("type") == "category" and n > 60)):
                     raise ChangeError(f'{where}: a slider needs a time or number column with 2 or more values, "{col["name"]}" does not fit')
             else:
-                if c.type == "switch" and len(c.options) != 2:
+                if c.type == "switch" and 2 < len(c.options) <= 12:
+                    d.update(type="select", style="buttons")
+                elif c.type == "switch" and len(c.options) != 2:
                     raise ChangeError(f"{where}: a switch has exactly 2 options")
                 if c.type == "select" and len(c.options) > 12:
                     raise ChangeError(f"{where}: a select has at most 12 options")
@@ -945,7 +1037,8 @@ def _fix_controls(controls: list, by_exact, by_norm, renamed_to: list, style: st
                         raise ChangeError(f"{where}.options.{j}.set: " + "; ".join(msgs)) from e
                     if not edits and not o.ops:
                         raise ChangeError(f"{where}.options.{j}: each option needs set or ops")
-                    opts.append({"label": o.label.strip(), "set": _clean_text(edits), "ops": _fix_ops(o.ops, by_exact, by_norm, renamed_to)})
+                    fixed = _fix_ops(o.ops, by_exact, by_norm, renamed_to)
+                    opts.append({"label": _fixed_label(o, fixed), "set": _clean_text(edits), "ops": fixed})
                 d["options"] = opts
         out.append(d)
     return out
@@ -967,8 +1060,21 @@ def fix_logo(edits: dict, reply: str, style: str, current) -> tuple[dict, str]:
     return edits, reply
 
 
+NO_WIDE_SANKEY = ("A flow chart needs one source column and one target column. It cannot use several value columns as its targets, "
+                  "because they can count the same things twice. Pick another chart kind for them, or change nothing and say why")
+TITLE_ASK = ("This change shows other values or series, so the current title may no longer match the chart. "
+             "Send the same change again and also set a title that names only what is still drawn")
+
+
+def needs_title(change: dict, recipe: dict) -> bool:
+    if not recipe.get("title") or "title" in (change.get("set") or {}):
+        return False
+    now = recipe.get("roles") or {}
+    return any(o.get("op") == "roles" and ("columns" in o or ("v" in o and o["v"] != now.get("v"))) for o in change.get("ops") or [])
+
+
 def validate_change(obj: dict, columns: list[dict], chart_names: list[str], kind: str | None = None, caps: bool = False,
-                    style: str = "ceps", logo: dict | None = None) -> dict:
+                    style: str = "ceps", logo: dict | None = None, shown: dict | None = None) -> dict:
     style = style if style in PALETTES else "ceps"
     try:
         ch = Change.model_validate(obj, context={"style": style})
@@ -977,8 +1083,10 @@ def validate_change(obj: dict, columns: list[dict], chart_names: list[str], kind
         raise ChangeError("Schema error. " + "; ".join(msgs)) from e
     by_exact, by_norm = _col_lookup(columns)
     renamed_to = []
-    ops = _fix_ops(ch.ops, by_exact, by_norm, renamed_to)
+    ops = _fix_ops(ch.ops, by_exact, by_norm, renamed_to, shown)
     edits = ch.set.model_dump(exclude_unset=True)
+    if (edits.get("kind") or kind) == "sankey" and any(o["op"] == "roles" and o.get("columns") for o in ops):
+        raise ChangeError(NO_WIDE_SANKEY)
     if ch.set.controls is not None:
         edits["controls"] = _fix_controls(ch.set.controls, by_exact, by_norm, renamed_to, style)
     known_names = list(dict.fromkeys(list(chart_names or []) + renamed_to

@@ -159,6 +159,16 @@ def test_controls_switch_on_two_value_column_and_select_buttons():
     assert [c["column"] for c in out["set"]["controls"]] == ["firm_size", "country"]
 
 
+def test_a_switch_between_three_things_becomes_buttons():
+    out = change(controls=[{"type": "switch", "column": "country"}])["set"]["controls"][0]
+    assert out == {"type": "select", "column": "country", "style": "buttons"}
+    out = change(controls=[{"type": "switch", "options": [{"label": x, "ops": [{"op": "filter", "column": "country", "keep": [x]}]}
+                                                           for x in ["Spain", "Belgum", "EU27"]]}])["set"]["controls"][0]
+    assert out["type"] == "select" and out["style"] == "buttons"
+    assert [o["ops"][0]["keep"] for o in out["options"]] == [["Spain"], ["Belgium"], ["EU27"]]
+    assert "A switch between three or more things is a select with style \"buttons\"." in SYSTEM
+
+
 def test_controls_percent_switch():
     out = change(controls=[{"type": "switch", "label": "Show", "options": [
         {"label": "Values", "ops": [{"op": "percent_share", "within": "none"}]},
@@ -178,10 +188,9 @@ def test_controls_empty_list_removes():
     [{"type": "legend", "column": "year"}],
     [{"type": "slider"}],
     [{"type": "slider", "column": "nope"}],
-    [{"type": "switch", "column": "country"}],
+    [{"type": "switch", "column": "all_firms"}],
     [{"type": "switch", "options": [{"label": "a", "ops": [{"op": "sort", "by": "value"}]}]}],
-    [{"type": "switch", "options": [{"label": "a", "ops": [{"op": "sort", "by": "value"}]}, {"label": "b", "ops": [{"op": "sort", "by": "value"}]},
-                                    {"label": "c", "ops": [{"op": "sort", "by": "label"}]}]}],
+    [{"type": "switch", "options": [{"label": str(i), "ops": [{"op": "sort", "by": "value"}]} for i in range(13)]}],
     [{"type": "select", "column": "all_firms"}],
     [{"type": "select", "column": "year", "options": [{"label": "a", "set": {"title": "x"}}, {"label": "b", "set": {"title": "y"}}]}],
     [{"type": "select", "options": [{"label": "a", "set": {"kind": "bar"}}, {"label": "b", "set": {"title": "y"}}]}],
@@ -483,3 +492,23 @@ return res;
     assert out["series"] is False
     plain_w, dim_w = out["turn"]
     assert 0 < dim_w < plain_w
+
+
+def test_sankey_names_every_node_apart_with_other_last(tmp_path):
+    import json
+    srcs = [f"Country {i}" for i in range(16)]
+    rows = [{"cat": s, "series": t, "v": (40 - 2.4 * i) * w} for i, s in enumerate(srcs) for t, w in (("Big", 1), ("Mid", 0.4), ("Tiny", 0.004))]
+    out = draw_probe(f"""
+draw({{kind: "sankey", rows: {json.dumps(rows)}}});
+const nodes = [...svg.querySelectorAll("rect.node")].map(n => ({{name: n.querySelector("title").textContent.split(":")[0], x: +n.getAttribute("x"), y: +n.getAttribute("y")}}));
+const labels = [...svg.querySelectorAll(".qv-plot text, g text")].filter(t => !t.closest(".qv-legend") && nodes.some(n => t.textContent.startsWith(n.name)))
+  .map(t => {{ const b = t.getBoundingClientRect(); return {{name: t.textContent, top: b.top, bottom: b.bottom, left: b.left}}; }});
+return {{nodes, labels}};
+""", tmp_path)
+    names = {n["name"] for n in out["nodes"]}
+    assert {l["name"] for l in out["labels"]} == names and "Other" in names and "Tiny" in names
+    left = sorted([n for n in out["nodes"] if n["x"] < 1], key=lambda n: n["y"])
+    assert left[-1]["name"] == "Other"
+    for side in (lambda l: l["left"] < 300, lambda l: l["left"] >= 300):
+        col = sorted(filter(side, out["labels"]), key=lambda l: l["top"])
+        assert all(a["bottom"] <= b["top"] + 0.5 for a, b in zip(col, col[1:])), col
