@@ -24,7 +24,7 @@
 
   async function load() {
     if (ask) return ask;
-    ask = fetch("/api/me", {credentials: "same-origin"}).then(r => (r.ok ? r.json() : null)).then(j => { if (j) { me = j; paint(); } })
+    ask = fetch("/api/me", {credentials: "same-origin"}).then(r => (r.ok ? r.json() : null)).then(j => { if (j) { me = j; paint(); window.dispatchEvent(new CustomEvent("qv-me", {detail: j})); } })
       .catch(() => {}).finally(() => { ask = null; });
     return ask;
   }

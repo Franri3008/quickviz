@@ -12,9 +12,11 @@ class RequestProtection:
         if scope["type"] != "http":
             return await self.app(scope, receive, send)
         is_api = scope["path"].startswith("/api")
-        if is_api and scope["method"] not in {"GET", "HEAD", "OPTIONS"}:
+        is_mcp = scope["path"].rstrip("/") == "/mcp"
+        if (is_api or is_mcp) and scope["method"] not in {"GET", "HEAD", "OPTIONS"}:
             headers = dict(scope.get("headers", []))
-            if not origin_allowed(headers.get(b"origin", b"").decode("latin-1")):
+            origin = headers.get(b"origin", b"").decode("latin-1")
+            if (is_api or origin) and not origin_allowed(origin):
                 return await JSONResponse({"detail": "Invalid request origin."}, 403)(scope, receive, send)
             limit = get_settings().max_body_bytes
             declared = headers.get(b"content-length")
@@ -47,7 +49,7 @@ class RequestProtection:
             if message["type"] == "http.response.start":
                 extra = [(b"x-content-type-options", b"nosniff"), (b"referrer-policy", b"no-referrer"),
                          (b"x-frame-options", b"DENY")]
-                if is_api:
+                if is_api or is_mcp:
                     extra.append((b"cache-control", b"no-store"))
                 message["headers"] = list(message.get("headers", [])) + extra
             await send(message)

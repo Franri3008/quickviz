@@ -8,6 +8,7 @@ import httpx
 import pytest
 
 from app import llm
+from conftest import sign_in
 from app.viz_chat import PATCH_MAX, SYSTEM, ChangeError, build_messages, check_patch, validate_change
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -160,13 +161,33 @@ def test_chat_endpoint_passes_the_patch_error_back(client, monkeypatch):
 
 def test_chat_uses_one_model_and_the_charts_have_no_logo(client, monkeypatch):
     sent = fake_chat(monkeypatch, [{"reply": "Added the logo.", "set": {"logo": {"show": True}}}])
-    r = client.post("/api/viz/chat", json={**CHAT, "message": "add the logo", "model": "openai/gpt-6-luna", "style": "ceps"})
+    r = client.post("/api/viz/chat", json={**CHAT, "message": "add the logo", "model": "openai/gpt-6-luna"})
     assert r.status_code == 200, r.text
     j = r.json()
     assert j["set"] == {} and j["reply"] == "These charts have no logo, so nothing changed." and j["style"] == "franri"
     assert sent[0]["model"] == "anthropic/claude-haiku-5.5" and "models" not in sent[0]
     system = sent[0]["messages"][0]["content"]
     assert "these charts have no logo" in system and "AI World logo" not in system and "CEPS researcher" not in system
+
+
+@pytest.mark.parametrize("style", ["aiw", "ceps", "nope"])
+def test_chat_refuses_a_style_the_visitor_was_not_given(client, monkeypatch, style):
+    sent = fake_chat(monkeypatch, [{"reply": "ok"}])
+    r = client.post("/api/viz/chat", json={**CHAT, "style": style})
+    assert r.status_code == 403 and r.json()["detail"]["reason"] == "style"
+    assert sent == []
+    sign_in(client, styles="franri,ceps")
+    assert client.post("/api/viz/chat", json={**CHAT, "style": "aiw"}).status_code == 403 and sent == []
+
+
+def test_chat_draws_in_a_style_the_user_was_given(client, monkeypatch):
+    sent = fake_chat(monkeypatch, [{"reply": "Added the logo.", "set": {"logo": {"show": True}}}])
+    sign_in(client, styles="franri,aiw")
+    r = client.post("/api/viz/chat", json={**CHAT, "message": "add the logo", "style": "aiw"})
+    assert r.status_code == 200, r.text
+    assert r.json()["style"] == "aiw" and r.json()["set"]["logo"] == {"show": True, "pos": "bottom-right"}
+    assert "AI World" in sent[0]["messages"][0]["content"]
+    assert client.post("/api/viz/chat", json=CHAT).json()["style"] == "franri"
 
 def guard_js():
     src = (ROOT / "web" / "charts.js").read_text()

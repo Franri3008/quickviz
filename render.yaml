@@ -1,17 +1,15 @@
 services:
   - type: web
     name: quickviz
-    runtime: python
+    runtime: docker
     plan: free
     branch: master
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
     healthCheckPath: /api/version
     envVars:
       - key: OPENROUTER_API_KEY
         sync: false
-      - key: PYTHON_VERSION
-        value: 3.12.7
       - key: DATABASE_URL
         sync: false
       - key: GOOGLE_CLIENT_ID
@@ -30,3 +28,9 @@ services:
         value: "1000"
       - key: GLOBAL_DAY_USD
         value: "3"
+      - key: RENDER_MAX_SCALE
+        value: "2"
+      - key: RENDER_IDLE_S
+        value: "300"
+      - key: RATE_RENDER
+        value: "20"

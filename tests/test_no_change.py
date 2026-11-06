@@ -131,3 +131,24 @@ def test_chat_endpoint_accepts_no_effect(client, monkeypatch):
     assert r.status_code == 200, r.text
     assert "came out identical" in sent[0]["messages"][-1]["content"]
     assert r.json()["patch"]["code"]
+
+
+@node
+def test_the_chosen_style_goes_into_the_spec_and_the_chat():
+    code = SETUP + """
+globalThis.__replies = [{reply: "ok", set: {}, ops: []}];
+window.QV_THEMES = {franri: {}, aiw: {}, ceps: {}};
+(async () => {
+  const out = {start: state.style};
+  houses = ["franri", "aiw"];
+  await useHouse("aiw", false);
+  out.picked = state.style;
+  out.spec = buildSpec(state.recipe).style;
+  await sendChat("Show the values");
+  out.sent = sent[0].style;
+  await useHouse("ceps", false);
+  out.clamped = state.style;
+  return out;
+})()"""
+    out = js(load(ADOPTION), code, ADOPTION_JEV)
+    assert out == {"start": "franri", "picked": "aiw", "spec": "aiw", "sent": "aiw", "clamped": "franri"}

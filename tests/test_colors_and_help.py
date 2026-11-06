@@ -147,11 +147,12 @@ def test_ceps_logo_change_is_dropped_with_a_plain_answer():
     assert ch["set"] == {"title": "X"} and ch["reply"] == "Title changed. CEPS charts have no logo, so nothing changed."
 
 
-def test_page_has_one_style_and_no_style_menu():
+def test_page_starts_in_franri_with_the_style_switch_hidden():
     html = (WEB / "index.html").read_text()
     assert "in CEPS house style" not in (ROOT / "README.md").read_text().split("\n")[2]
     assert 'id="style-pick"' not in html and 'id="style-row"' not in html
     assert '<body class="view-1" data-style="franri">' in html
+    assert '<label id="chart-house" class="chart-house" hidden>' in html
 
 
 def test_step_bar_sides_are_centred_and_wrap_when_narrow():

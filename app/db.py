@@ -1,6 +1,6 @@
 from functools import lru_cache
 
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 from app.config import get_settings
@@ -44,6 +44,15 @@ def initialize():
         if connection.dialect.name == "postgresql":
             connection.execute(text("SELECT pg_advisory_xact_lock(58201378)"))
         Base.metadata.create_all(connection)
+        migrate(connection)
+
+
+def migrate(connection):
+    have = {c["name"] for c in inspect(connection).get_columns("users")}
+    if "styles" not in have:
+        connection.execute(text("ALTER TABLE users ADD COLUMN styles VARCHAR(40) NOT NULL DEFAULT 'franri'"))
+    if "chart_style" not in have:
+        connection.execute(text("ALTER TABLE users ADD COLUMN chart_style VARCHAR(8)"))
 
 
 def reset_caches():

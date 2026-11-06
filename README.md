@@ -8,10 +8,14 @@ Anyone can use it without signing in.
 Signing in with Google gives more credits a day.
 
 Version 3.0.0 is built on a copy of CEPS QuickViz 2.1.0.
-The CEPS invitations, passwords, tiers and styles are cut out.
+The CEPS invitations, passwords and tiers are cut out.
 Google sign-in and daily credits replace them.
-The charts use the Franri house, with no logo. It is the only style.
+The charts use the Franri house, named QuickViz on the page, with no logo.
+The admin can also give a signed-in person the AI World and CEPS houses. See "Chart styles".
 The page and the charts use Carlito, at the CEPS sizes.
+
+Version 3.1.0 adds an MCP server at `/mcp`. Claude Code and Claude Desktop can make and change charts with it.
+Each person makes a personal API key in the account menu. See "Use QuickViz from Claude".
 
 ## Run it locally
 
@@ -162,6 +166,25 @@ It blocks or unblocks a person. Blocking signs them out at once and stops them s
 A blocked person can still use the site like any visitor who is not signed in.
 The admin cannot block themselves.
 
+The "Chart styles" column has one box per house: QuickViz, AI World and CEPS.
+A change saves at once. At least one box stays on. The admin's own row is fixed with all three.
+
+## Chart styles
+
+There are three styles: `franri` (shown as QuickViz), `aiw` (AI World) and `ceps` (CEPS).
+Every account has `franri` until the admin changes it. The admin always has all three.
+Visitors who are not signed in only get `franri`.
+
+A person with more than one style sees a "Style" menu above the chart.
+The pick redraws the chart and the sample chart, and is saved to the account.
+The page loads a theme file only when that style is first picked.
+
+The server checks the style on every request that takes one.
+`allowed_styles(user)` and `check_style(user, style)` in `app/auth.py` do it.
+A style the account does not have gets 403 before any model call, so no credits go.
+The style is stored in `users.styles` as a comma list. `users.chart_style` holds the last pick.
+Both columns are added at start-up to an older database, Postgres or SQLite.
+
 ## Health check
 
 `GET /api/health` needs no sign-in. Omni Dashboard can read it.
@@ -195,6 +218,13 @@ Its metrics include today's spend from the database and the money left on the ke
 | `RATE_PICK` | 60 | Mockup chart picks one IP may ask for in a minute |
 | `RATE_FILL` | 60 | Mockup label calls one IP may ask for in a minute |
 | `RATE_WEB` | 12 | Web data searches one IP may ask for in a minute |
+| `RATE_RENDER` | 20 | Server renders one person may ask for in a minute |
+| `RENDER_MAX_SCALE` | 2 | Largest PNG scale for a server render. 4 passes 512 MB |
+| `RENDER_TIMEOUT_S` | 25 | Longest one server render may take |
+| `RENDER_IDLE_S` | 300 | Seconds with no render before Chromium shuts |
+| `RENDER_RECYCLE` | 40 | Renders before Chromium restarts. 0 never restarts it |
+| `RENDER_SINGLE_PROCESS` | 1 | Run Chromium as one process. 0 lets it split |
+| `CHROME_PATH` | empty | Chromium to use. Empty looks in the Playwright folder, then on the `PATH` |
 
 `IP_DAY_CALLS` and `IP_DAY_USD` are gone. Remove them from Render.
 
@@ -217,8 +247,8 @@ It writes the sha256 of every copied file to `web/renderer-manifest.json`, with 
 A test fails when a synced file no longer matches its hash, or when a file in those folders is not in the manifest.
 Anything personal goes in its own file.
 
-`ceps-theme.js` and `aiw-theme.js` are synced but not loaded by the page.
-The chart frame and the renderer tests still use them.
+`ceps-theme.js` and `aiw-theme.js` are synced. The page loads them only when a person picks that style.
+The chart frame always has all three.
 
 `web/charts-mock.js` is personal. It makes the mockup charts and is not synced.
 
@@ -236,10 +266,83 @@ Answers are kept for one hour, so the same question costs once.
 ```
 
 The tests use a fake OpenRouter. They spend nothing. Some need Node, and a few need Chrome.
+`tests/test_render.py` and `tests/test_mcp.py` draw real charts when they find the Chromium headless shell. Without it those tests are skipped.
+
+## Server render
+
+`POST /api/render` draws a chart on the server. It returns the PNG and the self-contained HTML file.
+Only signed-in people may call it. It costs no credits, since no model is called.
+One person may draw `RATE_RENDER` charts a minute.
+
+The core is `render_chart(spec, style, width, scale)` in `app/render.py`. It is a plain async function.
+It returns the PNG bytes, the HTML text, the size, the style used and the time taken.
+It loads the real `charts.js`, the three themes and d3 into a headless Chromium page. Nothing is drawn by new code.
+Python talks to Chromium over a pipe with the DevTools protocol. Playwright only installs the browser.
+Its Node driver costs 130 to 250 MB more, so it never runs.
+
+Chromium starts on the first render, not at boot. It runs as one process.
+One chart is drawn at a time, with a fresh page each time.
+The browser shuts after `RENDER_IDLE_S` seconds with no render. It restarts after every `RENDER_RECYCLE` renders.
+The page can only load files from `web/`. Every other address is blocked.
+Drawing patches are dropped from the spec, so no user code runs on the server.
+
+To run it locally, install the browser once.
+
+```sh
+.venv/bin/python -m playwright install chromium-headless-shell
+```
+
+Set `CHROME_PATH` to use another Chromium.
+
+## Use QuickViz from Claude
+
+QuickViz is an MCP server too. Claude Code and Claude Desktop can send it a table and get a finished chart back.
+The chart uses the same steps as the page, so it comes out the same. It costs the same credits.
+
+1. Sign in on https://quickviz.franri.dev.
+2. Open the menu under your email and pick "Keys for Claude".
+3. Give the key a name and press "Make a key". Copy the key. It is shown only once.
+
+Add it to Claude Code with this command. Put your key in place of `<key>`.
+
+```sh
+claude mcp add --transport http quickviz https://quickviz.franri.dev/mcp --header "Authorization: Bearer <key>"
+```
+
+For Claude Desktop, add this to `claude_desktop_config.json`. On a Mac it is in `~/Library/Application Support/Claude/`.
+Claude Desktop starts local servers only, so `mcp-remote` connects it to the web address. It needs Node.
+
+```json
+{
+  "mcpServers": {
+    "quickviz": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://quickviz.franri.dev/mcp", "--header", "Authorization:${QUICKVIZ_AUTH}"],
+      "env": {"QUICKVIZ_AUTH": "Bearer <key>"}
+    }
+  }
+}
+```
+
+The server has three tools.
+
+| Tool | What it does |
+|---|---|
+| `list_styles` | The chart styles your account may use, the default one and the credits left today |
+| `make_chart` | Takes CSV text, an optional description, style and chart type. Gives back a PNG, a short summary and the chart spec as JSON |
+| `edit_chart` | Takes the spec from `make_chart` and a change in plain words. Gives back the same three things |
+
+Both chart tools take `html=true` to add the self-contained HTML file. It is large, often 400 KB or more.
+So it is left out unless asked for.
+
+The key works only for the MCP server. It cannot sign in to the page or make more keys.
+Your credits, your styles and a block by the admin apply to it as they do on the page.
+Delete a key in the same dialog when you no longer need it. It stops working at once.
 
 ## Deploy
 
 Render deploys from `master`. The settings are in `render.yaml`.
+The service runs from the `Dockerfile`. Docker brings Chromium, its system libraries and the Roboto font.
 The service was made by hand in the dashboard, not from `render.yaml`.
 So set everything below in the dashboard yourself.
 
@@ -261,8 +364,7 @@ Do these four steps once, in this order.
    - The app makes its tables itself on the first start.
 3. Set up Render.
    - Open the quickviz service. Under "Settings", set the branch to `master`.
-   - Set the build command to `pip install -r requirements.txt`.
-   - Set the start command to `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
+   - Set the runtime to Docker and the Dockerfile path to `./Dockerfile`. There is no build or start command.
    - Under "Environment" set these variables.
 
      | Variable | Value |
@@ -274,9 +376,8 @@ Do these four steps once, in this order.
      | `ADMIN_EMAIL` | Your Google email |
      | `PUBLIC_URL` | `https://quickviz.franri.dev` |
      | `PRODUCTION` | `true` |
-     | `PYTHON_VERSION` | `3.12.7` |
 
-   - Delete `IP_DAY_CALLS` and `IP_DAY_USD` if they are there.
+   - Delete `IP_DAY_CALLS` and `IP_DAY_USD` if they are there. `PYTHON_VERSION` does nothing under Docker.
    - The credit settings can stay unset. The defaults are in the table above.
    - Deploy. Then open the site, sign in, and open "Admin" from the menu under your email.
 4. Limit the OpenRouter key.
@@ -289,7 +390,7 @@ To try sign-in locally, put `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.e
 
 ## Version
 
-The version lives in `VERSION`.
+The version lives in `VERSION`. It is 3.1.0, which adds the MCP server and personal API keys.
 The server writes it into the page and adds it to every script and style URL.
 So a new release is never served from an old browser cache.
 Bump it on every release.
@@ -311,6 +412,10 @@ app/viz.py          the chart API: parse, redraw, reread, decide, names, chat
 app/viz_reading.py  file reading, the AI fallback and chart pictures
 app/viz_chat.py     the chat prompt and the checks on its answers
 app/mock.py         the mockup routes, pick, fill and web data
+app/render.py       the server render and /api/render
+app/keys.py         personal API keys, /api/keys
+app/pipeline.py     the chart steps for MCP, with app/pipeline.js run in the render page
+app/mcp_server.py   the MCP server at /mcp
 app/parse/          the rule-based file reader
 app/web_data.py     sourced web data
 web/index.html      the page
@@ -319,6 +424,7 @@ web/credits.js      the credit count, sign-in and the account menu
 web/admin.html      the admin page
 web/keep.js         saves the page in IndexedDB
 web/help.js         the chart types dialog
+web/keys.js         the "Keys for Claude" dialog
 web/frame-host.js   the sandboxed chart frame
 web/charts.js       the shared renderer, synced
 web/franri-theme.js the Franri house, synced
@@ -326,4 +432,5 @@ web/charts-mock.js  mockup charts and chart as you type
 scripts/            the renderer sync and the CEPS build scripts
 samples/            mock files the tests read
 demo/               demo files from version 2
+Dockerfile          the Render image, with Chromium for the server render
 ```

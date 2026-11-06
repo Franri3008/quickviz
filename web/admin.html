@@ -18,6 +18,7 @@
     .admin .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
     .admin input[type="number"] { width: 96px; padding: 4px 6px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); font: inherit; text-align: right; }
     .admin .tag { display: inline-block; margin-left: 6px; padding: 1px 6px; border: 1px solid var(--rule); font-size: 12px; color: var(--muted); }
+    .admin .check { display: inline-flex; align-items: center; gap: 4px; margin-right: 10px; white-space: nowrap; font-size: 14px; }
     .admin .tag.off { border-color: var(--red); color: var(--red); }
     .admin button.small { min-height: 30px; padding: 3px 10px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); font-size: 14px; }
     .admin button.small:hover { border-color: var(--accent); color: var(--link); }
@@ -43,13 +44,13 @@
     <div class="table-scroll">
       <table>
         <thead>
-          <tr><th>Email</th><th class="num">Daily credits</th><th class="num">Used today</th><th class="num">Last 7 days</th><th>Last sign-in</th><th></th></tr>
+          <tr><th>Email</th><th>Chart styles</th><th class="num">Daily credits</th><th class="num">Used today</th><th class="num">Last 7 days</th><th>Last sign-in</th><th></th></tr>
         </thead>
-        <tbody id="people"><tr><td colspan="6" class="muted">Loading...</td></tr></tbody>
+        <tbody id="people"><tr><td colspan="7" class="muted">Loading...</td></tr></tbody>
       </table>
     </div>
     <div id="msg" class="msg" role="status"></div>
-    <p class="note">One credit is USD 0.001 of real model cost. Days run from midnight to midnight UTC. Leave daily credits empty to use the default. Blocking signs a person out at once and stops them signing in. They can still use the site without signing in.</p>
+    <p class="note">One credit is USD 0.001 of real model cost. Days run from midnight to midnight UTC. Leave daily credits empty to use the default. Blocking signs a person out at once and stops them signing in. They can still use the site without signing in. Chart styles decide which houses a person can draw in. Everyone has QuickViz unless you change it. A person with more than one sees a style menu above the chart. The admin always has all three.</p>
   </main>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -57,6 +58,11 @@
       const esc = s => String(s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
       const n = v => Number(v || 0).toLocaleString("en");
       const when = t => (t ? new Date(t * 1000).toLocaleString("en-GB", {day: "numeric", month: "short", hour: "2-digit", minute: "2-digit"}) : "");
+      const HOUSES = {franri: "QuickViz", aiw: "AI World", ceps: "CEPS"};
+      const styleBoxes = u => Object.keys(HOUSES).map(k => {
+        const on = u.styles.includes(k), last = on && u.styles.length === 1, fixed = u.is_admin || last;
+        return `<label class="check"><input type="checkbox" data-style-user="${esc(u.id)}" value="${k}"${on ? " checked" : ""}${fixed ? " disabled" : ""}${last && !u.is_admin ? ' title="At least one style must stay on"' : ""} aria-label="${HOUSES[k]} style for ${esc(u.email)}"> ${HOUSES[k]}</label>`;
+      }).join("");
       const say = (text, kind) => { $("msg").textContent = text || ""; $("msg").className = "msg" + (kind ? " " + kind : ""); };
 
       async function api(path, method = "GET", body) {
@@ -82,6 +88,7 @@
           $("people").innerHTML = d.users.map(u => `
             <tr>
               <td>${esc(u.email)}${u.is_admin ? '<span class="tag">admin</span>' : ""}${u.active ? "" : '<span class="tag off">blocked</span>'}</td>
+              <td>${styleBoxes(u)}</td>
               <td class="num"><input type="number" min="0" max="1000000" step="1" data-credits="${esc(u.id)}" value="${u.credits_own ? u.credits_day : ""}" placeholder="${d.credits_user_day}" aria-label="Daily credits for ${esc(u.email)}"></td>
               <td class="num">${n(u.used_today)}</td>
               <td class="num">${n(u.used_week)}</td>
@@ -89,7 +96,7 @@
               <td class="num">${u.is_admin ? "" : u.active
                 ? `<button class="small danger" data-block="${esc(u.id)}" type="button">Block</button>`
                 : `<button class="small" data-unblock="${esc(u.id)}" type="button">Unblock</button>`}</td>
-            </tr>`).join("") || '<tr><td colspan="6" class="muted">Nobody has signed in yet.</td></tr>';
+            </tr>`).join("") || '<tr><td colspan="7" class="muted">Nobody has signed in yet.</td></tr>';
           const me = d.users.find(u => u.me);
           $("me").textContent = me ? me.email : "";
         } catch (e) {
@@ -113,6 +120,19 @@
       });
 
       document.body.addEventListener("change", async ev => {
+        const pick = ev.target.closest("input[data-style-user]");
+        if (pick) {
+          const id = pick.dataset.styleUser;
+          const styles = [...document.querySelectorAll("input[data-style-user]")].filter(i => i.dataset.styleUser === id && i.checked).map(i => i.value);
+          if (!styles.length) { pick.checked = true; return say("At least one style must stay on.", "error"); }
+          try {
+            await api(`/api/admin/users/${encodeURIComponent(id)}/styles`, "PATCH", {styles});
+            say("Chart styles saved.", "ok");
+          } catch (e) {
+            say(e.message, "error");
+          }
+          return load();
+        }
         const box = ev.target.closest("input[data-credits]");
         if (!box) return;
         const raw = box.value.trim();

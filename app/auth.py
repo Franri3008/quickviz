@@ -9,16 +9,19 @@ from urllib.parse import urlencode, urlsplit
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.responses import RedirectResponse
+from pydantic import BaseModel, Field
 from sqlalchemy import delete, select
 
 from app import guard
 from app.config import get_settings
 from app.db import session
-from app.models import LoginSession, OAuthState, User
+from app.models import DEFAULT_STYLE, STYLES, ApiKey, LoginSession, OAuthState, User, parse_styles
 
 COOKIE = "quickviz_session"
 STATE_COOKIE = "quickviz_oauth"
 STATE_SECONDS = 600
+KEY_PREFIX = "qv_"
+KEY_SEEN_EVERY = 60
 GOOGLE_AUTH = "https://accounts.google.com/o/oauth2/v2/auth"
 GOOGLE_TOKEN = "https://oauth2.googleapis.com/token"
 GOOGLE_ISSUERS = {"https://accounts.google.com", "accounts.google.com"}
@@ -47,6 +50,28 @@ def is_admin(user: User | None) -> bool:
     return bool(user and admin and user.email.lower() == admin)
 
 
+def allowed_styles(user: User | None) -> list[str]:
+    if user is None:
+        return [DEFAULT_STYLE]
+    if is_admin(user):
+        return list(STYLES)
+    return parse_styles(user.styles) or [DEFAULT_STYLE]
+
+
+def default_style(user: User | None) -> str:
+    allowed = allowed_styles(user)
+    chosen = user.chart_style if user else None
+    return chosen if chosen in allowed else allowed[0]
+
+
+def check_style(user: User | None, style: str | None) -> str:
+    if not style:
+        return default_style(user)
+    if style not in allowed_styles(user):
+        raise HTTPException(403, detail={"reason": "style", "message": "That chart style is not open to your account."})
+    return style
+
+
 def session_user(request: Request) -> User | None:
     token = request.cookies.get(COOKIE, "")
     if not token:
@@ -59,6 +84,38 @@ def session_user(request: Request) -> User | None:
         if not user or not user.active:
             return None
         return user
+
+
+def bearer_token(request: Request) -> str:
+    scheme, _, token = request.headers.get("authorization", "").partition(" ")
+    return token.strip() if scheme.lower() == "bearer" else ""
+
+
+def key_user(token: str) -> User | None:
+    if not token.startswith(KEY_PREFIX) or len(token) > 200:
+        return None
+    with session() as db, db.begin():
+        key = db.scalar(select(ApiKey).where(ApiKey.digest == digest(token)))
+        if not key:
+            return None
+        user = db.get(User, key.user_id)
+        if not user or not user.active:
+            return None
+        t = time.time()
+        if not key.last_used or t - key.last_used > KEY_SEEN_EVERY:
+            key.last_used = t
+            user.last_seen = t
+        return user
+
+
+def token_user(request: Request) -> User | None:
+    token = bearer_token(request)
+    return key_user(token) if token else None
+
+
+def new_key() -> tuple[str, str, str]:
+    token = KEY_PREFIX + secrets.token_urlsafe(32)
+    return token, token[:len(KEY_PREFIX) + 6], digest(token)
 
 
 def current_user(request: Request) -> User:
@@ -97,12 +154,24 @@ def me_payload(request: Request) -> dict:
     key = guard.who(guard.client_ip(request), user)
     return {"signed_in": user is not None, "email": user.email if user else None, "is_admin": is_admin(user),
             "sign_in": s.google_on, "credits_left": guard.left(key, limit), "credits_day": limit,
-            "resets_at": guard.next_reset()}
+            "resets_at": guard.next_reset(), "styles": allowed_styles(user), "style": default_style(user)}
 
 
 @router.get("/api/me")
 def me(request: Request):
     return me_payload(request)
+
+
+class StyleInput(BaseModel):
+    style: str = Field(min_length=1, max_length=8)
+
+
+@router.put("/api/me/style")
+def set_style(body: StyleInput, user: User = Depends(current_user)):
+    style = check_style(user, body.style)
+    with session() as db, db.begin():
+        db.get(User, user.id).chart_style = style
+    return {"style": style}
 
 
 @router.post("/api/logout")

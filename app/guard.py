@@ -8,7 +8,7 @@ from sqlalchemy import delete, func, select, text, update
 
 from app.config import get_settings
 from app.db import is_postgres, session
-from app.models import LoginSession, OAuthState, Spend, User
+from app.models import ApiKey, LoginSession, OAuthState, Spend, User
 
 WEEK_DAYS = 7
 _lock = threading.Lock()
@@ -39,7 +39,7 @@ def next_reset(t: float | None = None) -> str:
 
 def reset():
     with _lock, session() as db, db.begin():
-        for table in (Spend, LoginSession, OAuthState, User):
+        for table in (Spend, LoginSession, OAuthState, ApiKey, User):
             db.execute(delete(table))
 
 

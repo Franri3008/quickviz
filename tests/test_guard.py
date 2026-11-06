@@ -366,3 +366,64 @@ def test_admin_lists_use_and_sets_credits(clock, monkeypatch):
         assert boss.get("/api/admin/users").json()["users"][0]["active"] is False
         assert boss.patch(f"/api/admin/users/{uid}", json={"active": True}).status_code == 200
         assert boss.patch("/api/admin/users/nobody/credits", json={"credits_day": 3}).status_code == 404
+
+
+def test_styles_default_to_franri_and_the_admin_has_all(monkeypatch):
+    google_on(monkeypatch, admin="boss@example.com")
+    with new_client() as anon:
+        me = anon.get("/api/me").json()
+        assert me["styles"] == ["franri"] and me["style"] == "franri"
+        assert anon.put("/api/me/style", json={"style": "franri"}).status_code == 401
+    with new_client() as c:
+        sign_in(c, "ana@example.com")
+        me = c.get("/api/me").json()
+        assert me["styles"] == ["franri"] and me["style"] == "franri"
+    with new_client() as c:
+        sign_in(c, "boss@example.com")
+        assert c.get("/api/me").json()["styles"] == ["franri", "aiw", "ceps"]
+
+
+def test_admin_gives_styles_and_the_user_picks_one(monkeypatch):
+    google_on(monkeypatch, admin="boss@example.com")
+    with new_client("1.0.0.1") as user, new_client("1.0.0.2") as boss:
+        uid = sign_in(user, "ana@example.com")
+        bid = sign_in(boss, "boss@example.com")
+        assert user.patch(f"/api/admin/users/{uid}/styles", json={"styles": ["aiw"]}).status_code == 403
+        assert boss.get("/api/admin/users").json()["styles"] == ["franri", "aiw", "ceps"]
+        r = boss.patch(f"/api/admin/users/{uid}/styles", json={"styles": ["CEPS", "franri"]})
+        assert r.json() == {"ok": True, "styles": ["franri", "ceps"]}
+        rows = {u["email"]: u for u in boss.get("/api/admin/users").json()["users"]}
+        assert rows["ana@example.com"]["styles"] == ["franri", "ceps"] and rows["boss@example.com"]["styles"] == ["franri", "aiw", "ceps"]
+        assert user.get("/api/me").json()["styles"] == ["franri", "ceps"]
+        assert user.put("/api/me/style", json={"style": "aiw"}).status_code == 403
+        assert user.put("/api/me/style", json={"style": "ceps"}).json() == {"style": "ceps"}
+        assert user.get("/api/me").json()["style"] == "ceps"
+        for bad in ([], ["comic"], ["aiw", "aiw", "ceps", "franri"]):
+            assert boss.patch(f"/api/admin/users/{uid}/styles", json={"styles": bad}).status_code == 422, bad
+        assert boss.patch(f"/api/admin/users/{bid}/styles", json={"styles": ["aiw"]}).status_code == 400
+        assert boss.patch("/api/admin/users/nobody/styles", json={"styles": ["aiw"]}).status_code == 404
+        boss.patch(f"/api/admin/users/{uid}/styles", json={"styles": ["aiw"]})
+        me = user.get("/api/me").json()
+        assert me["styles"] == ["aiw"] and me["style"] == "aiw"
+
+
+def test_old_database_gets_the_style_columns(tmp_path, monkeypatch):
+    import sqlite3
+
+    path = tmp_path / "old.db"
+    con = sqlite3.connect(path)
+    con.execute("CREATE TABLE users (id VARCHAR(32) PRIMARY KEY, email VARCHAR(254), google_sub VARCHAR(64), name VARCHAR(200), "
+                "credits_day INTEGER, active BOOLEAN, created FLOAT, last_seen FLOAT)")
+    con.execute("INSERT INTO users VALUES ('u1', 'old@example.com', NULL, '', NULL, 1, 0, NULL)")
+    con.commit()
+    con.close()
+    monkeypatch.setenv("DATABASE_URL", f"sqlite:///{path}")
+    get_settings.cache_clear()
+    db.reset_caches()
+    db.initialize()
+    db.initialize()
+    with db.session() as s:
+        user = s.get(User, "u1")
+        assert user.styles == "franri" and user.chart_style is None
+    assert auth.allowed_styles(user) == ["franri"] and auth.check_style(user, None) == "franri"
+    db.reset_caches()

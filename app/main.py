@@ -7,9 +7,10 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from app import admin, auth, db, guard, health, mock
+from app import admin, auth, db, guard, health, keys, mcp_server, mock
 from app.config import ROOT_DIR, WEB_DIR
 from app.protect import RequestProtection
+from app.render import RENDERER, router as render_router
 from app.viz import router as viz_router
 
 log = logging.getLogger("quickviz")
@@ -31,15 +32,20 @@ def page(name: str) -> HTMLResponse:
 @asynccontextmanager
 async def lifespan(app):
     db.initialize()
-    yield
+    async with mcp_server.lifespan():
+        yield
+    await RENDERER.stop()
 
 
 app = FastAPI(title="QuickViz", docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
 app.add_middleware(RequestProtection)
 app.include_router(auth.router)
 app.include_router(admin.router)
+app.include_router(keys.router)
 app.include_router(viz_router)
 app.include_router(mock.router)
+app.include_router(render_router)
+app.add_route(mcp_server.PATH, mcp_server.endpoint, methods=["GET", "POST", "DELETE"], include_in_schema=False)
 
 
 @app.middleware("http")

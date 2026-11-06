@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from app import guard, viz_reading
+from app.auth import check_style
 from app.llm import DEFAULT_REASONING, Visitor, openrouter, visitor
 from app.viz_chat import STYLE_PROMPT, ChangeError, _norm, KINDS, build_messages, dropped_error, extract_json, honest_reply, validate_change
 from app.viz_parse import ParseError
@@ -124,6 +125,7 @@ class ChatIn(BaseModel):
     outline: str = Field("", max_length=12000)
     patch_error: PatchError | None = None
     no_effect: NoEffect | None = None
+    style: str | None = Field(None, max_length=8)
 
 
 @router.post("/parse")
@@ -328,8 +330,10 @@ async def names(body: NamesIn, user: Visitor = Depends(visitor)):
     }
 
 
-def system_messages(msgs: list[dict]) -> list[dict]:
-    text = msgs[0]["content"].replace(STYLE_PROMPT[STYLE]["@@LOGO@@"], NO_LOGO_RULE).replace("for a CEPS researcher", "for a user")
+def system_messages(msgs: list[dict], style: str = STYLE) -> list[dict]:
+    text = msgs[0]["content"].replace("for a CEPS researcher", "for a user")
+    if style != "aiw":
+        text = text.replace(STYLE_PROMPT[style]["@@LOGO@@"], NO_LOGO_RULE)
     head = {**msgs[0], "content": text}
     return [head] + msgs[1:]
 
@@ -344,12 +348,13 @@ def no_logo(change: dict, message: str) -> dict:
 @router.post("/chat")
 async def chat(body: ChatIn, user: Visitor = Depends(visitor)):
     t0 = time.time()
+    style = check_style(user.user, body.style)
     s = settings()
     columns = [c.model_dump() for c in body.columns]
     layout = body.recipe.get("layout") if isinstance(body.recipe.get("layout"), dict) else {}
     msgs = system_messages(build_messages(body.message, body.recipe, columns, body.sample, [h.model_dump() for h in body.history],
                                           body.chart_rows, body.chart_names, body.outline, body.patch_error.model_dump() if body.patch_error else None,
-                                          body.no_effect.model_dump() if body.no_effect else None, style=STYLE))
+                                          body.no_effect.model_dump() if body.no_effect else None, style=style), style)
     req = {"model": s.chat_model.strip(), "max_tokens": 2400, "temperature": 0.1,
            "reasoning": DEFAULT_REASONING, "response_format": {"type": "json_object"}, "messages": msgs}
     cost, tries, last_err, model = 0.0, 0, "", None
@@ -361,15 +366,16 @@ async def chat(body: ChatIn, user: Visitor = Depends(visitor)):
         raw = _content(data)
         try:
             kind = body.recipe.get("kind")
-            change = validate_change(extract_json(raw), columns, body.chart_names, kind=kind, caps=True, style=STYLE, logo=layout.get("logo"))
+            change = validate_change(extract_json(raw), columns, body.chart_names, kind=kind, caps=True, style=style, logo=layout.get("logo"))
             dropped = change.pop("dropped", [])
             target = change["set"].get("kind") or kind
             if dropped and attempt == 0:
                 raise ChangeError(dropped_error(dropped, target))
             if dropped:
                 change["reply"] = honest_reply(change, dropped, target)
-            change = no_logo(change, body.message)
-            return {**change, "style": STYLE, "model": model, "ms": round((time.time() - t0) * 1000), "cost": round(cost, 6), "tries": tries,
+            if style != "aiw":
+                change = no_logo(change, body.message)
+            return {**change, "style": style, "model": model, "ms": round((time.time() - t0) * 1000), "cost": round(cost, 6), "tries": tries,
                     "retry_reason": last_err[:300]}
         except ChangeError as e:
             last_err = str(e)

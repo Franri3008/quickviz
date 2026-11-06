@@ -80,7 +80,8 @@ There are three themes. `web/ceps-theme.js` started as `houses/ceps/theme.js` fr
 All three come from CEPS QuickViz through the sync. They fill `window.QV_THEMES` and have the same keys.
 `window.CEPS` stays as a second name for the CEPS theme.
 `charts.js` picks the theme from `spec.style` at every draw. A missing style means CEPS.
-So this app sets `style: "franri"` on every spec. The page loads only `franri-theme.js`.
+This app puts the chosen style in `spec.style`, `franri` by default. See "Chart styles" under "Accounts and credits".
+The page loads `franri-theme.js` up front. It adds `aiw-theme.js` or `ceps-theme.js` only when that style is first picked.
 The chart frame loads all three, the same way CEPS does.
 It reads every colour and font from the theme. It has no colour or font of its own.
 
@@ -553,7 +554,8 @@ Read from `~/.agents/skills/dataviz/houses/aiw/` (house.md, types.md, theme.css)
 
 ## How the Franri house is applied
 
-This is the only style in QuickViz 3. CEPS QuickViz ships the file but shows no menu entry for it.
+This is the default style in QuickViz 3, shown as QuickViz. The admin can give a person AI World and CEPS too.
+CEPS QuickViz ships the file but shows no menu entry for it.
 
 - Carlito 400 and 700, with the CEPS sizes. `webFont` is true, so `QV.ready` waits for it and the exports embed it.
 - Ink `#1c1917`. Ticks and notes are ash `#7a766f`, 4.52 to 1 on white.
@@ -725,7 +727,9 @@ are row counts, and that scatter items are drawn once. It also checks the mean a
 `POST /api/viz/chat` sends the recipe without rows, or an empty recipe with `kind` null when nothing is drawn yet, the columns (every value when a column has 60
 or fewer, else samples plus any value named in the message), 5 sample rows, the first 12 drawn rows,
 the drawn item names, the last 8 chat turns and the SVG outline. A retry after a failed patch adds `patch_error`. A retry after a change that drew nothing new adds `no_effect`.
-The server always uses the "franri" style and the answer says so in `style`. It drops any `logo` the model sets. The model replies with:
+The page sends the chosen `style`. The server runs `check_style` on it. A style the account does not have gets 403 with
+`{"reason": "style"}` before any model call. No style means the account's default. The answer names the style used in `style`.
+Only AI World draws a logo. For QuickViz and CEPS the server drops any `logo` the model sets. The model replies with:
 
 ```json
 {"reply": "Kept Spain, Italy and EU27 and highlighted Spain.",
@@ -806,7 +810,7 @@ See "Credits" in the README.
 | `POST /api/viz/redraw?name=` | the raw PNG or JPG bytes | `REDRAW_MODEL`, default Claude Haiku 5.5, 3 calls at once. They count as 3 calls against the budget before any is sent. See "Chart pictures" |
 | `POST /api/viz/decide` | text, columns, file, sheet | Jev 1.13, one decisions call for the kind and every column role. The file and sheet name go in as a hint |
 | `POST /api/viz/names` | text, columns, kind, roles, file, filters, years, data_years | `LABEL_MODELS`, default Claude Haiku 5.5 then Gemini 3.8 Flash |
-| `POST /api/viz/chat` | message, recipe, columns, sample, history, chart_rows, chart_names, outline, patch_error, no_effect | `CHAT_MODEL`, Claude Haiku 5.5, with no fallback. The style is always `franri` and the chart has no logo |
+| `POST /api/viz/chat` | message, recipe, columns, sample, history, chart_rows, chart_names, outline, patch_error, no_effect, style | `CHAT_MODEL`, Claude Haiku 5.5, with no fallback. The style must be one the account has. Only AI World has a logo |
 
 `/names` gets the one-value filters outside the roles as `filters`, each `{column, value, reader, options}`. `reader`
 is true when a dropdown lets the reader switch it, and `options` lists its values. `years` are the years drawn and
@@ -1130,16 +1134,150 @@ Measured on 2026-10-12 with a 28 country chart. The bar chart file went from 618
 The world map file went from 1,381 KB to 958 KB.
 
 
+## Server render
+
+`POST /api/render` in `app/render.py` draws a chart on the server. It needs a sign-in, or it answers 401.
+
+| Field | Default | Meaning |
+|---|---|---|
+| `spec` | required | A chart spec, as in "Spec shape". It needs `kind` and `rows` |
+| `style` | the spec's `style`, then `franri` | `franri`, `aiw` or `ceps` |
+| `width` | 760 | Width in CSS px, 320 to 1600 |
+| `scale` | 2 | Pixel ratio of the PNG, 1 to `RENDER_MAX_SCALE` |
+
+The answer is JSON. `png` is the PNG as base64. `html` is the same self-contained file as the HTML export.
+`style`, `width`, `height`, `scale` and `ms` come back too.
+A bad spec or a failed draw answers 422. A style the account may not use, or an unknown one, answers 403 with `reason` `style`. Too many calls answer 429 with `retry_after`.
+
+`patches` and `ctlInit` are dropped from the spec. No user code runs on the server.
+Controls are not drawn, so the PNG shows the chart as it first opens.
+The PNG is a screenshot of the drawn SVG. The browser download redraws the SVG onto a canvas instead.
+Both use the same `charts.js` and the same theme, so they match.
+A 760 px chart at scale 2 is 1520 px wide.
+
+The style check is one call, `pick_style(user, style)` in `app/render.py`.
+
+Memory, measured on 2026-10-30 on macOS with uvicorn and Chromium together. It is the sum of resident memory of
+every process. Linux may differ. The Docker check with a 512 MB limit is still to run.
+
+| Step | Peak MB |
+|---|---|
+| Idle, no browser | 85 |
+| First render, browser starts | 283 |
+| 5 renders | 331 |
+| 40-category bar | 383 |
+| World map | 407 |
+| 30 mixed renders | 463 |
+
+Playwright's own driver added 130 to 250 MB on top, so the code talks to Chromium directly.
+Scale 4 peaked at 566 MB, so `RENDER_MAX_SCALE` is 2.
+
+## API keys
+
+A personal API key lets a program act as one signed-in account. Today only the MCP server takes keys.
+`app/keys.py` has the routes. They need a signed-in session. A key cannot manage keys.
+
+| Route | What it does |
+|---|---|
+| `GET /api/keys` | The account's keys, newest first. Each has `id`, `name`, `prefix`, `created` and `last_used`. Never the key |
+| `POST /api/keys` | `{"name": "My laptop"}` makes a key. The answer has the full key in `key`, this once. 400 past 10 keys |
+| `DELETE /api/keys/{id}` | Deletes the key. 404 for a key of another account |
+
+A key is `qv_` and 43 random URL-safe characters. The `api_keys` table stores only its SHA-256 hash and the first
+9 characters as `prefix`, so a person can tell keys apart. `last_used` is written at most once a minute.
+
+A key is sent as `Authorization: Bearer <key>`. `token_user(request)` in `app/auth.py` is the one place that turns
+a request into an account. It finds the key by hash and returns the account, or nothing when the key is unknown or
+the account is blocked. A later OAuth token would be checked in the same function.
+Blocking an account stops its keys at once. Unblocking makes them work again.
+
+The "Keys for Claude" item in the account menu opens `web/keys.js`. It lists the keys, makes one, shows it once
+with the `claude mcp add` command, and deletes keys.
+
+## MCP server
+
+`/mcp` is an MCP server, built on the official `mcp` Python SDK with the streamable HTTP transport.
+It runs stateless and answers plain JSON, so any instance can answer any call and a restart loses nothing.
+`app/mcp_server.py` holds it. It is a route on the main FastAPI app. Its session manager starts in the app lifespan.
+
+Every request needs a key. With none, a wrong one or a blocked account it answers 401 with `WWW-Authenticate: Bearer`.
+A request with an `Origin` header must come from `PUBLIC_URL`. Without one it passes, since Claude sends none.
+The body limit is `MAX_BODY_BYTES`, as for `/api`.
+
+| Tool | Arguments | Gives back |
+|---|---|---|
+| `list_styles` | none | Text, and `structuredContent` with `styles`, `default` and `credits_left` |
+| `make_chart` | `data` CSV text, then optional `description`, `style`, `chart_type`, `html` | A PNG, a summary, the spec JSON, and the HTML file when `html` is true |
+| `edit_chart` | `spec` from a chart tool, `instruction`, then optional `style`, `html` | The same |
+
+The two chart tools share the render limit, `RATE_RENDER` calls a minute per account.
+They charge credits through the same `openrouter()` call as the page, so the count is the same.
+The style goes through `check_style` before any model call.
+
+### One source of truth for the chart
+
+The page builds the spec in `web/app.js`. The server routes only answer questions: which chart, which roles,
+what title, what change. `fitsKind`, `withAutoFilters`, `withAutoControls`, `applyChange` and `buildSpec` turn those
+answers and the rows into a spec. That code is not copied into Python.
+
+Instead the MCP path runs `web/app.js` itself inside the server's Chromium page. `app/pipeline.js` loads the source of
+`app.js` with a stand-in `document`, chart frame and `fetch`, the way `tests/app_harness.js` does in Node. It then calls
+the same functions the page calls. Python calls the same route functions as the page in between.
+
+`make_chart` takes these steps, in `make_chart` in `app/pipeline.py`.
+
+1. `viz_reading.read` reads the CSV, as `POST /api/viz/parse` does.
+2. In the page, `namesColumns` gives the columns. `decide` in `app/viz.py` picks the chart and the roles.
+   The description goes in as the user's text. A `chart_type` skips this call.
+3. In the page, `firstRecipe` and `withAutoControls` make the recipe, as `autoChart` does. `namesBody` builds the names call.
+4. `names` in `app/viz.py` gives the title, the unit and any role fix. A failed names call leaves the title empty, as on the page.
+5. In the page, `namedRecipe` applies the role fix and `buildSpec` makes the spec.
+6. `render_chart` draws it.
+
+`edit_chart` runs `chatBody` in the page, `chat` in `app/viz.py`, then `applyChange` and `withAutoControls` in the page.
+When the change alters which rows are drawn and the title is the automatic one, `names` gives a new title, as `refreshTitle` does.
+A change that only adds a drawing patch is refused, since the server runs no user code. A change that draws the same chart
+is not applied, and the reply says so.
+
+`firstRecipe`, `namedRecipe`, `namesBody`, `chatBody` and `rateText` were split out of `autoChart`, `refreshTitle`,
+`sendChat` and `applyReply` for this. The page behaves as before.
+
+Each page step is a fresh page under the render lock, with the render timeout. A make takes three or four page steps and one draw.
+
+The spec that comes back is the render spec plus a `quickviz` block with `v`, the `recipe`, the `names` answer and the
+data rows. `edit_chart` needs that block, so the spec must come back unchanged. The rows make the spec about as large as the data.
+
+### Errors
+
+A failed tool call has `isError` true. The text starts with a plain heading. `structuredContent.error` has `reason`,
+`status` and `message`.
+
+| Reason | Status | When |
+|---|---|---|
+| `credits` | 429 | The account's credits are gone. The text says when they come back |
+| `site` | 429 | The site's daily AI budget is gone |
+| `style` | 403 | The account may not use that style. The text lists the styles it may use |
+| `rate` | 429 | More than `RATE_RENDER` chart calls in a minute |
+| `data` | none or 422 | Empty, too large or unreadable data, or no chart fits it |
+| `chart_type` | none | An unknown `chart_type`, or one that does not fit the data |
+| `spec` | none | A spec without the `quickviz` block, or not JSON |
+| `timeout` | none | A page step or the draw took longer than `RENDER_TIMEOUT_S` |
+| `bad_change` | 422 | The chat answer could not be used twice in a row |
+| `ai` | 502 to 504 | OpenRouter failed |
+
 ## Accounts and credits
 
 `app/auth.py` has Google sign-in, the session cookie and `/api/me`. `app/admin.py` has the admin API.
 `app/guard.py` counts credits. `app/db.py` and `app/models.py` hold the database.
 
-The tables are `users`, `sessions`, `oauth_states` and `spend`. They are made at startup.
+The tables are `users`, `sessions`, `oauth_states`, `api_keys` and `spend`. They are made at startup.
+`migrate` in `app/db.py` then adds any `users` column an older database lacks, on Postgres and SQLite alike.
+Today that is `styles` and `chart_style`.
 
 | Route | What it does |
 |---|---|
-| `GET /api/me` | Signed in or not, the email, admin or not, whether sign-in is on, credits left today, the daily number, the reset time |
+| `GET /api/me` | Signed in or not, the email, admin or not, whether sign-in is on, credits left today, the daily number, the reset time, `styles` the account may use and the current `style` |
+| `PUT /api/me/style` | `{"style": "aiw"}` saves the pick. 401 when not signed in, 403 for a style the account does not have |
 | `POST /api/logout` | Deletes the session |
 | `GET /auth/google/login` | Starts sign-in. 404 when Google is not set |
 | `GET /auth/google/callback` | Ends sign-in. 404 when Google is not set |
@@ -1147,6 +1285,21 @@ The tables are `users`, `sessions`, `oauth_states` and `spend`. They are made at
 | `GET /api/admin/users` | Every account with credits used today and in the last 7 days |
 | `PATCH /api/admin/users/{id}` | `{"active": false}` blocks, `true` unblocks |
 | `PATCH /api/admin/users/{id}/credits` | `{"credits_day": 500}` sets a daily number. `null` goes back to the default |
+| `PATCH /api/admin/users/{id}/styles` | `{"styles": ["franri", "aiw"]}` sets the styles. 422 for an empty list or an unknown name. 400 for the admin |
+
+### Chart styles
+
+`STYLES` in `app/models.py` is `("franri", "aiw", "ceps")`. `users.styles` holds a comma list, `franri` by default.
+`users.chart_style` holds the last pick, or null.
+
+`allowed_styles(user)` in `app/auth.py` gives `["franri"]` for a visitor, all three for the admin,
+and the stored list for anyone else. `check_style(user, style)` returns the style when it is allowed,
+the account's default when it is empty, and raises 403 otherwise. Every route that takes a style calls it.
+Today that is `POST /api/viz/chat`, `POST /api/render`, `PUT /api/me/style` and the MCP chart tools. The other `/api/viz` routes and the mockup routes take no style.
+
+`web/credits.js` fires a `qv-me` event with each `/api/me` answer. `app.js` keeps the allowed list and shows the
+"Style" menu in the chart head only when there are two or more. A pick loads the theme file if needed,
+redraws the chart and the sample chart, and saves the pick with `PUT /api/me/style`.
 
 ### Sign-in
 

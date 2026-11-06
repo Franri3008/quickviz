@@ -21,6 +21,7 @@
   <script src="app.js?v=__VERSION__" defer></script>
   <script src="credits.js?v=__VERSION__" defer></script>
   <script src="help.js?v=__VERSION__" defer></script>
+  <script src="keys.js?v=__VERSION__" defer></script>
 </head>
 <body class="view-1" data-style="franri">
   <header class="topbar">
@@ -33,6 +34,7 @@
         <span id="who-menu" class="menu who-menu" role="menu" aria-label="Account" hidden>
           <span id="who-line" class="who-line"></span>
           <a id="admin-link" role="menuitem" href="/admin" hidden>Admin</a>
+          <button id="keys-open" type="button" role="menuitem" aria-haspopup="dialog" aria-controls="keys-dialog">Keys for Claude</button>
           <a role="menuitem" href="/privacy">Privacy</a>
           <button id="signout" type="button" role="menuitem">Sign out</button>
         </span>
@@ -146,6 +148,7 @@
       <div class="stage-head">
         <div id="kinds" class="kinds" role="tablist" aria-label="Chart type"></div>
         <span id="stage-mock" class="mock-badge" hidden>Mockup data</span>
+        <label id="chart-house" class="chart-house" hidden>Style <select id="chart-house-select"></select></label>
       </div>
       <p id="shown-line" class="shown-line" role="note" hidden></p>
       <div id="frame" class="frame">
@@ -190,6 +193,33 @@
       <div class="help-scroll" tabindex="0" role="region" aria-label="Chart types">
         <ul id="help-list" class="help-list"></ul>
         <p class="help-privacy"><a href="/privacy">Privacy</a></p>
+      </div>
+    </div>
+  </dialog>
+  <dialog id="keys-dialog" class="help-dialog keys-dialog" aria-labelledby="keys-title">
+    <div class="help-box">
+      <div class="help-head">
+        <h2 id="keys-title">Keys for Claude</h2>
+        <button id="keys-close" type="button" class="icon-btn help-close" aria-label="Close">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="help-scroll keys-scroll">
+        <p class="keys-about">A key lets Claude Code or Claude Desktop make charts with your account. It uses your credits and your chart styles. Anyone with the key can do the same, so keep it private.</p>
+        <form id="keys-form" class="keys-form">
+          <label for="keys-name">Name</label>
+          <input id="keys-name" type="text" maxlength="60" placeholder="My laptop" autocomplete="off">
+          <button type="submit" class="primary">Make a key</button>
+        </form>
+        <div id="keys-new" class="keys-new" hidden>
+          <p><b>Copy this key now.</b> It is shown only once.</p>
+          <code id="keys-token" class="keys-code"></code>
+          <p>Add QuickViz to Claude Code with:</p>
+          <code id="keys-cmd" class="keys-code"></code>
+          <button id="keys-copy" type="button">Copy the command</button>
+        </div>
+        <p id="keys-err" class="keys-err" role="alert" hidden></p>
+        <ul id="keys-list" class="keys-list"></ul>
       </div>
     </div>
   </dialog>

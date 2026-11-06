@@ -6,6 +6,15 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db import Base
 
+STYLES = ("franri", "aiw", "ceps")
+DEFAULT_STYLE = "franri"
+
+
+def parse_styles(value) -> list[str]:
+    items = value.split(",") if isinstance(value, str) else list(value or [])
+    picked = {str(s).strip().lower() for s in items}
+    return [s for s in STYLES if s in picked]
+
 
 def uid():
     return uuid4().hex
@@ -18,6 +27,8 @@ class User(Base):
     google_sub: Mapped[str | None] = mapped_column(String(64), unique=True, nullable=True)
     name: Mapped[str] = mapped_column(String(200), default="")
     credits_day: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    styles: Mapped[str] = mapped_column(String(40), default=DEFAULT_STYLE, server_default=DEFAULT_STYLE)
+    chart_style: Mapped[str | None] = mapped_column(String(8), nullable=True)
     active: Mapped[bool] = mapped_column(Boolean, default=True)
     created: Mapped[float] = mapped_column(Float, default=time.time)
     last_seen: Mapped[float | None] = mapped_column(Float, nullable=True)
@@ -28,6 +39,17 @@ class LoginSession(Base):
     token: Mapped[str] = mapped_column(String(64), primary_key=True)
     user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), index=True)
     expires: Mapped[float] = mapped_column(Float, index=True)
+
+
+class ApiKey(Base):
+    __tablename__ = "api_keys"
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=uid)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), index=True)
+    name: Mapped[str] = mapped_column(String(60), default="")
+    prefix: Mapped[str] = mapped_column(String(16))
+    digest: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    created: Mapped[float] = mapped_column(Float, default=time.time)
+    last_used: Mapped[float | None] = mapped_column(Float, nullable=True)
 
 
 class OAuthState(Base):

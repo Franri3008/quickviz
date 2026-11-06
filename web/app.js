@@ -690,6 +690,11 @@ function namesContext(r) {
 
 function namesColumns() { return state.data.cols.map(c => ({name: c.name, type: c.type, distinct: c.distinct, samples: (c.samples || []).map(String)})); }
 
+function namesBody(r) {
+  const roles = Object.fromEntries(Object.entries(r.roles).filter(([q, v]) => ["cat", "series", "t", "v", "v2"].includes(q) && v && !String(v).startsWith("(")));
+  return {text: "", columns: namesColumns(), kind: r.kind, roles, file: state.data.name, ...namesContext(r)};
+}
+
 function catKey(r) {
   const used = new Set(Object.values(r.roles || {}).flat());
   return JSON.stringify((r.filters || []).filter(f => f.keep && f.keep.length === 1 && !used.has(f.column) && !yearCols().includes(f.column)).map(f => [f.column, String(f.keep[0])]).sort());
@@ -702,9 +707,8 @@ async function refreshTitle() {
   if (k === state.namesFor) return;
   state.namesFor = k;
   const my = seq;
-  const roles = Object.fromEntries(Object.entries(r.roles).filter(([q, v]) => ["cat", "series", "t", "v", "v2"].includes(q) && v && !String(v).startsWith("(")));
   try {
-    const w = await api("/api/viz/names", {json: {text: "", columns: namesColumns(), kind: r.kind, roles, file: state.data.name, ...namesContext(r)}});
+    const w = await api("/api/viz/names", {json: namesBody(r)});
     if (my !== seq || !state.recipe || catKey(state.recipe) !== k || !w || !w.title) return;
     state.names = {...state.names, title: w.title};
     render();
@@ -1261,6 +1265,13 @@ function sayMissed(missed, kind, rest) {
   return `The ${what} did not show on this ${name}, so that part did not change.` + (rest ? " The rest of the change was applied." : "");
 }
 
+function rateText(res, next, text) {
+  const saysOther = /\bOther\b|\bas other\b/;
+  if (!((res.ops || []).some(o => o.op === "top_n" && o.n) && next.top && isRate(next) && (next.top.other || saysOther.test(text)))) return text;
+  const kept = (text.match(/[^.!?]+[.!?]*/g) || []).filter(x => !saysOther.test(x)).join("").trim();
+  return ((kept || `Kept the top ${next.top.n}.`) + " " + RATE_OTHER).trim();
+}
+
 async function applyReply(base, res, m, message, pend) {
   const changed = Object.keys(res.set || {}).length || (res.ops || []).length || !!res.patch;
   m.text = res.reply || (changed ? "Done." : "I did not change anything.");
@@ -1271,11 +1282,7 @@ async function applyReply(base, res, m, message, pend) {
   pushUndo(message, pend);
   state.recipe = next;
   m.applied = true;
-  const saysOther = /\bOther\b|\bas other\b/;
-  if ((res.ops || []).some(o => o.op === "top_n" && o.n) && next.top && isRate(next) && (next.top.other || saysOther.test(m.text))) {
-    const kept = (m.text.match(/[^.!?]+[.!?]*/g) || []).filter(x => !saysOther.test(x)).join("").trim();
-    m.text = ((kept || `Kept the top ${next.top.n}.`) + " " + RATE_OTHER).trim();
-  }
+  m.text = rateText(res, next, m.text);
   notePatchesDropped(base, next);
   const drawn = await render();
   const missed = missedFields(res.set, drawn);
@@ -1353,6 +1360,15 @@ function drawnNames(spec) {
   return [...out];
 }
 
+function chatBody(base, message, history) {
+  const spec = state.spec || buildSpec(base);
+  return {
+    message, recipe: recipeForAI(base), columns: colsForAI(message),
+    sample: state.data.rows.slice(0, SAMPLE_ROWS).map(r => state.data.cols.map(c => r[c.name])),
+    history, chart_rows: spec.rows.slice(0, 12), chart_names: drawnNames(spec), style: state.style,
+  };
+}
+
 async function sendChat(message) {
   if (!state.data || state.busy) return;
   if (/^\s*(undo|go back|revert)\s*[.!]?\s*$/i.test(message)) { undo(); return; }
@@ -1364,12 +1380,7 @@ async function sendChat(message) {
   addChat("user", message);
   const pend = addChat("assistant", "", {pending: true});
   setStatus("", true);
-  const spec = state.spec || buildSpec(base);
-  const body = {
-    message, recipe: recipeForAI(base), columns: colsForAI(message),
-    sample: state.data.rows.slice(0, SAMPLE_ROWS).map(r => state.data.cols.map(c => r[c.name])),
-    history, chart_rows: spec.rows.slice(0, 12), chart_names: drawnNames(spec),
-  };
+  const body = chatBody(base, message, history);
   if (state.recipe && state.spec) body.outline = await chart.outline(6000);
   try {
     let res = await api("/api/viz/chat", {json: body});
@@ -1845,7 +1856,7 @@ const MOCK_SAY = {picking: "Finding a chart for it…", refining: "Naming the sa
 function drawMock(spec) {
   mockShown = spec;
   $("mock-box").hidden = false;
-  mockChart.render({...spec, style: "franri"}, {still: true, patches: QV.withMockPatch([], spec.mock !== false)}).catch(() => null);
+  mockChart.render({...spec, style: state.style}, {still: true, patches: QV.withMockPatch([], spec.mock !== false)}).catch(() => null);
   paintSteps();
 }
 
@@ -1989,6 +2000,24 @@ function guessKind() {
   return {choice, ranked: ["bar", "line", "stacked_bar", "heatmap", "scatter", "treemap", "map"].map(k => [k, 0.1]), guess: true};
 }
 
+function firstRecipe(p, told) {
+  const order = [p.choice, ...(p.ranked || []).map(r => r[0]).filter(k => k !== p.choice)];
+  const orient = ["horizontal", "vertical"].includes(state.data.orientation_hint) ? {orientation: state.data.orientation_hint} : {};
+  const given = told ? {roles: told.roles, sourceUrl: state.data.source_url || "", note: (state.data.notes || [])[0] || ""} : {};
+  for (const k of order) {
+    const recipe = fitsKind(k, {filters: [], source: state.data.source_hint || "", ...given, ...(k === "bar" || k === "stacked_bar" ? orient : {})});
+    if (recipe) return recipe;
+  }
+  return null;
+}
+
+function namedRecipe(recipe, w) {
+  if (!w || !w.roles || !Object.keys(w.roles).length) return recipe;
+  const fixed = rolesFor(recipe.kind, {...recipe.roles, ...w.roles});
+  const next = fixed && withAutoFilters({...recipe, roles: fixed});
+  return next && buildSpec(next).rows.length ? withAutoControls(next) : recipe;
+}
+
 async function autoChart() {
   if (!state.data || state.auto) return;
   const my = ++seq;
@@ -2015,11 +2044,7 @@ async function autoChart() {
   state.decide = p.guess ? null : p;
   const desc = state.data.described;
   if (desc) state.names = {title: desc.title || "", unit: desc.unit || "", columns: {}};
-  const order = [p.choice, ...(p.ranked || []).map(r => r[0]).filter(k => k !== p.choice)];
-  let recipe = null;
-  const orient = ["horizontal", "vertical"].includes(state.data.orientation_hint) ? {orientation: state.data.orientation_hint} : {};
-  const given = told ? {roles: told.roles, sourceUrl: state.data.source_url || "", note: (state.data.notes || [])[0] || ""} : {};
-  for (const k of order) { recipe = fitsKind(k, {filters: [], source: state.data.source_hint || "", ...given, ...(k === "bar" || k === "stacked_bar" ? orient : {})}); if (recipe) break; }
+  const recipe = firstRecipe(p, told);
   state.auto = "done";
   state.drawing = false; state.busy = false;
   setStatus("");
@@ -2037,20 +2062,15 @@ async function autoChart() {
   drawChat();
   if (failed || told) return;
   setStatus("", true);
-  const roles = Object.fromEntries(Object.entries(recipe.roles).filter(([k, v]) => ["cat", "series", "t", "v", "v2"].includes(k) && v && !String(v).startsWith("(")));
   try {
     const w = await Promise.race([
-      api("/api/viz/names", {json: {text: "", columns, kind: recipe.kind, roles, file: state.data.name, ...namesContext(state.recipe)}, signal}),
+      api("/api/viz/names", {json: namesBody(state.recipe), signal}),
       new Promise(ok => setTimeout(() => ok(null), 9000)),
     ]);
     if (my !== seq || !w) return;
     state.names = w;
     state.namesFor = catKey(state.recipe);
-    if (w.roles && Object.keys(w.roles).length) {
-      const fixed = rolesFor(state.recipe.kind, {...state.recipe.roles, ...w.roles});
-      const next = fixed && withAutoFilters({...state.recipe, roles: fixed});
-      if (next && buildSpec(next).rows.length) state.recipe = withAutoControls(next);
-    }
+    state.recipe = namedRecipe(state.recipe, w);
     render();
   } catch (e) {
   } finally {
@@ -2082,6 +2102,50 @@ function paintTheme() {
   b.setAttribute("aria-label", dark ? "Light mode" : "Dark mode");
   b.title = dark ? "Light mode" : "Dark mode";
 }
+const HOUSES = {franri: "QuickViz", aiw: "AI World", ceps: "CEPS"};
+const houseLoads = {};
+let houses = ["franri"];
+
+function loadHouse(style) {
+  if ((window.QV_THEMES || {})[style]) return Promise.resolve();
+  if (!houseLoads[style]) houseLoads[style] = new Promise((ok, no) => {
+    const tag = document.createElement("script");
+    const v = document.querySelector('meta[name="qv-version"]');
+    tag.src = `${style}-theme.js?v=${v ? v.content : ""}`;
+    tag.onload = ok;
+    tag.onerror = () => { delete houseLoads[style]; no(new Error("theme")); };
+    document.head.appendChild(tag);
+  });
+  return houseLoads[style];
+}
+
+function paintHouses() {
+  $("chart-house").hidden = houses.length < 2;
+  $("chart-house-select").innerHTML = houses.map(k => `<option value="${k}"${k === state.style ? " selected" : ""}>${HOUSES[k]}</option>`).join("");
+}
+
+async function useHouse(style, save) {
+  if (!houses.includes(style)) style = houses[0];
+  try { await loadHouse(style); } catch (e) { style = "franri"; }
+  const changed = style !== state.style;
+  state.style = style;
+  document.body.dataset.style = style;
+  paintHouses();
+  if (changed) {
+    if (state.recipe && !state.busy) render();
+    if (mockShown) drawMock(mockShown);
+    keep();
+  }
+  if (save) api("/api/me/style", {method: "PUT", json: {style}}).catch(() => {});
+}
+
+window.addEventListener("qv-me", ev => {
+  const got = (ev.detail.styles || []).filter(k => HOUSES[k]);
+  houses = got.length ? got : ["franri"];
+  useHouse(ev.detail.style, false);
+});
+$("chart-house-select").onchange = ev => useHouse(ev.target.value, true);
+
 $("theme").onclick = () => { if (window.QVTheme) QVTheme.toggle(); };
 window.addEventListener("qv-theme", paintTheme);
 paintTheme();

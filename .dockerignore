@@ -1,0 +1,13 @@
+.git
+.env
+.env.*
+.venv
+.pytest_cache
+**/__pycache__
+*.db
+*.db-*
+demo
+samples
+tests
+node_modules
+.DS_Store
