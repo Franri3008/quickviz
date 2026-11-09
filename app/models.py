@@ -1,7 +1,7 @@
 import time
 from uuid import uuid4
 
-from sqlalchemy import Boolean, Float, ForeignKey, Index, Integer, String
+from sqlalchemy import Boolean, Float, ForeignKey, Index, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db import Base
@@ -71,3 +71,11 @@ class Spend(Base):
     cost_usd: Mapped[float] = mapped_column(Float, default=0.0)
 
     __table_args__ = (Index("ix_spend_day_who", "day", "who"),)
+
+
+class ChartFile(Base):
+    __tablename__ = "chart_files"
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), index=True)
+    spec: Mapped[str] = mapped_column(Text)
+    created: Mapped[float] = mapped_column(Float, default=time.time, index=True)

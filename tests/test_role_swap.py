@@ -4,6 +4,8 @@ from app.viz_chat import ChangeError, validate_change
 from app.viz_parse import parse_file
 from tests.test_no_blending import STRESS, load, run
 
+pytestmark = pytest.mark.usefixtures("debug_fields")
+
 SIZE = "Size classes in number of persons employed"
 EU = "European Union - 27 countries (from 2020)"
 EA = "Euro area – 20 countries (from 2023)"

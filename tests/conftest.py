@@ -94,3 +94,10 @@ def spent_rows(who: str):
 
     with db.session() as s:
         return list(s.query(Spend).filter_by(who=who))
+
+
+@pytest.fixture
+def debug_fields(monkeypatch):
+    from app import leak
+
+    monkeypatch.setattr(leak, "KEEP_DEBUG", True)

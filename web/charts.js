@@ -700,12 +700,13 @@
     const rotate = a != null ? a > 0 : widest > bw - 6;
     const ax = g.append("g").attr("transform", `translate(0,${ih})`).call(d3.axisBottom(x).tickSizeOuter(0));
     styleAxis(ax);
-    const every = rotate ? Math.max(1, Math.ceil(FS.tick * 1.1 / bw)) : 1;
+    const every = rotate ? Math.max(1, Math.ceil(FS.tick * 1.1 / bw)) : 1, timed = labels.every(l => /^\d{4}/.test(String(l)));
     ax.selectAll(".tick").each(function (d, i) {
       const t = d3.select(this).select("text"), k = flagW && flagKey(d);
       if (k) flagAt(C, d3.select(this), k, -flagW / 2, 8 + flagW * 0.375, FS.tick, flagW);
       t.append("title").text(d);
-      if (i % every) { t.remove(); return; }
+      const last = labels.length - 1, ends = timed && i === last;
+      if (!ends && (i % every || (timed && last - i < every && last % every))) { t.remove(); return; }
       t.attr("font-size", sizeAt(dm, d, FS.tick)).text(clip(d, rotate ? maxW : bw - 4, sizeAt(dm, d, FS.tick), tickF(C, d)));
       if (rotate) tilt(t, deg);
       if (drop) t.attr("transform", `translate(0,${drop})` + (rotate ? ` rotate(-${deg})` : ""));
@@ -731,7 +732,7 @@
     ax.selectAll(".tick").each(function (d, i) {
       if (i % every && i !== labels.length - 1) d3.select(this).select("text").remove();
       else if (i !== labels.length - 1 && (labels.length - 1 - i) < every && (labels.length - 1) % every) d3.select(this).select("text").remove();
-      else if (a) tilt(d3.select(this).select("text").text(clip(d, 140, FS.tick, fm("tickLabels"))), a);
+      else if (a) tilt(fullTip(d3.select(this).select("text").text(clip(d, 140, FS.tick, fm("tickLabels"))), d), a);
     });
     return ax;
   }
@@ -748,7 +749,8 @@
     catLabels(C, ax.selectAll(".tick text"));
     return ax;
   }
-  const roomFor = (C, cap, span = C.W) => (C.spec.labelRoom === "full" ? Math.max(cap, span / 3) : cap);
+  const roomFor = (C, cap, span = C.W, pair = false) => (C.spec.labelRoom === "full" ? Math.max(cap, span / (pair ? 4 : 3)) : cap);
+  const fullTip = (t, full) => { if (t.text() !== String(full)) t.append("title").text(full); return t; };
   const labelWidth = (labels, cap, size = FS.label, fl = false, dm = null) => Math.min(cap, d3.max(labels, l => tw(l, sizeAt(dm, l, size), fm("tickLabels", 700, true)) + (fl && flagKey(l) ? flagRoom(true, sizeAt(dm, l, size)) : 0)) || 0);
 
   function empty(C, msg) {
@@ -1592,14 +1594,14 @@
       const fitsIn = (a, s) => (a.endAngle - a.startAngle) * ringMid >= tw(s, FS.min, fm("valueLabels", 700)) + 8 && rad - ringIn >= FS.min + 4;
       const inLabel = (a, s, dy) => {
         const [px, py] = d3.arc().innerRadius(ringIn).outerRadius(rad).centroid(a);
-        c.append("text").attr("class", "qv-pct").attr("x", px).attr("y", py).attr("dy", dy).attr("text-anchor", "middle").attr("font-size", FS.min).call(face, "valueLabels", 700)
+        return c.append("text").attr("class", "qv-pct").attr("x", px).attr("y", py).attr("dy", dy).attr("text-anchor", "middle").attr("font-size", FS.min).call(face, "valueLabels", 700)
           .attr("fill", textOn(color(a.data.cat))).attr("font-family", FONT).text(s);
       };
       if (!showLeg) {
         if (spec.valueLabels !== "off") arcs.forEach(a => {
           const big = a.endAngle - a.startAngle > 0.3, name = clip(a.data.cat, rad * 0.6, FS.min, fm("valueLabels", 700)), s = share(a.data);
-          if (spec.valueLabels === "on" && big && rad - ringIn >= 2 * FS.min + 8) { inLabel(a, name, "-0.25em"); inLabel(a, s, "1.05em"); }
-          else if (big) inLabel(a, name, "0.35em");
+          if (spec.valueLabels === "on" && big && rad - ringIn >= 2 * FS.min + 8) { fullTip(inLabel(a, name, "-0.25em"), a.data.cat); inLabel(a, s, "1.05em"); }
+          else if (big) fullTip(inLabel(a, name, "0.35em"), a.data.cat);
           else if (spec.valueLabels === "on" && fitsIn(a, s)) inLabel(a, s, "0.35em");
         });
         return;
@@ -1615,7 +1617,7 @@
         it.append("title").text(e.cat);
         it.append("rect").attr("y", 3).attr("width", 14).attr("height", 14).attr("fill", color(e.cat));
         it.append("text").attr("x", 22).attr("y", 15).attr("font-size", FS.label).call(face, "legend", 400, isHl(C, e.cat)).attr("fill", INK).attr("font-family", FONT)
-          .text(clip(e.cat, lwAvail - 22, FS.label, fm("legend", 400, isHl(C, e.cat))));
+          .text(clip(e.cat, lwAvail - 22, FS.label, fm("legend", 400, isHl(C, e.cat)))).call(fullTip, e.cat);
         if (spec.valueLabels !== "off") it.append("text").attr("x", 22).attr("y", 33).attr("font-size", FS.tick).call(face, "legend").attr("fill", MUTED).attr("font-family", FONT)
           .text(pct ? fmtShort(e.v, "%") : `${NF.format(".1%")(e.v / total)} / ${fmtShort(e.v, spec.unit)}`);
       });
@@ -1637,7 +1639,8 @@
       const showV = spec.valueLabels === "on";
       const valW = side0 => (showV ? d3.max([...sumBy(pairs.map(p => ({k: p[side0], v: p.v})), r => r.k).values()], v => tw(fmtShort(v, spec.unit), FS.tick, fm("valueLabels"))) + 8 : 0);
       const vwL = valW("s"), vwR = valW("t");
-      const lwL = labelWidth(srcNames, roomFor(C, Math.min(190, C.W * 0.27))) + 10 + vwL, lwR = labelWidth(dstNames, roomFor(C, Math.min(190, C.W * 0.27))) + 10 + vwR;
+      const free = C.W - 2 * PAD - 20 - vwL - vwR;
+      const lwL = labelWidth(srcNames, roomFor(C, Math.min(190, C.W * 0.27), free, true)) + 10 + vwL, lwR = labelWidth(dstNames, roomFor(C, Math.min(190, C.W * 0.27), free, true)) + 10 + vwR;
       const b = box(C, top, {left: PAD + lwL, bottom: 10, right: PAD + lwR});
       function layout(shared) {
         const id = (side, n) => (shared ? n : side + n);
@@ -1671,7 +1674,7 @@
         items.forEach((n, i) => {
           const t = b.g.append("text").attr("x", sd === "L" ? n.x0 - 6 : n.x1 + 6).attr("y", ys[i]).attr("dy", "0.35em")
             .attr("text-anchor", sd === "L" ? "end" : "start").attr("font-size", FS.label).call(face, "tickLabels", 400, isHl(C, n.name)).attr("fill", INK)
-            .attr("font-family", FONT).text(clip(n.name, sd === "L" ? lwL - 8 - vwL : lwR - 8 - vwR, FS.label, tickF(C, n.name)));
+            .attr("font-family", FONT).text(clip(n.name, sd === "L" ? lwL - 8 - vwL : lwR - 8 - vwR, FS.label, tickF(C, n.name))).call(fullTip, n.name);
           if (showV) t.append("tspan").attr("class", "qv-node-value").attr("font-size", FS.tick).call(face, "valueLabels").attr("font-style", fi("valueLabels") || (fi("tickLabels") ? "normal" : null))
             .attr("fill", INK).text("  " + fmtShort(n.value, spec.unit));
         });
@@ -1700,7 +1703,8 @@
       const lastOf = s => s.pts.filter(p => p.v !== undefined).at(-1), firstOf = s => s.pts.find(p => p.v !== undefined);
       const fl = flagsOn(C, cats);
       const dm = dimOf(C, cats);
-      const lwR = labelWidth(cats, roomFor(C, Math.min(170, C.W * 0.2)), FS.tick, fl, dm) + 14, lwL = labelWidth(cats, roomFor(C, Math.min(140, C.W * 0.16)), FS.tick, fl, dm) + 14;
+      const free = C.W - 2 * PAD - 28 - 30 - (spec.yLabel ? 30 : 0);
+      const lwR = labelWidth(cats, roomFor(C, Math.min(170, C.W * 0.2), free, true), FS.tick, fl, dm) + 14, lwL = labelWidth(cats, roomFor(C, Math.min(140, C.W * 0.16), free, true), FS.tick, fl, dm) + 14;
       const b = box(C, top, {left: PAD + (spec.yLabel ? 30 : 0) + 30 + lwL, bottom: bottomFor(C, pointExtra(C, ts)), right: PAD + lwR});
       const x = d3.scalePoint(ts, [0, b.iw]).padding(0.15), y = d3.scaleLinear([1, maxRank], [0, b.ih]);
       const dens = cats.length > 7 ? 0.8 : 1;
@@ -1736,7 +1740,7 @@
           if (k && start) flagAt(C, b.g, k, x0, ys[i], fs);
           const t = b.g.append("text").attr("x", x0 + (k && start ? fr : 0)).attr("y", ys[i]).attr("dy", "0.35em").attr("text-anchor", anchor)
             .attr("font-size", fs).call(face, "tickLabels", 400, color.hl.has(e.s.c)).attr("fill", anyHl && !color.hl.has(e.s.c) ? MUTED : INK)
-            .attr("font-family", FONT).text(clip(e.s.c, (start ? lwR : lwL) - 14 - (k ? fr : 0), fs, fm("tickLabels", 400, color.hl.has(e.s.c))));
+            .attr("font-family", FONT).text(clip(e.s.c, (start ? lwR : lwL) - 14 - (k ? fr : 0), fs, fm("tickLabels", 400, color.hl.has(e.s.c)))).call(fullTip, e.s.c);
           if (k && !start) flagEnd(C, t.node(), k, fs);
         });
       };

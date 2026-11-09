@@ -4,7 +4,7 @@ from pathlib import Path
 
 from fastapi import HTTPException
 
-from app import auth, guard, viz, viz_reading
+from app import auth, guard, leak, viz, viz_reading
 from app.capabilities import say_unused
 from app.config import WEB_DIR
 from app.llm import Visitor
@@ -75,10 +75,11 @@ async def read_csv(user: Visitor, text: str) -> dict:
 
 async def named(user: Visitor, body: dict) -> dict | None:
     try:
-        return await viz.names(viz.NamesIn(**body), user)
+        got = await viz.names(viz.NamesIn(**body), user)
     except HTTPException as e:
         log.info("Names skipped: %s", e.detail)
         return None
+    return leak.scrub(got, leak.allowed_of(body), "name") if isinstance(got, dict) else got
 
 
 async def picture(user: Visitor, done: dict, data: dict, style: str) -> dict:
@@ -113,6 +114,7 @@ async def make_chart(user: Visitor, csv: str, description: str | None = None, st
     out = await picture(user, done, data, style)
     out["kinds"] = plan["kinds"]
     out["reply"] = ""
+    out["allowed"] = leak.allowed_of(data, text)
     return out
 
 
@@ -127,8 +129,8 @@ def unpack(chart) -> tuple[dict, dict, dict | None]:
     return qv["recipe"], slim(data), names
 
 
-def honest(applied: dict) -> str:
-    reply = (applied.get("reply") or "").strip()
+def honest(applied: dict, allowed: str = "") -> str:
+    reply = leak.clean((applied.get("reply") or "").strip(), leak.DONE if applied["changed"] else leak.REFUSED, allowed)
     if not applied["changed"]:
         return reply if any(s in reply.lower() for s in SAID) else f"{UNCHANGED} {reply}".strip()
     if applied.get("missed"):
@@ -151,7 +153,10 @@ async def edit_chart(user: Visitor, chart: dict, instruction: str, style: str | 
         applied = await stage("apply", {**state, "res": res})
         if applied.get("noop") or not applied["changed"]:
             applied = {"recipe": recipe, "reply": NO_CHANGE, "changed": False}
-    applied["reply"] = honest(applied)
+    allowed = leak.allowed_of(data, message)
+    if applied["changed"]:
+        applied["recipe"] = leak.scrub(applied["recipe"], leak.allowed_of(allowed, recipe), "recipe field")
+    applied["reply"] = honest(applied, allowed)
     if applied.get("names"):
         got = await named(user, applied["names"])
         if got and got.get("title"):
@@ -160,4 +165,5 @@ async def edit_chart(user: Visitor, chart: dict, instruction: str, style: str | 
     out = await picture(user, done, data, style)
     out["reply"] = applied["reply"]
     out["changed"] = applied["changed"]
+    out["allowed"] = allowed
     return out

@@ -10,6 +10,8 @@ from conftest import new_client, spend, spent_rows
 
 import app.parse as REAL
 
+pytestmark = pytest.mark.usefixtures("debug_fields")
+
 CSV = b"country,2021,2022,2023\nBelgium,1.5,2,3\nEU27,3,4,5\nSpain,2,2.5,4\n"
 GOOD = {"blocks": [{"header_rows": [0], "data_start": 1, "data_end": 3, "id_columns": [{"index": 0, "name": "country"}],
                     "value_columns": [{"index": 1, "name": "2021"}, {"index": 2, "name": "2022"}, {"index": 3, "name": "2023"}]}],

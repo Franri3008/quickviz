@@ -14,6 +14,7 @@ from pydantic import ValidationError
 from starlette.concurrency import run_in_threadpool
 
 from app.llm import DEFAULT_REASONING, openrouter, reasoning
+from app.leak import RULE
 from app.parse.recipe import Recipe
 from app.viz_parse import MISSING, PERIOD_HEAD, _to_number
 
@@ -328,7 +329,7 @@ def build_messages(grid, sheets, sheet, detected: dict, conf: float, issues: lis
             + ("Its problems:\n" + "\n".join("- " + _clean(i, 200) for i in issues[:12]) + "\n" if issues else "")
             + f"The grid has {len(grid)} rows and {_width(grid)} columns:\n<<<GRID\n{grid_view(grid)}\nGRID>>>\n"
             + "Reply with the JSON recipe that reads this sheet best.")
-    return [{"role": "system", "content": PROMPT + "\n\nRecipe schema:\n" + _schema()}, {"role": "user", "content": user}]
+    return [{"role": "system", "content": PROMPT + "\n\n" + RULE + "\n\nRecipe schema:\n" + _schema()}, {"role": "user", "content": user}]
 
 
 def _content(data) -> str:
@@ -930,7 +931,7 @@ async def redraw(user, raw: bytes, name: str, model: str) -> dict:
     url = f"data:{mime};base64,{base64.b64encode(raw).decode()}"
     pick = reasoning(model)
     req = {"model": model, "max_tokens": 6000, "temperature": 0.3,
-           "messages": [{"role": "system", "content": PICTURE_PROMPT},
+           "messages": [{"role": "system", "content": PICTURE_PROMPT + "\n\n" + RULE},
                         {"role": "user", "content": [{"type": "text", "text": "Read the values in this chart."},
                                                      {"type": "image_url", "image_url": {"url": url}}]}]}
     if pick:

@@ -32,6 +32,7 @@ def page(name: str) -> HTMLResponse:
 @asynccontextmanager
 async def lifespan(app):
     db.initialize()
+    mcp_server.prune()
     async with mcp_server.lifespan():
         yield
     await RENDERER.stop()
@@ -46,6 +47,7 @@ app.include_router(viz_router)
 app.include_router(mock.router)
 app.include_router(render_router)
 app.add_route(mcp_server.PATH, mcp_server.endpoint, methods=["GET", "POST", "DELETE"], include_in_schema=False)
+app.add_route(mcp_server.FILES, mcp_server.download, methods=["GET"], include_in_schema=False)
 
 
 @app.middleware("http")

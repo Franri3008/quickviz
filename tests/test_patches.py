@@ -11,6 +11,8 @@ from app import llm
 from conftest import sign_in
 from app.viz_chat import PATCH_MAX, SYSTEM, ChangeError, build_messages, check_patch, validate_change
 
+pytestmark = pytest.mark.usefixtures("debug_fields")
+
 ROOT = Path(__file__).resolve().parents[1]
 COLUMNS = [
     {"name": "country", "type": "category", "distinct": 3, "values": ["Spain", "Belgium", "EU27"]},

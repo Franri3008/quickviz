@@ -10,6 +10,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from app import guard, viz_reading
 from app.auth import check_style
+from app.leak import RULE, public_route
 from app.llm import DEFAULT_REASONING, Visitor, openrouter, visitor
 from app.viz_chat import STYLE_PROMPT, TITLE_ASK, ChangeError, _norm, KINDS, build_messages, dropped_error, extract_json, honest_reply, needs_title, validate_change
 from app.viz_parse import ParseError
@@ -130,6 +131,7 @@ class ChatIn(BaseModel):
 
 
 @router.post("/parse")
+@public_route
 async def parse(request: Request, name: str = "data.csv", sheet: str | None = None, user: Visitor = Depends(visitor)):
     raw = await request.body()
     if len(raw) > settings().max_upload_bytes:
@@ -145,6 +147,7 @@ async def parse(request: Request, name: str = "data.csv", sheet: str | None = No
 
 
 @router.post("/redraw")
+@public_route
 async def redraw(request: Request, name: str = "chart.png", user: Visitor = Depends(visitor)):
     raw = await request.body()
     if len(raw) > settings().max_upload_bytes:
@@ -168,6 +171,7 @@ class RereadIn(BaseModel):
 
 
 @router.post("/reread")
+@public_route
 async def reread(body: RereadIn, user: Visitor = Depends(visitor)):
     if (body.recipe is None) == (body.header_row is None):
         raise HTTPException(400, detail="Send a recipe or a header row")
@@ -208,6 +212,7 @@ def file_context(file: str, sheet: str = "") -> str:
 
 
 @router.post("/decide")
+@public_route
 async def decide(body: DecideIn, user: Visitor = Depends(visitor)):
     t0 = time.time()
     cols = [c for c in body.columns if c.name.strip()][:MAX_COLUMNS]
@@ -218,12 +223,12 @@ async def decide(body: DecideIn, user: Visitor = Depends(visitor)):
     ctx = (f"The user says: {body.text[:1500]}\n" if body.text.strip() else "") + file_context(body.file, body.sheet) + f"The data has these columns: {summary}.\n"
     qs = {"kind": {
         "type": "choice",
-        "instructions": "A user describes the data they have. Pick the chart type that best shows it.\n\n" + ctx,
+        "instructions": "A user describes the data they have. Pick the chart type that best shows it.\n\n" + ctx + "\n" + RULE,
         "criteria": {p["id"]: p["description"] for p in PRESETS},
     }}
     for i, c in enumerate(cols):
         qs[f"col{i}"] = {"type": "choice", "criteria": COLUMN_ROLES,
-                         "instructions": ctx + f"What role does the column \"{c.name[:80]}\" play in a chart of this data?"}
+                         "instructions": ctx + f"What role does the column \"{c.name[:80]}\" play in a chart of this data?\n" + RULE}
     data = await openrouter(user, "/api/alpha/decisions", {"model": settings().jev_model, "state": "", "questions": qs}, timeout=30)
     ans = data.get("answers", {}) if isinstance(data, dict) else {}
     k = ans.get("kind", {})
@@ -289,6 +294,7 @@ def true_years(title: str, years: list[int], data_years: list[int] | None = None
 
 
 @router.post("/names")
+@public_route
 async def names(body: NamesIn, user: Visitor = Depends(visitor)):
     t0 = time.time()
     cols = [c for c in body.columns if c.name.strip()][:MAX_COLUMNS]
@@ -304,7 +310,7 @@ async def names(body: NamesIn, user: Visitor = Depends(visitor)):
                 + (f"Years drawn: {span_text(years)}\n" if years else "")
                 + "Columns:\n" + lines)
     s = settings()
-    msgs = [{"role": "system", "content": NAME_PROMPT}, {"role": "user", "content": user_msg[:4000]}]
+    msgs = [{"role": "system", "content": NAME_PROMPT + "\n\n" + RULE}, {"role": "user", "content": user_msg[:4000]}]
     switchable = [v for f in body.filters if f.reader for v in [f.value, *f.options] if len(_norm(v)) > 2]
     cost = 0.0
     for attempt in range(2):
@@ -358,6 +364,7 @@ def shown_columns(recipe: dict) -> dict:
 
 
 @router.post("/chat")
+@public_route
 async def chat(body: ChatIn, user: Visitor = Depends(visitor)):
     t0 = time.time()
     style = check_style(user.user, body.style)

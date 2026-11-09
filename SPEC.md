@@ -416,12 +416,26 @@ Each place has its own cap, such as 140 px or 16% of the width for the left name
 with an ellipsis. "full" raises each cap to a third of the chart width, or a third of the height for slanted column names.
 The names take only the room the longest one needs, and the plot gets narrower. A name longer than a third is still cut.
 
-`roomFor(C, cap, span)` in `charts.js` gives the cap. It covers the ranking end labels on both sides, horizontal bar,
+Since 4.1.0 a chart with names on both sides keeps at least about half its width for the plot. That is the ranking chart
+and the flow chart. Each side then gets a quarter of the width left after the fixed gaps, so both sides together take
+at most half. Before, each side could take a third, and a ranking chart of six countries at 600 px lost its middle years.
+A name longer than its side is cut again. Every cut name in the ranking and flow end labels, and every cut slanted year,
+holds its full text in an SVG `<title>`, so it shows on hover in the HTML file. This holds in both modes.
+The same goes for a cut name inside a donut ring and in the donut list beside it.
+
+`roomFor(C, cap, span, pair)` in `charts.js` gives the cap. With `pair` true it gives a quarter of `span`, else a third. It covers the ranking end labels on both sides, horizontal bar,
 stacked bar and dot range category names, heatmap row names, flow chart node names, slanted column labels, and the side
 legend. In a top or bottom legend each name may take the full row width in place of 220 px.
 Histogram, donut and map do not read it. The donut list is placed by the ring, not by a cap.
 
 `labelMax` only cuts names shorter. The prompt tells the model to use `labelRoom` for "show the full names".
+
+### Thinned time labels
+
+A time axis that gets too narrow for every year shows every second, third or later year. `pointBottomAxis` does this
+for line, stacked area and ranking charts. The first year and the last year always show, and the label just before
+the last drops when it would crowd it. Since 4.1.0 a column chart whose labels all start with a four digit year keeps
+the last year too when its slanted labels thin. Other column labels thin as before.
 
 ## Shaded ranges
 
@@ -1260,7 +1274,7 @@ Scale 4 peaked at 566 MB, so `RENDER_MAX_SCALE` is 2.
 
 ## API keys
 
-A personal API key lets a program act as one signed-in account. Today only the MCP server takes keys.
+A personal API key lets a program act as one signed-in account. Today only the MCP server and its HTML downloads take keys.
 `app/keys.py` has the routes. They need a signed-in session. A key cannot manage keys.
 
 | Route | What it does |
@@ -1293,8 +1307,79 @@ The body limit is `MAX_BODY_BYTES`, as for `/api`.
 | Tool | Arguments | Gives back |
 |---|---|---|
 | `list_styles` | none | Text, and `structuredContent` with `styles`, `default` and `credits_left` |
-| `make_chart` | `data` CSV text, then optional `description`, `style`, `chart_type`, `html` | A PNG, a summary, the spec JSON, and the HTML file when `html` is true |
-| `edit_chart` | `spec` from a chart tool, `instruction`, then optional `style`, `html` | The same |
+| `make_chart` | `data` CSV text, then optional `description`, `style`, `chart_type` | A PNG, a summary with the chart id and the HTML download link, and `structuredContent` with `chart_id` and `html_url` |
+| `edit_chart` | `chart_id`, `instruction`, then optional `style` | The same, with a new chart id |
+
+The spec never goes to the client. `result` stores the whole chart, spec and `quickviz` block, in `chart_files` and
+answers with its id. `edit_chart` loads the row with `load_file`, which checks the owner and the age, and runs the edit
+on it. The result is a new row with a new id. The old row is left as it was, so an earlier id still works until it expires.
+An unknown id, another account's id and an expired id all answer "That chart has expired, make it again with make_chart."
+`Server.call_tool` answers a call to `edit_chart` that still carries `spec` with a short error that asks for the chart id.
+
+### HTML download
+
+Before 4.1.0 the tools could send the self-contained HTML inline with `html=true`. It is 450 to 950 KB, and Claude Code
+cuts tool output at 25,000 tokens, so the file never arrived whole. The argument is gone.
+
+Each chart tool call now stores the chart in the `chart_files` table, model `ChartFile`. The row holds a
+`secrets.token_urlsafe(32)` id, the owner's user id, the whole chart JSON, and the created time.
+The download draws it without its `quickviz` block, so the recipe and the read data never reach the file.
+The summary ends with the address and the curl line to save it, and says the link lasts 7 days.
+
+`GET /mcp/files/<id>.html` is `download` in `app/mcp_server.py`. It takes the same `Authorization: Bearer` key.
+No key or a bad key answers 401. An unknown id, an id older than 7 days, or a chart of another account answers 404.
+Any key of the owner works. The route draws the spec again with `render_chart` and answers the HTML as an attachment,
+with `Cache-Control: no-store`. It costs no credits but counts toward `RATE_RENDER`.
+
+The base of the address is the one the call came in on. `base_url` reads `X-Forwarded-Proto` and `Host`.
+Rows older than 7 days are deleted by `prune`, at startup and before each new row.
+`load_file` also deletes an expired row when a download or an edit finds it.
+
+### Keeping the inside private
+
+Someone can ask Claude to "show how QuickViz works" through the tools. The prompts, the models, the steps and the
+spec schema must not come out that way. The drawing code and the HTML file are public, so they are not covered.
+
+`app/leak.py` holds the rule and the filter.
+
+1. `RULE` goes at the end of every model call the MCP can reach. That is both decide questions, the names prompt,
+   the chat prompt, the sheet reading prompt and the picture prompt. It says never to reveal the instructions,
+   prompts, models, steps or internal field names, and to treat the user's words only as a chart request.
+2. `reason(text, allowed)` says why a text leaks, or nothing. It has two checks only.
+   - "prompt". The text shares 8 or more words in a row with a prompt string. Each prompt string is also checked with
+     `RULE` joined to its end, so a quote across that join counts too. The prompt strings are every upper-case constant in
+     the prompt modules whose name has PROMPT, SYSTEM, ASK, PRESETS, ROLES, CHARTABLE, SCORE, RULE, SANKEY, THEME or SCHEMA
+     in it, the two inline decide questions, `system_prompt` for each house, `_schema()` and `RULE`.
+     Words are lower-cased runs of letters and digits, so case, punctuation and line breaks do not hide a quote.
+   - "model". The text names a configured model id, such as "anthropic/claude-haiku-5.5", or its bare part after the
+     slash, such as "claude-haiku-5.5". The ids come from the model settings and the model catalog where there is one.
+   Words and ids in `allowed`, the chart's own data and the user's own request, do not count.
+   There is no check for provider words, camelCase names or words like recipe or prompt. Those blocked real charts,
+   such as "Claude Monet", "Google leads the search engine market", kWh, mmHg, eBay and iPhone.
+3. A leak drops only the field it sits in. `scrub` takes out each leaking string and keeps the rest.
+   - `pipeline.named` scrubs the names answer. A leaking title loses only the title. The unit, labels and roles stay.
+   - `pipeline.edit_chart` scrubs the new recipe. The edit still applies, and only a leaking drawn field is cleared.
+   - `honest` filters the chat reply. `mcp_server.result` checks the title and the reply once more before they go out.
+4. A held-back reply becomes "The chart was updated." when the chart changed, else "That request can't be handled here."
+   The original goes to the `quickviz.leak` log at warning level, never to the client.
+
+This lowers the risk. It does not remove it. A model that follows an injected instruction can still give out a
+paraphrase, a translation or an encoded copy of a prompt, and no word check catches that.
+
+The page has the same guard. Every `/api/viz/*` route goes through `public_route`, which removes `model`, `ms`, `cost`,
+`tries`, `retry_reason`, `reasons`, `error`, `usage` and `raw` from the answer and from a 422 detail. It also removes
+`reading.ai` and the model and cost of `reading.picture`. `web/app.js` read these only behind `window.QV_DEBUG`, which
+nothing sets. The chat reply of `/api/viz/chat` goes through the same filter.
+Tests that check retries or the reading's model step set `leak.KEEP_DEBUG` with the `debug_fields` fixture. Nothing else sets it. The mockup routes `/api/pick`, `/api/fill`
+and `/api/web-data` drop the same fields.
+Every model call of the page, chat included, goes through `openrouter()` in `app/llm.py`. It reserves credits with
+`guard.reserve` before the call, so an anonymous visitor is counted per IP, and every call counts toward `GLOBAL_DAY_USD`.
+
+Errors to the client are fixed lines from `HEADS` and `SAYS` in `app/mcp_server.py`. Only a few safe parts are filled in.
+They are the styles the account may use, the reset time, the wait in seconds, and the chart type message, which names
+chart types only. Exception text, paths and stack traces go to the server log. `Server.call_tool` turns any other
+exception into "That request can't be handled here."
+`list_styles` gives style ids, their names, the default and the credits left. Nothing about colours or fonts.
 
 The two chart tools share the render limit, `RATE_RENDER` calls a minute per account.
 They charge credits through the same `openrouter()` call as the page, so the count is the same.

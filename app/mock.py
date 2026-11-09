@@ -10,6 +10,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException, Request
 
 from app import guard
 from app.config import WEB_DIR
+from app.leak import public_route
 from app.llm import Visitor, openrouter, visitor
 from app.web_data import FIELDS, WebCache, WebDataError, web_reply, web_request
 
@@ -201,6 +202,7 @@ async def ask(user: Visitor, made: tuple) -> tuple[dict, int]:
 
 
 @router.post("/pick")
+@public_route
 async def api_pick(request: Request, body=Body(...), user: Visitor = Depends(visitor)):
     text = admit(request, body, "pick")
     try:
@@ -211,6 +213,7 @@ async def api_pick(request: Request, body=Body(...), user: Visitor = Depends(vis
 
 
 @router.post("/fill")
+@public_route
 async def api_fill(request: Request, body=Body(...), user: Visitor = Depends(visitor)):
     text = admit(request, body, "fill")
     try:
@@ -225,6 +228,7 @@ async def api_fill(request: Request, body=Body(...), user: Visitor = Depends(vis
 
 
 @router.post("/web-data")
+@public_route
 async def api_web_data(request: Request, body=Body(...), user: Visitor = Depends(visitor)):
     text = admit(request, body, "web")
     kind = body.get("kind")

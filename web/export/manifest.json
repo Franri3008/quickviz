@@ -1,8 +1,8 @@
 {
   "charts.min.js": {
     "source": "charts.js",
-    "source_sha256": "34f97c5251235bce59839369957b287f576649b03a561fa4ecb191f6596fc8fc",
-    "sha256": "70c1c5146339792506268ef3f53c5d181e6707f0845c908e90c969b70eafe5b9"
+    "source_sha256": "2e61a12be78b2cde2d82f4edf5be813f02563b1549ec05aa3da0565a5a47dbaf",
+    "sha256": "ba7ce741ba3a759a913b8df9e58e2a380580ba05dd63f6f477e4069e94ba358b"
   },
   "ceps-theme.min.js": {
     "source": "ceps-theme.js",

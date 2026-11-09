@@ -344,13 +344,37 @@ The server has three tools.
 | Tool | What it does |
 |---|---|
 | `list_styles` | The chart styles your account may use, the default one and the credits left today |
-| `make_chart` | Takes CSV text, an optional description, style and chart type. Gives back a PNG, a short summary and the chart spec as JSON |
-| `edit_chart` | Takes the spec from `make_chart` and a change in plain words. Gives back the same three things |
+| `make_chart` | Takes CSV text, an optional description, style and chart type. Gives back a PNG and a short summary with a chart id and a download link |
+| `edit_chart` | Takes a chart id and a change in plain words. Gives back a new chart id, the PNG and a download link |
 
-Both chart tools take `html=true` to add the self-contained HTML file. It is large, often 400 KB or more.
-So it is left out unless asked for.
+The chart spec stays on the server. `make_chart` stores it and gives back a chart id. `edit_chart` loads the chart by that id,
+changes it and stores the result under a new id. The old id keeps working until it expires.
+A chart id lasts 7 days, as its download link does. An unknown or expired id gets "That chart has expired, make it again".
+An old client that still sends a spec to `edit_chart` gets a short error that asks for the chart id.
 
-The key works only for the MCP server. It cannot sign in to the page or make more keys.
+The self-contained HTML file is not sent in the reply. It is 450 to 950 KB, and Claude Code cuts tool output at 25,000 tokens.
+The summary gives a download link instead, `GET <base>/mcp/files/<id>.html`, and the curl line to save it.
+
+```sh
+curl -s -H "Authorization: Bearer $KEY" -o chart.html https://quickviz.franri.dev/mcp/files/<id>.html
+```
+
+The base is the address the call came in on. The chart id is the `<id>` part of the link.
+The link needs a key of the account that made the chart. Any of its keys works.
+Another account gets 404, and a call with no key gets 401.
+The server keeps only the chart spec, a few KB, in the `chart_files` table under a long random id.
+It draws the HTML again on each download. A download costs no credits but shares the render rate limit.
+Links last 7 days. Older ones are deleted at startup, on each new chart, and when a call finds them expired. Then they answer 404.
+
+The server keeps its prompts, models and steps to itself.
+Every model call carries a rule never to reveal them, and to read the user's words only as a chart request.
+A model reply that still quotes a prompt or names a model id is replaced by a fixed line before it goes out.
+A leaking title or label is dropped on its own, and the rest of the chart stays.
+This lowers the risk. It does not remove it. A model that follows an injected instruction can still leak a paraphrase or an encoded copy.
+The page sends no model ids or debug fields either.
+Errors to Claude are short and fixed. The full detail goes to the server log. SPEC.md has the details.
+
+The key works only for the MCP server and its downloads. It cannot sign in to the page or make more keys.
 Your credits, your styles and a block by the admin apply to it as they do on the page.
 Delete a key in the same dialog when you no longer need it. It stops working at once.
 
@@ -405,10 +429,16 @@ To try sign-in locally, put `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.e
 
 ## Version
 
-The version lives in `VERSION`. It is 4.0.0.
-The chat and `edit_chart` can now show long names in full with `labelRoom: "full"`. The default still cuts them.
-`edit_chart` now checks the drawn chart. A change that draws the same chart, or that the chart cannot show, says so in the reply.
-This changes `charts.js`, `capabilities.json` and `export/charts.min.js` here first. CEPS QuickViz must take the same change before the next sync.
+The version lives in `VERSION`. It is 4.1.0.
+`make_chart` and `edit_chart` no longer send the HTML file inline, and `html=true` is gone. The summary gives a 7-day download link.
+The chart spec no longer leaves the server. The tools give a chart id, and `edit_chart` takes that id.
+Model replies pass a filter that holds back prompt text and model names. Errors to Claude are short and fixed.
+Clipped donut names show in full on hover.
+With `labelRoom: "full"`, the names on the two sides of a bump or sankey chart take at most half the width together.
+Longer names are cut again and show in full on hover. Thinned year labels always keep the first and the last year.
+This changes `charts.js` and `export/charts.min.js` here first. CEPS QuickViz takes the same change in 3.1.0.
+4.0.0 let the chat and `edit_chart` show long names in full with `labelRoom: "full"`. The default still cuts them.
+It also made `edit_chart` check the drawn chart, so a change that draws the same chart says so.
 3.2.0 added the columns row above the chart and kept table pictures wide.
 3.1.3 made the server render work in the Docker image again.
 3.1.2 let the chat pick which value columns a wide chart shows.

@@ -7,6 +7,7 @@ from typing import Annotated, Any, Literal, Union
 from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, ValidationError, ValidationInfo, field_validator, model_validator
 
 from app.capabilities import CAPS, kind_name, say_missing, unsupported
+from app.leak import RULE
 
 KINDS = ["bar", "line", "stacked_area", "stacked_bar", "scatter", "histogram", "heatmap", "treemap", "donut",
          "sankey", "bump", "dot_range", "map"]
@@ -1174,7 +1175,7 @@ def build_messages(message: str, recipe: dict, columns: list[dict], sample: list
     kind = recipe.get("kind")
     if kind in CAPS["kinds"]:
         ctx["fields_this_chart_draws"] = CAPS["kinds"][kind]
-    msgs = [{"role": "system", "content": system_prompt(style)}]
+    msgs = [{"role": "system", "content": system_prompt(style) + "\n\n" + RULE}]
     for h in (history or [])[-8:]:
         role = "assistant" if h.get("role") == "assistant" else "user"
         text = _short(h.get("text") or "", 300)
