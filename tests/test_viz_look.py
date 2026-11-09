@@ -31,6 +31,8 @@ def change(**set_):
     {"padding": 0},
     {"padding": 40},
     {"labelMax": 12},
+    {"labelRoom": "full"},
+    {"labelRoom": "auto"},
     {"thousands": "space"},
     {"thousands": "none", "decimalMark": "comma"},
     {"numberStyle": "full"},
@@ -75,6 +77,7 @@ def test_font_size_in_px_text_is_read():
     {"border": True},
     {"padding": 60},
     {"labelMax": 2},
+    {"labelRoom": "wide"},
     {"thousands": "dot"},
     {"decimalMark": "space"},
     {"numberStyle": "scientific"},
@@ -130,7 +133,7 @@ def test_dashed_names_are_matched():
 
 
 def test_prompt_names_the_new_fields_and_controls():
-    for f in ["textHalo", "textColor", "background", "border", "padding", "labelMax", "thousands", "decimalMark", "numberStyle",
+    for f in ["textHalo", "textColor", "background", "border", "padding", "labelMax", "labelRoom", "thousands", "decimalMark", "numberStyle",
               "axisTitles", "opacity", "lineStyle", "dashed", "markerShape", "titleSize", "flags", "controls", '"type": "legend"', '"type": "checkbox"',
               '"type": "slider"', '"type": "switch"', '"type": "select"']:
         assert f in SYSTEM

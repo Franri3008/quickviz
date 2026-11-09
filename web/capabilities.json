@@ -51,7 +51,8 @@
    "refLabel",
    "textHalo",
    "flags",
-   "shade"
+   "shade",
+   "labelRoom"
   ],
   "line": [
    "xLabel",
@@ -86,7 +87,8 @@
    "dashed",
    "markerShape",
    "flags",
-   "shade"
+   "shade",
+   "labelRoom"
   ],
   "stacked_area": [
    "xLabel",
@@ -115,7 +117,8 @@
    "refLabel",
    "textHalo",
    "flags",
-   "shade"
+   "shade",
+   "labelRoom"
   ],
   "stacked_bar": [
    "xLabel",
@@ -147,7 +150,8 @@
    "refLabel",
    "textHalo",
    "flags",
-   "shade"
+   "shade",
+   "labelRoom"
   ],
   "scatter": [
    "xLabel",
@@ -182,7 +186,8 @@
    "pointSize",
    "markerShape",
    "textHalo",
-   "flags"
+   "flags",
+   "labelRoom"
   ],
   "histogram": [
    "xLabel",
@@ -223,7 +228,8 @@
    "dimSize",
    "barGap",
    "textHalo",
-   "flags"
+   "flags",
+   "labelRoom"
   ],
   "treemap": [
    "unit",
@@ -239,7 +245,8 @@
    "valueLabels",
    "highlight",
    "colors",
-   "textHalo"
+   "textHalo",
+   "labelRoom"
   ],
   "donut": [
    "yLabel",
@@ -266,7 +273,8 @@
    "valueLabels",
    "highlight",
    "colors",
-   "textHalo"
+   "textHalo",
+   "labelRoom"
   ],
   "bump": [
    "xLabel",
@@ -283,7 +291,8 @@
    "dashed",
    "markerShape",
    "textHalo",
-   "flags"
+   "flags",
+   "labelRoom"
   ],
   "dot_range": [
    "xLabel",
@@ -313,7 +322,8 @@
    "refLabel",
    "markerShape",
    "textHalo",
-   "flags"
+   "flags",
+   "labelRoom"
   ],
   "map": [
    "unit",
@@ -401,6 +411,7 @@
   "dashed": "dashed lines",
   "markerShape": "marker shape",
   "flags": "country flags",
-  "shade": "shaded range"
+  "shade": "shaded range",
+  "labelRoom": "full names"
  }
 }

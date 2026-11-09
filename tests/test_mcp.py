@@ -1,3 +1,4 @@
+import asyncio
 import base64
 import json
 import re
@@ -8,6 +9,7 @@ import pytest
 from app import db, llm, pipeline, render
 from app.models import ApiKey, User
 from conftest import new_client, sign_in, spend, spent_rows
+from tests.test_app_logic import RBC_RANKS
 
 ROOT = pipeline.WEB_DIR.parent
 CSV = (ROOT / "samples" / "MOCK_ai_adoption_eu_countries_2025.csv").read_text()
@@ -222,3 +224,62 @@ def test_make_then_edit_runs_the_web_pipeline_and_charges_the_account(monkeypatc
     finally:
         import asyncio
         asyncio.run(render.RENDERER.stop())
+
+
+
+TEXTS = """async ({spec, width}) => { await QV.ready; const svg = document.getElementById("chart"); document.getElementById("host").style.width = width + "px";
+  QV.render(svg, spec, {width, still: true, noResize: true, noControls: true}); return [...svg.querySelectorAll("text")].map(t => t.textContent); }"""
+
+
+def bank_labels(specs, widths=(600, 760)):
+    async def work(page, spec, width):
+        return await page.call(TEXTS, {"spec": render.clean_spec(spec, "franri"), "width": width})
+
+    async def all_of():
+        try:
+            return {w: [[t for t in await render.RENDERER.run(lambda page: work(page, sp, w)) if t.startswith("Royal Bank")] for sp in specs]
+                    for w in widths}
+        finally:
+            await render.RENDERER.stop()
+
+    return asyncio.run(all_of())
+
+
+def edit_once(monkeypatch, change):
+    sent = fake_llm(monkeypatch, change)
+    try:
+        with new_client() as c:
+            sign_in(c, styles="franri")
+            key = make_key(c)["key"]
+            made = tool(c, key, "make_chart", data=RBC_RANKS, description="Bank ranking", chart_type="bump")
+            assert not made["isError"], made
+            before = json.loads(made["content"][2]["text"])
+            edited = tool(c, key, "edit_chart", spec=before, instruction="show the full bank names")
+            assert not edited["isError"], edited
+            after = json.loads(edited["content"][2]["text"])
+    finally:
+        asyncio.run(render.RENDERER.stop())
+    labels = bank_labels([before, after])
+    chats = [b for p, b in sent if p.endswith("/chat/completions") and not b["messages"][0]["content"].startswith("You check a chart")]
+    return edited["content"][1]["text"], after, labels, chats
+
+
+def test_bump_names_are_cut_by_default_and_whole_with_full_label_room(monkeypatch):
+    text, after, labels, chats = edit_once(monkeypatch, {"reply": "The bank names now show in full.", "set": {"labelRoom": "full"}})
+    cut, whole = labels[600]
+    assert len(cut) == 2 and all(t.endswith("\u2026") for t in cut), cut
+    assert whole == ["Royal Bank of Canada"] * 2 and labels[760][1] == whole
+    assert after["kind"] == "bump" and after["labelRoom"] == "full"
+    assert "The bank names now show in full." in text and len(chats) == 1
+
+
+def test_a_change_with_no_visible_effect_asks_once_more_then_says_so(monkeypatch):
+    text, after, labels, chats = edit_once(monkeypatch, {"reply": "Done, the names now show in full.", "set": {"labelMax": 60}})
+    assert "The chart did not change, so nothing was applied." in text and "now show in full" not in text
+    assert len(chats) == 2 and "That change had no visible effect." in chats[1]["messages"][-1]["content"]
+    assert "labelMax" not in after and labels[600][0] == labels[600][1]
+
+
+def test_a_reply_without_a_change_never_reads_as_done(monkeypatch):
+    text, after, _, chats = edit_once(monkeypatch, {"reply": "I widened the label column.", "set": {}})
+    assert "The chart did not change. I widened the label column." in text and len(chats) == 1 and "labelRoom" not in after

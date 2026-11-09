@@ -5,6 +5,7 @@ from pathlib import Path
 from fastapi import HTTPException
 
 from app import auth, guard, viz, viz_reading
+from app.capabilities import say_unused
 from app.config import WEB_DIR
 from app.llm import Visitor
 from app.render import EXPORT_W, RENDERER, RenderError, render_chart
@@ -17,6 +18,9 @@ PIPE_JS = Path(__file__).with_name("pipeline.js")
 DATA_KEYS = ("name", "sheet", "sheets", "columns", "rows", "source_hint", "notes", "aggregates", "orientation_hint", "source_url")
 MAX_TEXT = 2000
 VERSION = 1
+NO_CHANGE = "The chart did not change, so nothing was applied."
+UNCHANGED = "The chart did not change."
+SAID = ("did not change", "nothing changed", "nothing was applied", "no change")
 BOOT_JS = """async ({app, pipe}) => { await QV.ready; (0, eval)(pipe); QVPipe.boot(app); return true; }"""
 
 
@@ -123,6 +127,15 @@ def unpack(chart) -> tuple[dict, dict, dict | None]:
     return qv["recipe"], slim(data), names
 
 
+def honest(applied: dict) -> str:
+    reply = (applied.get("reply") or "").strip()
+    if not applied["changed"]:
+        return reply if any(s in reply.lower() for s in SAID) else f"{UNCHANGED} {reply}".strip()
+    if applied.get("missed"):
+        return say_unused(applied["missed"], applied.get("recipe", {}).get("kind"), bool(applied.get("rest")))
+    return reply
+
+
 async def edit_chart(user: Visitor, chart: dict, instruction: str, style: str | None = None) -> dict:
     recipe, data, names = unpack(chart)
     style = auth.check_style(user.user, style or (chart.get("style") if isinstance(chart.get("style"), str) else None))
@@ -133,6 +146,12 @@ async def edit_chart(user: Visitor, chart: dict, instruction: str, style: str | 
     body = await stage("chat", {**state, "message": message})
     res = await viz.chat(viz.ChatIn(**body), user)
     applied = await stage("apply", {**state, "res": res})
+    if applied.get("noop"):
+        res = await viz.chat(viz.ChatIn(**body, no_effect=applied["noop"]), user)
+        applied = await stage("apply", {**state, "res": res})
+        if applied.get("noop") or not applied["changed"]:
+            applied = {"recipe": recipe, "reply": NO_CHANGE, "changed": False}
+    applied["reply"] = honest(applied)
     if applied.get("names"):
         got = await named(user, applied["names"])
         if got and got.get("title"):

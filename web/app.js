@@ -9,7 +9,7 @@ const KEEP_V = 1, KEEP_MS = 7 * 864e5;
 const keepBox = {timer: 0, data: null, id: null, off: false};
 const LAYOUT = ["legend", "legendPos", "legendDir", "legendSort", "tickAngle", "grid", "valueMin", "valueMax", "valueLog", "xMin", "xMax", "xLog", "ticks",
   "fontSize", "barGap", "lineWidth", "markers", "curve", "titleAlign", "refLine", "refLabel", "trendline", "pointSize", "donutHole", "height",
-  "textHalo", "textColor", "background", "border", "padding", "labelMax", "thousands", "decimalMark", "numberStyle", "axisTitles", "opacity",
+  "textHalo", "textColor", "background", "border", "padding", "labelMax", "labelRoom", "thousands", "decimalMark", "numberStyle", "axisTitles", "opacity",
   "lineStyle", "dashed", "markerShape", "titleSize", "flags", "shade", "fontStyle", "dimSize", "controls", "logo"];
 const AXIS_FIELDS = ["valueMin", "valueMax", "valueLog", "xMin", "xMax", "xLog", "refLine", "refLabel"];
 

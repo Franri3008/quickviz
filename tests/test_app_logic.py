@@ -31,6 +31,9 @@ def jev(roles):
     return {"columns": {k: {"role": v, "confidence": 0.9} for k, v in roles.items()}}
 
 
+RBC_RANKS = "bank,year,rank\n" + "\n".join(
+    f"{b},{y},{(i + k) % 5 + 1}" for k, y in enumerate(range(2021, 2026))
+    for i, b in enumerate(["Royal Bank of Canada", "JPMorgan Chase", "HSBC", "BNP Paribas", "Santander"]))
 ADOPTION = "MOCK_ai_adoption_eu_countries_2025.csv"
 ADOPTION_JEV = jev({"country": "name", "iso3": "ignore", "country_group": "group",
                     "ai_use_pct_all_firms": "value", "ai_use_pct_large_firms": "value"})
@@ -346,3 +349,17 @@ def test_server_pipeline_puts_the_ranking_first_like_the_page():
     assert out["kind"] == "bump" and out["kinds"][:2] == ["bump", "heatmap"]
     assert out["told"] == "line" and out["sent"] == ["Value"]
     assert out["ms"] == 17 and out["boa"] == 7
+
+
+def test_bump_label_room_reaches_the_spec_and_keeps_names_whole():
+    out = parse_file(RBC_RANKS.encode(), "banks.csv", None)
+    names = [c["name"] for c in out["columns"]]
+    data = {**out, "rows": [dict(zip(names, r)) for r in out["rows"]], "cols": out["columns"], "name": "banks.csv"}
+    got = js(data, """
+      const r = fitsKind("bump", {filters: []});
+      const full = applyChange(r, {set: {labelRoom: "full"}}), back = applyChange(full, {set: {labelRoom: null}});
+      ({kind: r.kind, plain: buildSpec(r).labelRoom ?? null, full: buildSpec(full).labelRoom, back: buildSpec(back).labelRoom ?? null,
+        names: [...new Set(buildSpec(full).rows.map(x => x.cat))]})
+    """, jev({"bank": "name", "year": "time", "rank": "value"}))
+    assert got["kind"] == "bump" and got["plain"] is None and got["full"] == "full" and got["back"] is None
+    assert "Royal Bank of Canada" in got["names"]

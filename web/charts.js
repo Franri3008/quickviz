@@ -255,7 +255,8 @@
     if (mode === "off" || (items.length < (mode === "on" ? 1 : 2) && !C.spec.legendTitle)) { C.leg = null; return C.top; }
     items = sortLegend(C, items, values);
     const {pos, dir} = keyPlace(C), side = isSide(pos);
-    const maxW = side ? Math.min(240, C.W * 0.3) : C.W - 2 * PAD, rowH = 24;
+    const maxW = side ? roomFor(C, Math.min(240, C.W * 0.3)) : C.W - 2 * PAD, rowH = 24;
+    const itemW = side || C.spec.labelRoom === "full" ? maxW - 20 : 220;
     const titleRow = side || dir === "vertical";
     const tf = fm("legend", 700), lf = fm("legend");
     const title = C.spec.legendTitle ? clip(C.spec.legendTitle, titleRow ? maxW : maxW * 0.5, FS.tick, tf) : "";
@@ -264,7 +265,7 @@
     const fr = flagRoom(true, FS.tick);
     items.forEach(it => {
       const flag = C.legFlags ? flagKey(it.name) : null;
-      const label = clip(it.label || it.name, (side ? maxW - 20 : 220) - (flag ? fr : 0), FS.tick, lf), w = 14 + 6 + (flag ? fr : 0) + tw(label, FS.tick, lf) + 18;
+      const label = clip(it.label || it.name, itemW - (flag ? fr : 0), FS.tick, lf), w = 14 + 6 + (flag ? fr : 0) + tw(label, FS.tick, lf) + 18;
       if ((dir === "vertical" || x + w > maxW) && rows.at(-1).length) { rows.push([]); x = 0; }
       rows.at(-1).push({...it, label, w, flag});
       x += w;
@@ -747,6 +748,7 @@
     catLabels(C, ax.selectAll(".tick text"));
     return ax;
   }
+  const roomFor = (C, cap, span = C.W) => (C.spec.labelRoom === "full" ? Math.max(cap, span / 3) : cap);
   const labelWidth = (labels, cap, size = FS.label, fl = false, dm = null) => Math.min(cap, d3.max(labels, l => tw(l, sizeAt(dm, l, size), fm("tickLabels", 700, true)) + (fl && flagKey(l) ? flagRoom(true, sizeAt(dm, l, size)) : 0)) || 0);
 
   function empty(C, msg) {
@@ -958,7 +960,7 @@
         const k = fitRows(C, d.length, top + hb() + footH(C) + 10);
         if (k < d.length) d = d.slice(0, k);
         grow(C, top + d.length * rowH + hb() + footH(C) + 10);
-        const lw = labelWidth(d.map(e => e.cat), Math.min(240, C.W * 0.32), FS.label, fl, dm);
+        const lw = labelWidth(d.map(e => e.cat), roomFor(C, Math.min(240, C.W * 0.32)), FS.label, fl, dm);
         const valW = showLabels ? d3.max(d, e => tw(fmt(e.v), vfs(e.cat), fm("valueLabels", 400, isHl(C, e.cat)))) + 12 : 0;
         const x0 = vScale(C, lo, hi || 1, {dataMin: d3.min(d, e => e.v), dataMax: d3.max(d, e => e.v)});
         const xa = rotatedBottom(C, tv(x0, nt(5)).map(fmtT), 1e9, 80);
@@ -984,7 +986,7 @@
         refLine(C, b, x, "v");
         axisTitles(C, b, spec.yLabel, spec.xLabel);
       } else {
-        const rot = rotatedBottom(C, d.map(e => e.cat), step, Math.min(170, H * 0.3));
+        const rot = rotatedBottom(C, d.map(e => e.cat), step, roomFor(C, Math.min(170, H * 0.3), H));
         const fv = fl ? Math.min(flagBox(FS.tick).w, step - 4) : 0, flagW = fv >= 8 ? fv : 0;
         const b = box(C, top, {left, bottom: bottomFor(C, rot + (flagW ? flagW * 0.75 + 4 : 0))});
         const x = d3.scaleBand(d.map(e => e.cat), [0, b.iw]).paddingInner(spec.barGap ?? Math.min(0.75, pin)).paddingOuter(0.14);
@@ -1003,7 +1005,7 @@
             .call(face, "valueLabels", 400, e => isHl(C, e.cat)).attr("font-family", FONT).attr("text-anchor", "middle").attr("x", e => x(e.cat) + x.bandwidth() / 2)
             .attr("y", e => (e.v < 0 ? y(e.v) + vfs(e.cat) + 3 : y(e.v) - 6)).text(e => fmt(e.v));
         }
-        bandBottomAxis(C, b.g, x, b.ih, d.map(e => e.cat), Math.min(170, H * 0.3), flagW);
+        bandBottomAxis(C, b.g, x, b.ih, d.map(e => e.cat), roomFor(C, Math.min(170, H * 0.3), H), flagW);
         b.g.append("line").attr("x2", b.iw).attr("y1", y(base)).attr("y2", y(base)).attr("stroke", FAINT);
         refLine(C, b, y, "h");
         axisTitles(C, b, spec.xLabel, spec.yLabel);
@@ -1157,7 +1159,7 @@
         const y0 = (pct ? d3.scaleLinear().domain([0, 100]) : vScale(C, 0, d3.max(table, o => o.__tot) || 1, {noLog: true})).range([300, 0]);
         const left = leftFor(C, yTickW(y0, valT));
         const step = (C.W - left - PAD - (C.leg && isSide(C.leg.pos) ? C.leg.w + 20 : 0)) / cats.length;
-        const rot = rotatedBottom(C, cats, step, Math.min(170, H * 0.3));
+        const rot = rotatedBottom(C, cats, step, roomFor(C, Math.min(170, H * 0.3), H));
         const fv = fl ? Math.min(flagBox(FS.tick).w, step - 4) : 0, flagW = fv >= 8 ? fv : 0;
         const b = box(C, top + (tots ? FS.label + 6 : 0), {left, bottom: bottomFor(C, rot + (flagW ? flagW * 0.75 + 4 : 0))});
         const x = d3.scaleBand(cats, [0, b.iw]).paddingInner(spec.barGap ?? Math.min(0.75, Math.max(0.24, 1 - 96 / Math.max(1, b.iw / cats.length)))).paddingOuter(0.14);
@@ -1180,7 +1182,7 @@
           b.g.selectAll("text.tot").data(table).join("text").attr("class", "tot").attr("x", o => x(o.cat) + x.bandwidth() / 2).attr("y", o => y(o.__tot) - 6)
             .attr("text-anchor", "middle").attr("font-size", FS.label).call(face, "valueLabels").attr("fill", INK).attr("font-family", FONT).text(o => fmtShort(o.__tot, spec.unit));
         }
-        bandBottomAxis(C, b.g, x, b.ih, cats, Math.min(170, H * 0.3), flagW);
+        bandBottomAxis(C, b.g, x, b.ih, cats, roomFor(C, Math.min(170, H * 0.3), H), flagW);
         if (!pct) refLine(C, b, y, "h");
         axisTitles(C, b, spec.xLabel, valTitle);
         return;
@@ -1188,7 +1190,7 @@
       const k = fitRows(C, cats.length, top + 40 + (spec.yLabel ? 30 : 0) + footH(C));
       if (k < cats.length) { cats = cats.slice(0, k); table = table.slice(0, k); stack = d3.stack().keys(names)(table); }
       grow(C, top + cats.length * 30 + 40 + (spec.yLabel ? 30 : 0) + footH(C));
-      const lw = labelWidth(cats, Math.min(240, C.W * 0.3), FS.label, fl, dimOf(C, cats));
+      const lw = labelWidth(cats, roomFor(C, Math.min(240, C.W * 0.3)), FS.label, fl, dimOf(C, cats));
       const totW = pct ? 0 : d3.max(table, o => tw(fmtShort(o.__tot, spec.unit), FS.label, fm("valueLabels"))) + 12;
       const b = box(C, top, {left: PAD + (spec.xLabel ? 30 : 0) + lw + 10, bottom: 30 + (spec.yLabel ? 30 : 0) + (ang(C) ? 24 : 0), right: PAD + Math.max(10, totW)});
       const y = d3.scaleBand(cats, [0, b.ih]).padding(spec.barGap ?? 0.24);
@@ -1452,7 +1454,7 @@
       const a = ang(C), angFor = w => a ?? (w >= 28 ? 35 : w >= 19 ? 60 : 90), rotMax = Math.round(Math.max(110, Math.min(170, ((C.space || H) - top - cats.length * 24) * 0.35)));
       const fs = FS.min;
       const numStep = spec.valueLabels === "off" ? 0 : Math.max(fs + 4, (d3.max(cells, e => e.v === undefined ? 0 : tw(short(e.v), fs, fm("valueLabels"))) || 0) + 6) / (1 - gapH);
-      const lwCap = Math.min(220, Math.max(C.W * 0.28, C.W - 10 - 2 * PAD - km.left - km.right - (cols.length + gapH) * Math.max(fs + 4, numStep)));
+      const lwCap = roomFor(C, Math.min(220, Math.max(C.W * 0.28, C.W - 10 - 2 * PAD - km.left - km.right - (cols.length + gapH) * Math.max(fs + 4, numStep))));
       const fl = flagsOn(C, cats);
       const lw0 = labelWidth(cats, lwCap, FS.tick, fl, dimOf(C, cats));
       const estX0 = Math.min((C.W - lw0 - 10 - 2 * PAD - km.left - km.right) / (cols.length + gapH), ROW_MIN);
@@ -1635,7 +1637,7 @@
       const showV = spec.valueLabels === "on";
       const valW = side0 => (showV ? d3.max([...sumBy(pairs.map(p => ({k: p[side0], v: p.v})), r => r.k).values()], v => tw(fmtShort(v, spec.unit), FS.tick, fm("valueLabels"))) + 8 : 0);
       const vwL = valW("s"), vwR = valW("t");
-      const lwL = labelWidth(srcNames, Math.min(190, C.W * 0.27)) + 10 + vwL, lwR = labelWidth(dstNames, Math.min(190, C.W * 0.27)) + 10 + vwR;
+      const lwL = labelWidth(srcNames, roomFor(C, Math.min(190, C.W * 0.27))) + 10 + vwL, lwR = labelWidth(dstNames, roomFor(C, Math.min(190, C.W * 0.27))) + 10 + vwR;
       const b = box(C, top, {left: PAD + lwL, bottom: 10, right: PAD + lwR});
       function layout(shared) {
         const id = (side, n) => (shared ? n : side + n);
@@ -1698,7 +1700,7 @@
       const lastOf = s => s.pts.filter(p => p.v !== undefined).at(-1), firstOf = s => s.pts.find(p => p.v !== undefined);
       const fl = flagsOn(C, cats);
       const dm = dimOf(C, cats);
-      const lwR = labelWidth(cats, Math.min(170, C.W * 0.2), FS.tick, fl, dm) + 14, lwL = labelWidth(cats, Math.min(140, C.W * 0.16), FS.tick, fl, dm) + 14;
+      const lwR = labelWidth(cats, roomFor(C, Math.min(170, C.W * 0.2)), FS.tick, fl, dm) + 14, lwL = labelWidth(cats, roomFor(C, Math.min(140, C.W * 0.16)), FS.tick, fl, dm) + 14;
       const b = box(C, top, {left: PAD + (spec.yLabel ? 30 : 0) + 30 + lwL, bottom: bottomFor(C, pointExtra(C, ts)), right: PAD + lwR});
       const x = d3.scalePoint(ts, [0, b.iw]).padding(0.15), y = d3.scaleLinear([1, maxRank], [0, b.ih]);
       const dens = cats.length > 7 ? 0.8 : 1;
@@ -1768,7 +1770,7 @@
       const vals = d.flatMap(e => [e.a, e.b]).filter(v => v !== undefined);
       const [lo, hi] = d3.extent(vals), p = (hi - lo) * 0.06 || Math.abs(hi) * 0.1 || 1;
       const dm = dimOf(C, cats), vfs = n => sizeAt(dm, n, FS.min);
-      const lw = labelWidth(cats, Math.min(240, C.W * 0.3), FS.label, fl, dm);
+      const lw = labelWidth(cats, roomFor(C, Math.min(240, C.W * 0.3)), FS.label, fl, dm);
       const b = box(C, top, {left: PAD + (spec.xLabel ? 30 : 0) + lw + 10, bottom: 30 + (spec.yLabel ? 30 : 0) + (ang(C) ? 24 : 0), right: PAD + 14 + (labelsOn ? 40 : 0)});
       const x = vScale(C, lo >= 0 ? Math.max(0, lo - p) : lo - p, hi + p, {dataMin: lo, dataMax: hi}).range([0, b.iw]), y = d3.scaleBand(cats, [0, b.ih]).padding(0.5);
       const r = Math.max(4, Math.min(7, y.step() * 0.28));

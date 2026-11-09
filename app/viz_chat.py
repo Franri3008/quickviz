@@ -207,6 +207,7 @@ class SpecEdits(Strict):
     border: Literal["on", "off"] | None = None
     padding: int | None = Field(None, ge=0, le=48)
     labelMax: int | None = Field(None, ge=4, le=60)
+    labelRoom: Literal["auto", "full"] | None = None
     thousands: Literal["auto", "comma", "space", "none"] | None = None
     decimalMark: Literal["point", "comma"] | None = None
     numberStyle: Literal["auto", "short", "full"] | None = None
@@ -517,6 +518,10 @@ background: white, transparent, light grey, pale green, pale blue or pale yellow
 border: "on" or "off". A thin grey frame around the whole chart.
 padding: 0 to 48. Space in pixels around the chart edges. The default is 16.
 labelMax: 4 to 60. Cut category, series and legend names after this many characters, with an ellipsis.
+labelRoom: "auto" or "full". "auto" keeps long names beside the plot short, cut with an ellipsis. "full" gives them the room the longest name needs,
+  up to a third of the chart width, and the plot gets narrower. Names longer than that are still cut. Use it for "show the full names" or "do not cut the labels".
+  It covers ranking end labels on both sides, bar and dot range category names, heatmap row names, flow chart node names, slanted column labels and legend names.
+  labelMax only cuts names shorter. It never makes room, so never use labelMax to show a full name. null goes back to "auto".
 thousands: "auto", "comma", "space" or "none". The thousands separator in numbers.
 decimalMark: "point" or "comma". The decimal separator, comma for European style.
 numberStyle: "auto", "short" (12.5k, 3.2M) or "full" (12,500, 3,200,000). How big numbers are written.

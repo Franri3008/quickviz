@@ -169,6 +169,7 @@ All are optional. A missing or null field means automatic, which is the house de
 | `border` | on, off | a thin grey frame round the whole chart |
 | `padding` | 0 to 48 | space round the chart edges in px. The default is 16 |
 | `labelMax` | 4 to 60 | cuts category, series and legend names after this many characters, with an ellipsis and the full name on hover |
+| `labelRoom` | auto, full | room for names beside the plot. See below |
 | `thousands` | auto, comma, space, none | the thousands separator |
 | `decimalMark` | point, comma | the decimal separator |
 | `numberStyle` | auto, short, full | short writes 12.5k and 3.2M, full writes every digit |
@@ -261,18 +262,18 @@ thousands, decimalMark and numberStyle. Legend means legend, legendPos, legendDi
 
 | kind | Draws |
 |---|---|
-| bar | axis, numbers, legend, orientation, valueLabels, highlight, dimSize, colors, value range and log, ticks, barGap, refLine, textHalo, flags, shade. The legend only appears with a highlight |
-| line | axis, numbers, legend, valueLabels, highlight, colors, value range and log, ticks, lineWidth, markers, curve, refLine, textHalo, lineStyle, dashed, markerShape, flags, shade |
-| stacked_area | axis, numbers, legend, valueLabels, highlight, colors, value range, ticks, curve, refLine, textHalo, flags, shade |
-| stacked_bar | axis, numbers, legend, orientation, stack, valueLabels, highlight, dimSize, colors, value range, ticks, barGap, refLine, textHalo, flags, shade. Range and refLine only when absolute |
-| scatter | axis, numbers, legend, valueLabels, highlight, dimSize, colors, value and x range and log, ticks, refLine, trendline, pointSize, markerShape, textHalo, flags |
+| bar | axis, numbers, legend, orientation, valueLabels, highlight, dimSize, colors, value range and log, ticks, barGap, refLine, textHalo, flags, shade, labelRoom. The legend only appears with a highlight |
+| line | axis, numbers, legend, valueLabels, highlight, colors, value range and log, ticks, lineWidth, markers, curve, refLine, textHalo, lineStyle, dashed, markerShape, flags, shade, labelRoom |
+| stacked_area | axis, numbers, legend, valueLabels, highlight, colors, value range, ticks, curve, refLine, textHalo, flags, shade, labelRoom |
+| stacked_bar | axis, numbers, legend, orientation, stack, valueLabels, highlight, dimSize, colors, value range, ticks, barGap, refLine, textHalo, flags, shade, labelRoom. Range and refLine only when absolute |
+| scatter | axis, numbers, legend, valueLabels, highlight, dimSize, colors, value and x range and log, ticks, refLine, trendline, pointSize, markerShape, textHalo, flags, labelRoom |
 | histogram | axis, numbers, valueLabels, colors, value range, x range, ticks, barGap, textHalo |
-| heatmap | xLabel, axisTitles, tickAngle, numbers, legend without legendSort, valueLabels, highlight, dimSize, barGap, textHalo, flags |
-| treemap | numbers, legend, valueLabels, highlight, colors, textHalo |
+| heatmap | xLabel, axisTitles, tickAngle, numbers, legend without legendSort, valueLabels, highlight, dimSize, barGap, textHalo, flags, labelRoom |
+| treemap | numbers, legend, valueLabels, highlight, colors, textHalo, labelRoom |
 | donut | yLabel, numbers, legend, legendPos, legendSort, valueLabels, highlight, colors, donutHole, textHalo |
-| sankey | numbers, valueLabels, highlight, colors, textHalo |
-| bump | axis, highlight, dimSize, colors, lineWidth, markers, lineStyle, dashed, markerShape, textHalo, flags |
-| dot_range | axis, numbers, legend, valueLabels, highlight, dimSize, colors, value range and log, ticks, refLine, markerShape, textHalo, flags |
+| sankey | numbers, valueLabels, highlight, colors, textHalo, labelRoom |
+| bump | axis, highlight, dimSize, colors, lineWidth, markers, lineStyle, dashed, markerShape, textHalo, flags, labelRoom |
+| dot_range | axis, numbers, legend, valueLabels, highlight, dimSize, colors, value range and log, ticks, refLine, markerShape, textHalo, flags, labelRoom |
 | map | numbers, legend without legendSort, highlight, textHalo |
 
 Three things keep the chat truthful.
@@ -407,6 +408,20 @@ In AI World, `cat` in `aiw-theme.js` is blue, red, emerald, amber, violet, cyan,
 Amber is moved after emerald, so red and amber are never neighbours in a series. When EU27 is drawn, blue is
 skipped, because blue stays for the EU. A highlight is red. The CEPS colour names still work in AI World.
 Each one maps to the nearest AI World colour, so navy is the AI World blue and green is emerald.
+
+### Label room
+
+`labelRoom` sets how much room the names beside the plot get. "auto" is the default and draws as before 4.0.0.
+Each place has its own cap, such as 140 px or 16% of the width for the left names of a ranking chart. Longer names are cut
+with an ellipsis. "full" raises each cap to a third of the chart width, or a third of the height for slanted column names.
+The names take only the room the longest one needs, and the plot gets narrower. A name longer than a third is still cut.
+
+`roomFor(C, cap, span)` in `charts.js` gives the cap. It covers the ranking end labels on both sides, horizontal bar,
+stacked bar and dot range category names, heatmap row names, flow chart node names, slanted column labels, and the side
+legend. In a top or bottom legend each name may take the full row width in place of 220 px.
+Histogram, donut and map do not read it. The donut list is placed by the ring, not by a cap.
+
+`labelMax` only cuts names shorter. The prompt tells the model to use `labelRoom` for "show the full names".
 
 ## Shaded ranges
 
@@ -1308,8 +1323,18 @@ the same functions the page calls. Python calls the same route functions as the 
 
 `edit_chart` runs `chatBody` in the page, `chat` in `app/viz.py`, then `applyChange` and `withAutoControls` in the page.
 When the change alters which rows are drawn and the title is the automatic one, `names` gives a new title, as `refreshTitle` does.
-A change that only adds a drawing patch is refused, since the server runs no user code. A change that draws the same chart
-is not applied, and the reply says so.
+A change that only adds a drawing patch is refused, since the server runs no user code.
+
+Since 4.0.0 the edit is checked the way the page checks it. `apply` in `app/pipeline.js` draws the old spec and the new
+spec off screen at the export width and compares the SVG markup. Gradient and clip ids are taken out first, and controls
+and rows count when the spec has controls. A blank draw, such as a map still loading, skips the check.
+When the two draws match, the change is not applied. `edit_chart` sends it back to the model once as `no_effect`, with
+`noEffect` from `app.js`. If the second answer also draws the same chart, or changes nothing, the reply is
+"The chart did not change, so nothing was applied." The model's claim is never shown in that case.
+When a set field was never read by the renderer, the reply names it, as on the page. An example is
+"The full names did not show on this donut chart, so that part did not change." `say_unused` in `app/capabilities.py` writes it.
+When the model changes nothing at all, the reply starts with "The chart did not change." unless it already says so.
+This stops a reply like "I widened the label column" from reading as done.
 
 `firstRecipe`, `namedRecipe`, `namesBody`, `chatBody` and `rateText` were split out of `autoChart`, `refreshTitle`,
 `sendChat` and `applyReply` for this. The page behaves as before.

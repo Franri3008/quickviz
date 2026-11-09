@@ -405,7 +405,11 @@ To try sign-in locally, put `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.e
 
 ## Version
 
-The version lives in `VERSION`. It is 3.2.0, which adds the columns row above the chart and keeps table pictures wide.
+The version lives in `VERSION`. It is 4.0.0.
+The chat and `edit_chart` can now show long names in full with `labelRoom: "full"`. The default still cuts them.
+`edit_chart` now checks the drawn chart. A change that draws the same chart, or that the chart cannot show, says so in the reply.
+This changes `charts.js`, `capabilities.json` and `export/charts.min.js` here first. CEPS QuickViz must take the same change before the next sync.
+3.2.0 added the columns row above the chart and kept table pictures wide.
 3.1.3 made the server render work in the Docker image again.
 3.1.2 let the chat pick which value columns a wide chart shows.
 3.1.1 drew rank tables as a ranking chart.

@@ -156,7 +156,8 @@ HTML_HELP = "Optional. Also return the self-contained interactive HTML file. It 
 MAKE = ("Make a finished chart from a table. QuickViz reads the data, picks the chart type and the column roles, names the chart and draws it. "
         "Returns a PNG, a short summary and the chart spec as JSON, plus the self-contained HTML file when html is true. Uses credits.")
 EDIT = ("Change a chart made by make_chart or edit_chart. Pass its spec JSON unchanged and say what to change in plain words, "
-        "for example 'show the top 10', 'make it a line chart' or 'title: AI use in 2025'. Returns the same outputs as make_chart. Uses credits.")
+        "for example 'show the top 10', 'make it a line chart' or 'title: AI use in 2025'. Returns the same outputs as make_chart. Uses credits. "
+        "When the change could not be made or drew the same chart, the reply says so and the chart stays as it was.")
 
 
 @server.tool(description=MAKE, annotations=ToolAnnotations(title="Make a chart", readOnlyHint=False, destructiveHint=False, openWorldHint=False))

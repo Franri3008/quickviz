@@ -28,3 +28,11 @@ def say_missing(fields: list[str], kind: str | None) -> str:
     what = labels[0] if len(labels) == 1 else ", ".join(labels[:-1]) + " or " + labels[-1]
     art = "an" if kind_name(kind)[0] in "aeiou" else "a"
     return f"{art.capitalize()} {kind_name(kind)} cannot show {what}, so that part did not change."
+
+
+def say_unused(fields: list[str], kind: str | None, rest: bool) -> str:
+    labels = list(dict.fromkeys(CAPS["labels"].get(f, f) for f in fields))
+    if not labels:
+        return ""
+    what = labels[0] if len(labels) == 1 else ", ".join(labels[:-1]) + " and " + labels[-1]
+    return f"The {what} did not show on this {kind_name(kind)}, so that part did not change." + (" The rest of the change was applied." if rest else "")
