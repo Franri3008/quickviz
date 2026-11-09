@@ -5,7 +5,9 @@ import re
 import secrets
 import time
 from contextlib import asynccontextmanager
+from html import escape
 from typing import Annotated
+from urllib.parse import quote, urlencode
 
 from fastapi import HTTPException
 from mcp.server.fastmcp import Context, FastMCP
@@ -34,7 +36,8 @@ FILE_DAYS = 7
 FILE_ID = re.compile(r"^[A-Za-z0-9_-]{40,64}$")
 STYLE_NAMES = {"franri": "QuickViz", "aiw": "AI World", "ceps": "CEPS"}
 INSTRUCTIONS = ("QuickViz turns a table into a finished chart. Call make_chart with CSV text. You get a picture of the chart, a chart id "
-                "and a link to download the interactive chart. To change a chart, call edit_chart with its chart id and say what to change "
+                "and a curl line that saves the interactive chart. Save it into the current folder and tell the user where it is. "
+                "To change a chart, call edit_chart with its chart id and say what to change "
                 "in plain words. Each call uses credits from the QuickViz account the key belongs to. Call list_styles to see which "
                 "chart styles it may use.")
 NO_KEY = "A QuickViz API key is needed. Make one in the QuickViz account menu and send it as: Authorization: Bearer <key>"
@@ -170,7 +173,7 @@ def keep_file(owner: str, spec: dict) -> str:
     return fid
 
 
-def load_file(owner: str, fid: str) -> dict | None:
+def stored_file(fid: str) -> tuple[str, dict] | None:
     if not isinstance(fid, str) or not FILE_ID.match(fid):
         return None
     with session() as db, db.begin():
@@ -180,7 +183,12 @@ def load_file(owner: str, fid: str) -> dict | None:
         if row.created < time.time() - file_age():
             db.delete(row)
             return None
-        return json.loads(row.spec) if row.user_id == owner else None
+        return row.user_id, json.loads(row.spec)
+
+
+def load_file(owner: str, fid: str) -> dict | None:
+    found = stored_file(fid)
+    return found[1] if found and found[0] == owner else None
 
 
 def drawn(spec: dict) -> dict:
@@ -200,6 +208,11 @@ def slug_of(title: str, kind: str | None) -> str:
     return "".join(ch if ch.isalnum() else "-" for ch in name).strip("-")[:60] or "chart"
 
 
+def disposition(kind: str, name: str) -> str:
+    plain = re.sub(r"[^A-Za-z0-9-]", "-", name).strip("-") or "chart"
+    return f"{kind}; filename=\"{plain}.html\"; filename*=UTF-8''{quote(name + '.html', safe='')}"
+
+
 def result(ctx: Context, user: Visitor, out: dict) -> CallToolResult:
     fid = keep_file(user.user.id, out["spec"])
     url = base_url(ctx.request_context.request) + PATH + "/files/" + fid + ".html"
@@ -213,8 +226,10 @@ def result(ctx: Context, user: Visitor, out: dict) -> CallToolResult:
         lines.append("Other chart types that fit: " + ", ".join(k for k in out["kinds"] if k != out["kind"]) + ".")
     lines.append(f"Credits left today: {out['credits_left']}.")
     lines.append(f"Chart id: {fid}. To change the chart, call edit_chart with this chart id and say what to change.")
-    lines.append(f"The interactive chart is a self-contained HTML file at {url}. It needs the same key and the link lasts {FILE_DAYS} days. "
-                 f'Save it with: curl -s -H "Authorization: Bearer $KEY" -o {slug_of(title, out["kind"])}.html {url}')
+    lines.append(f"Save the interactive chart, a self-contained HTML file, into the current folder with the line below, then tell the user "
+                 f"the path of the saved file. The link lasts {FILE_DAYS} days. It also opens in a browser for the account owner "
+                 f"while signed in to QuickViz.")
+    lines.append(f'Save it with: curl -s -H "Authorization: Bearer $KEY" -o {slug_of(title, out["kind"])}.html {url}')
     return CallToolResult(content=[ImageContent(type="image", data=base64.b64encode(out["png"]).decode("ascii"), mimeType="image/png"),
                                    TextContent(type="text", text="\n".join(lines))],
                           structuredContent={"chart_id": fid, "html_url": url})
@@ -237,10 +252,11 @@ async def list_styles(ctx: Context) -> CallToolResult:
 
 
 MAKE = ("Make a finished chart from a table. QuickViz picks the chart type, names the chart and draws it. "
-        "Returns a picture of the chart, a chart id and a link to download the interactive chart. Uses credits.")
+        "Returns a picture of the chart, a chart id and a curl line. Run it to save the interactive chart into the current folder, "
+        "then tell the user the saved path. Uses credits.")
 EDIT = ("Change a chart made earlier. Pass its chart id and say what to change in plain words, for example 'show the top 10', "
-        "'make it a line chart' or 'title: AI use in 2025'. Returns a new chart id, the picture and a download link. Uses credits. "
-        "When the change could not be made, the reply says so and the chart stays as it was.")
+        "'make it a line chart' or 'title: AI use in 2025'. Returns a new chart id, the picture and a curl line. "
+        "Run it to save the chart into the current folder, then tell the user the saved path. Uses credits. When the change could not be made, the reply says so and the chart stays as it was.")
 
 
 @server.tool(description=MAKE, annotations=ToolAnnotations(title="Make a chart", readOnlyHint=False, destructiveHint=False, openWorldHint=False))
@@ -271,30 +287,120 @@ async def _edit(ctx, user, chart_id, instruction, style):
     return result(ctx, user, await pipeline.edit_chart(user, spec, instruction, style))
 
 
+NO_STORE = {"Cache-Control": "no-store"}
+PAGE_CSP = ("default-src 'none'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; "
+            "img-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'")
+CHART_CSP = "sandbox allow-scripts allow-downloads allow-popups allow-modals; frame-ancestors 'none'"
+FONTS = "https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap"
+PAGE = """<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex">
+<title>{title} | {app}</title>
+<link rel="stylesheet" href="{fonts}">
+<style>
+:root {{ --ink: #1a1a1a; --muted: #6b6b69; --rule: #d4d4d2; --paper: #ffffff; --panel: #f7f7f5; --accent: #13759a; --accent-dark: #0d5873;
+  --on-accent: #ffffff; color-scheme: light; }}
+@media (prefers-color-scheme: dark) {{
+  :root {{ --ink: #e9e9e6; --muted: #a8a8a4; --rule: #3a3d40; --paper: #131517; --panel: #1b1e21; --accent: #13759a; --accent-dark: #0d5873;
+    color-scheme: dark; }}
+}}
+html, body {{ margin: 0; background: var(--paper); color: var(--ink); }}
+body {{ min-height: 100vh; display: grid; place-items: center; padding: 24px; box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 17px; line-height: 1.5; }}
+main {{ max-width: 460px; width: 100%; padding: 32px 32px 28px; border: 1px solid var(--rule); background: var(--panel); box-sizing: border-box; }}
+.app {{ margin: 0 0 18px; color: var(--muted); font-size: 14px; letter-spacing: 0.02em; }}
+h1 {{ margin: 0 0 12px; font-family: "Libre Baskerville", "Bodoni 72", Didot, serif; font-weight: 400; font-size: 26px; line-height: 1.25; }}
+p {{ margin: 0 0 14px; }}
+.muted {{ color: var(--muted); font-size: 15px; }}
+.button {{ display: inline-block; margin-top: 8px; padding: 8px 18px; border: 1px solid var(--accent); background: var(--accent); color: var(--on-accent);
+  font-weight: 700; font-size: 16px; text-decoration: none; }}
+.button:hover {{ background: var(--accent-dark); border-color: var(--accent-dark); }}
+.button:focus-visible {{ outline: 2px solid var(--accent); outline-offset: 2px; }}
+</style>
+</head>
+<body>
+<main>
+<p class="app">{app}</p>
+<h1>{title}</h1>
+{body}
+</main>
+</body>
+</html>
+"""
+
+
+def wants_html(request: Request) -> bool:
+    return "text/html" in request.headers.get("accept", "").lower()
+
+
+def link_page(title: str, lines: list[str], status: int, button: tuple[str, str] | None = None) -> HTMLResponse:
+    body = "\n".join(f"<p>{escape(line)}</p>" for line in lines)
+    if button:
+        body += f'\n<p><a class="button" href="{escape(button[1])}">{escape(button[0])}</a></p>'
+    html = PAGE.format(title=escape(title), app="QuickViz", fonts=FONTS, body=body)
+    return HTMLResponse(html, status, headers={**NO_STORE, "Content-Security-Policy": PAGE_CSP})
+
+
+def expired_page() -> HTMLResponse:
+    return link_page("This chart has expired", [f"Chart links last {FILE_DAYS} days. Ask Claude to make the chart again for a new link."], 404)
+
+
+def sign_in_page(fid: str) -> HTMLResponse:
+    back_to = PATH + "/files/" + fid + ".html"
+    if not get_settings().google_on:
+        return link_page("Sign in to open this chart", ["This chart belongs to a QuickViz account. Sign-in is off on this server, "
+                                                        "so save it with the curl line from Claude instead."], 401)
+    return link_page("Sign in to open this chart", ["This chart belongs to a QuickViz account. Sign in with that account and the chart opens."],
+                     401, ("Sign in", "/auth/google/login?" + urlencode({"next": back_to})))
+
+
+def other_account_page(fid: str) -> HTMLResponse:
+    back_to = PATH + "/files/" + fid + ".html"
+    button = ("Sign in with another account", "/auth/google/login?" + urlencode({"next": back_to})) if get_settings().google_on else None
+    return link_page("This chart belongs to another account", ["You are signed in to QuickViz, but this chart was made with a key "
+                                                               "from a different account. Sign in with that account to open it."], 403, button)
+
+
 def gone() -> JSONResponse:
     return JSONResponse({"error": "not_found", "message": f"No such chart file. Links last {FILE_DAYS} days. Make the chart again to get a new one."},
-                        404, headers={"Cache-Control": "no-store"})
+                        404, headers=NO_STORE)
 
 
 async def download(request: Request):
+    fid = request.path_params["name"].removesuffix(".html")
+    browser = wants_html(request)
     user = auth.token_user(request)
+    by_key = user is not None
     if user is None:
-        return JSONResponse({"error": "unauthorized", "message": NO_KEY}, 401,
-                            headers={"WWW-Authenticate": 'Bearer realm="QuickViz"', "Cache-Control": "no-store"})
-    spec = load_file(user.id, request.path_params["name"].removesuffix(".html"))
-    if spec is None:
-        return gone()
+        user = auth.session_user(request)
+    if user is None:
+        if not browser:
+            return JSONResponse({"error": "unauthorized", "message": NO_KEY}, 401,
+                                headers={"WWW-Authenticate": 'Bearer realm="QuickViz"', **NO_STORE})
+        return sign_in_page(fid) if stored_file(fid) else expired_page()
+    found = stored_file(fid)
+    if found is None or found[0] != user.id:
+        if not browser:
+            return gone()
+        return other_account_page(fid) if found else expired_page()
+    spec = found[1]
     ok, wait = LIMIT.allow(Visitor(guard.client_ip(request), user).who, "render")
     if not ok:
         return JSONResponse({"error": "rate", "message": f"Too many requests. Please wait {wait} s and try again."}, 429,
-                            headers={"Retry-After": str(wait), "Cache-Control": "no-store"})
+                            headers={"Retry-After": str(wait), **NO_STORE})
     try:
         out = await render_chart(drawn(spec), spec.get("style"))
     except RenderTimeout:
         log.warning("Download render timed out", exc_info=True)
-        return JSONResponse({"error": "timeout", "message": "Drawing the chart took too long. Try again."}, 503, headers={"Cache-Control": "no-store"})
+        return JSONResponse({"error": "timeout", "message": "Drawing the chart took too long. Try again."}, 503, headers=NO_STORE)
     except RenderError:
         log.warning("Download render failed", exc_info=True)
-        return JSONResponse({"error": "render", "message": "The chart could not be drawn."}, 500, headers={"Cache-Control": "no-store"})
+        return JSONResponse({"error": "render", "message": "The chart could not be drawn."}, 500, headers=NO_STORE)
     name = slug_of(spec.get("title") or "", spec.get("kind"))
-    return HTMLResponse(out["html"], headers={"Cache-Control": "no-store", "Content-Disposition": f'attachment; filename="{name}.html"'})
+    shown = "attachment" if by_key else "inline"
+    return HTMLResponse(out["html"], headers={**NO_STORE, "Content-Disposition": disposition(shown, name),
+                                              "Content-Security-Policy": CHART_CSP})

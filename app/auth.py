@@ -2,6 +2,7 @@ import base64
 import hashlib
 import hmac
 import json
+import re
 import secrets
 import time
 from urllib.parse import urlencode, urlsplit
@@ -19,6 +20,8 @@ from app.models import DEFAULT_STYLE, STYLES, ApiKey, LoginSession, OAuthState, 
 
 COOKIE = "quickviz_session"
 STATE_COOKIE = "quickviz_oauth"
+NEXT_COOKIE = "quickviz_next"
+RETURN_PATH = re.compile(r"^/mcp/files/[A-Za-z0-9_-]{40,64}\.html$")
 STATE_SECONDS = 600
 KEY_PREFIX = "qv_"
 KEY_SEEN_EVERY = 60
@@ -184,14 +187,19 @@ def logout(request: Request, response: Response):
     return {"ok": True}
 
 
-def back(reason: str | None = None) -> RedirectResponse:
-    r = RedirectResponse("/" + (f"?signin={reason}" if reason else ""), 303)
+def safe_next(value: str) -> str:
+    return value if isinstance(value, str) and RETURN_PATH.fullmatch(value) else ""
+
+
+def back(reason: str | None = None, to: str = "") -> RedirectResponse:
+    r = RedirectResponse(safe_next(to) or ("/" + (f"?signin={reason}" if reason else "")), 303)
     r.delete_cookie(STATE_COOKIE, path="/auth")
+    r.delete_cookie(NEXT_COOKIE, path="/auth")
     return r
 
 
 @router.get("/auth/google/login", include_in_schema=False)
-def google_login():
+def google_login(next: str = ""):
     s = get_settings()
     if not s.google_on:
         raise HTTPException(404, detail="Sign-in is off.")
@@ -205,6 +213,8 @@ def google_login():
                        "code_challenge_method": "S256", "prompt": "select_account"})
     r = RedirectResponse(f"{GOOGLE_AUTH}?{query}", 303)
     _cookie(r, STATE_COOKIE, state, STATE_SECONDS, "/auth")
+    if safe_next(next):
+        _cookie(r, NEXT_COOKIE, next, STATE_SECONDS, "/auth")
     return r
 
 
@@ -259,7 +269,7 @@ async def google_callback(request: Request, code: str = "", state: str = "", err
     if not valid_claims(c):
         return back("failed")
     email = c["email"].strip().lower()[:254]
-    r = back()
+    r = back(to=request.cookies.get(NEXT_COOKIE, ""))
     with session() as db, db.begin():
         user = db.scalar(select(User).where(User.google_sub == c["sub"])) or db.scalar(select(User).where(User.email == email))
         if user is None:

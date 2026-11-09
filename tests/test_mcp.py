@@ -6,7 +6,7 @@ import re
 import httpx
 import pytest
 
-from app import db, leak, llm, mcp_server, pipeline, render
+from app import auth, db, leak, llm, mcp_server, pipeline, render
 from app.models import ApiKey, ChartFile, User
 from conftest import new_client, sign_in, spend, spent_rows
 from tests.test_app_logic import RBC_RANKS
@@ -343,6 +343,14 @@ def test_tool_text_gives_a_download_link_and_no_inline_html(monkeypatch):
             text, url = res["content"][1]["text"], link_of(res)
             assert f'curl -s -H "Authorization: Bearer $KEY" -o ' in text and text.rstrip().endswith(url) and "7 days" in text
             assert "<!doctype" not in json.dumps(res) and len(json.dumps(res)) < 20_000
+            assert "into the current folder" in text and "tell the user the path of the saved file" in text
+            assert "opens in a browser for the account owner while signed in" in text
+            assert not leak.leaks(text) and leak.named_model(text) is None
+            for word in ("spec", "recipe", "html_url", "user_id", "JSON", "prompt", "model"):
+                assert word not in text, word
+        for name in ("make_chart", "edit_chart"):
+            said = tools[name]["description"]
+            assert "current folder" in said and "saved path" in said and not leak.leaks(said)
         assert "-o top-10.html" in text
         r = c.post("/mcp", json={"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": "make_chart", "arguments": {"data": CSV}}},
                    headers={"Accept": "application/json, text/event-stream", "Authorization": f"Bearer {key}", "Host": "quickviz.franri.dev",
@@ -369,9 +377,14 @@ def test_the_html_download_is_for_its_owner_only_and_expires(monkeypatch):
         got = c.get(path, headers={"Authorization": f"Bearer {other_key}"})
         assert got.status_code == 200 and got.text.startswith("<!doctype html>") and "AI use by EU country, 2025" in got.text
         assert drawn[-1] == {k: v for k, v in spec.items() if k != "quickviz"} and got.headers["cache-control"] == "no-store"
+        assert got.headers["content-disposition"] == mcp_server.disposition("attachment", "ai-use-by-eu-country--2025")
         assert 'filename="ai-use-by-eu-country--2025.html"' in got.headers["content-disposition"]
-        assert c.get(path).status_code == 401
-        assert c.get(path, headers={"Authorization": "Bearer qv_nope"}).status_code == 401
+        assert "frame-ancestors 'none'" in got.headers["content-security-policy"] and got.headers["x-frame-options"] == "DENY"
+    with new_client() as anon:
+        assert anon.get(path).status_code == 401 and anon.get(path).json()["error"] == "unauthorized"
+        assert anon.get(path, headers={"Authorization": "Bearer qv_nope"}).status_code == 401
+    with new_client() as c:
+        c.cookies.set(auth.COOKIE, f"tok-{uid}")
         assert c.get(f"/mcp/files/{'x' * 43}.html", headers={"Authorization": f"Bearer {key}"}).status_code == 404
         assert c.get("/mcp/files/short.html", headers={"Authorization": f"Bearer {key}"}).status_code == 404
     with new_client() as c2:
@@ -401,6 +414,134 @@ def test_the_html_download_is_for_its_owner_only_and_expires(monkeypatch):
     newer = mcp_server.keep_file(uid, spec)
     with db.session() as s:
         assert s.get(ChartFile, fresh) is None and s.get(ChartFile, newer) is not None
+
+
+BROWSER = {"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"}
+
+
+def aged(fid):
+    with db.session() as s, s.begin():
+        s.get(ChartFile, fid).created -= 8 * 86400
+
+
+def test_the_owner_opens_the_link_in_a_browser_with_their_sign_in(monkeypatch):
+    drawn = fake_pages(monkeypatch)
+    spec = fake_chart()["spec"]
+    with new_client() as c:
+        uid = sign_in(c)
+        fid = mcp_server.keep_file(uid, spec)
+        path = f"/mcp/files/{fid}.html"
+        got = c.get(path, headers=BROWSER)
+        assert got.status_code == 200 and "AI use by EU country, 2025" in got.text and len(drawn) == 1
+        assert got.headers["content-disposition"] == mcp_server.disposition("inline", "ai-use-by-eu-country--2025")
+        assert 'filename="ai-use-by-eu-country--2025.html"' in got.headers["content-disposition"]
+        csp = got.headers["content-security-policy"]
+        assert "sandbox allow-scripts" in csp and "allow-same-origin" not in csp and "frame-ancestors 'none'" in csp
+        assert got.headers["x-frame-options"] == "DENY" and got.headers["cache-control"] == "no-store"
+        assert c.get(path).status_code == 200
+        assert c.post(path).status_code == 405
+        aged(fid)
+        late = c.get(path, headers=BROWSER)
+        assert late.status_code == 404 and "This chart has expired" in late.text and "7 days" in late.text
+        assert c.get(path).json()["error"] == "not_found"
+        fid = mcp_server.keep_file(uid, spec)
+        path = f"/mcp/files/{fid}.html"
+    with new_client() as bo:
+        sign_in(bo, "bo@example.com")
+        other = bo.get(path, headers=BROWSER)
+        assert other.status_code == 403 and "This chart belongs to another account" in other.text and "AI use" not in other.text
+        assert bo.get(path).status_code == 404 and bo.get(path).json()["error"] == "not_found"
+    with new_client() as blocked:
+        sign_in(blocked, "cy@example.com", active=False)
+        assert blocked.get(path, headers=BROWSER).status_code == 401 and blocked.get(path).status_code == 401
+    with new_client() as anon:
+        page = anon.get(path, headers=BROWSER)
+        assert page.status_code == 401 and "Sign in to open this chart" in page.text and "/auth/google/login" not in page.text
+        assert anon.get(path).status_code == 401 and anon.get(path).headers["www-authenticate"].startswith("Bearer")
+        for name in ("x" * 43, "short", "a" * 65):
+            gone = anon.get(f"/mcp/files/{name}.html", headers=BROWSER)
+            assert gone.status_code == 404 and "This chart has expired" in gone.text
+    assert len(drawn) == 2
+
+
+def test_a_non_latin_title_gives_a_safe_file_name(monkeypatch):
+    from urllib.parse import unquote
+
+    fake_pages(monkeypatch)
+    with new_client() as c:
+        uid = sign_in(c)
+        key = make_key(c)["key"]
+        fid = mcp_server.keep_file(uid, {**fake_chart()["spec"], "title": "中文 Ελλάδα"})
+        path = f"/mcp/files/{fid}.html"
+        for got, kind in ((c.get(path, headers={"Authorization": f"Bearer {key}"}), "attachment"), (c.get(path, headers=BROWSER), "inline")):
+            assert got.status_code == 200 and "中文 Ελλάδα" in got.text
+            head = got.headers["content-disposition"]
+            assert head.isascii() and head.startswith(kind + '; filename="chart.html"; ')
+            assert unquote(head.split("filename*=UTF-8''")[1]) == "中文-ελλάδα.html"
+    mixed = mcp_server.disposition("inline", mcp_server.slug_of("AI in Ελλάδα 2025", "bar"))
+    assert mixed.startswith('inline; filename="ai-in--------2025.html"') and mixed.isascii()
+
+
+def test_the_link_pages_look_like_the_house_and_cannot_be_framed(monkeypatch):
+    from tests.test_guard import google_on
+
+    google_on(monkeypatch)
+    with new_client() as c:
+        uid = sign_in(c)
+        fid = mcp_server.keep_file(uid, fake_chart()["spec"])
+    with new_client() as anon:
+        page = anon.get(f"/mcp/files/{fid}.html", headers=BROWSER)
+    assert page.status_code == 401 and page.headers["content-type"].startswith("text/html")
+    assert f'href="/auth/google/login?next=%2Fmcp%2Ffiles%2F{fid}.html"' in page.text
+    csp = page.headers["content-security-policy"]
+    assert "frame-ancestors 'none'" in csp and "script-src" not in csp and "default-src 'none'" in csp
+    assert page.headers["x-frame-options"] == "DENY" and page.headers["cache-control"] == "no-store"
+    assert '"Libre Baskerville", "Bodoni 72", Didot, serif' in page.text and "-apple-system, BlinkMacSystemFont" in page.text
+    assert "prefers-color-scheme: dark" in page.text and "<script" not in page.text
+
+
+def test_sign_in_returns_to_the_chart_and_nowhere_else(monkeypatch):
+    from urllib.parse import parse_qs, urlsplit
+
+    from tests.test_guard import fake_google, google_on
+
+    google_on(monkeypatch)
+    fake_google(monkeypatch)
+    fake_pages(monkeypatch)
+    with db.session() as s, s.begin():
+        user = User(email="dee@example.com", google_sub="g-123")
+        s.add(user)
+        s.flush()
+        uid = user.id
+    fid = mcp_server.keep_file(uid, fake_chart()["spec"])
+    path = f"/mcp/files/{fid}.html"
+
+    def login(c, nxt):
+        r = c.get("/auth/google/login", params={"next": nxt}, follow_redirects=False)
+        assert r.status_code == 303
+        state = parse_qs(urlsplit(r.headers["location"]).query)["state"][0]
+        return r, c.get(f"/auth/google/callback?code=c1&state={state}", follow_redirects=False)
+
+    with new_client() as c:
+        start, done = login(c, path)
+        assert auth.NEXT_COOKIE in start.headers["set-cookie"] and "httponly" in start.headers["set-cookie"].lower()
+        assert done.status_code == 303 and done.headers["location"] == path
+        assert c.get(done.headers["location"], headers=BROWSER).status_code == 200
+    bad = ["https://evil.example/", "//evil.example/mcp/files/" + fid + ".html", "/\\evil.example", "javascript:alert(1)",
+           f"https://evil.example{path}", f"{path}?to=//evil.example", "/mcp/files/../../admin", f"/mcp/files/{fid}.html/../../x",
+           f"/mcp/files/{fid}.htmlx", f"{path}\n", f"{path}\r\nSet-Cookie: x=1", "/%2F%2Fevil.example", "/"]
+    for nxt in bad:
+        with new_client() as c:
+            start, done = login(c, nxt)
+            assert auth.NEXT_COOKIE not in start.headers.get("set-cookie", ""), nxt
+            assert done.headers["location"] == "/", nxt
+    for forged in ("https://evil.example/", "//evil.example", f"https:{path}"):
+        with new_client() as c:
+            r = c.get("/auth/google/login", follow_redirects=False)
+            state = parse_qs(urlsplit(r.headers["location"]).query)["state"][0]
+            c.cookies.set(auth.NEXT_COOKIE, forged, path="/auth")
+            done = c.get(f"/auth/google/callback?code=c1&state={state}", follow_redirects=False)
+            assert done.headers["location"] == "/", forged
 
 
 BALKANS = ["Bosnia and Herzegovina", "North Macedonia", "Germany", "France", "Spain", "Italy"]

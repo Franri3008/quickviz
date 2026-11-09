@@ -360,8 +360,13 @@ curl -s -H "Authorization: Bearer $KEY" -o chart.html https://quickviz.franri.de
 ```
 
 The base is the address the call came in on. The chart id is the `<id>` part of the link.
-The link needs a key of the account that made the chart. Any of its keys works.
-Another account gets 404, and a call with no key gets 401.
+The tool text tells Claude to run that curl line in the current folder and to report the saved path.
+The link takes a key of the account that made the chart. Any of its keys works.
+The owner can also open the link in a browser while signed in to QuickViz with Google. It then shows the chart in the tab.
+A browser that is not signed in gets a short page with a Sign in button. After sign-in Google returns to the same chart.
+A browser signed in to another account gets a page that says the chart belongs to another account.
+An unknown or expired id gets a page that says chart links last 7 days.
+Calls without `text/html` in `Accept`, like curl, keep the old answers. Another account gets 404, and no key gets 401.
 The server keeps only the chart spec, a few KB, in the `chart_files` table under a long random id.
 It draws the HTML again on each download. A download costs no credits but shares the render rate limit.
 Links last 7 days. Older ones are deleted at startup, on each new chart, and when a call finds them expired. Then they answer 404.
@@ -429,9 +434,12 @@ To try sign-in locally, put `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.e
 
 ## Version
 
-The version lives in `VERSION`. It is 4.1.0.
-`make_chart` and `edit_chart` no longer send the HTML file inline, and `html=true` is gone. The summary gives a 7-day download link.
-The chart spec no longer leaves the server. The tools give a chart id, and `edit_chart` takes that id.
+The version lives in `VERSION`. It is 4.1.1.
+The chart link from `make_chart` and `edit_chart` now opens in a browser for its owner while signed in with Google.
+Anyone else in a browser gets a short page that asks them to sign in, or says the chart belongs to another account or expired.
+The tool text now tells Claude to save the file with the curl line into the current folder and report its path.
+4.1.0 stopped sending the HTML file inline. The summary gives a 7-day download link.
+`html=true` is gone. The chart spec no longer leaves the server. The tools give a chart id, and `edit_chart` takes that id.
 Model replies pass a filter that holds back prompt text and model names. Errors to Claude are short and fixed.
 Clipped donut names show in full on hover.
 With `labelRoom: "full"`, the names on the two sides of a bump or sankey chart take at most half the width together.

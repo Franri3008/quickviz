@@ -1324,12 +1324,44 @@ cuts tool output at 25,000 tokens, so the file never arrived whole. The argument
 Each chart tool call now stores the chart in the `chart_files` table, model `ChartFile`. The row holds a
 `secrets.token_urlsafe(32)` id, the owner's user id, the whole chart JSON, and the created time.
 The download draws it without its `quickviz` block, so the recipe and the read data never reach the file.
-The summary ends with the address and the curl line to save it, and says the link lasts 7 days.
+The summary ends with the curl line to save the file and says the link lasts 7 days.
+It tells Claude to save the file into the current folder and report the saved path.
+It also says the link opens in a browser for the account owner while signed in. It names no internal field and passes `app/leak.py`.
 
 `GET /mcp/files/<id>.html` is `download` in `app/mcp_server.py`. It takes the same `Authorization: Bearer` key.
-No key or a bad key answers 401. An unknown id, an id older than 7 days, or a chart of another account answers 404.
-Any key of the owner works. The route draws the spec again with `render_chart` and answers the HTML as an attachment,
-with `Cache-Control: no-store`. It costs no credits but counts toward `RATE_RENDER`.
+Since 4.1.1 it also takes the owner's Google sign-in cookie, `quickviz_session`, through `auth.session_user`.
+The key is tried first. The owner is matched by user id. A blocked account has no session, so it counts as signed out.
+The route draws the spec again with `render_chart`. It costs no credits but counts toward `RATE_RENDER`.
+With a key it answers the HTML as an attachment. With the cookie it answers it inline, so the chart opens in the tab.
+Both carry `Cache-Control: no-store` and `Content-Security-Policy: sandbox allow-scripts allow-downloads allow-popups allow-modals; frame-ancestors 'none'`.
+The sandbox gives the chart page an opaque origin, so its scripts cannot reach the QuickViz cookie or API.
+`Content-Disposition` comes from `disposition`. It has an ASCII `filename=`, where every other character becomes `-`,
+and an RFC 5987 `filename*=UTF-8''` form with the full name. So a title like "中文 Ελλάδα" cannot break the header.
+The middleware adds `X-Frame-Options: DENY` as on every page.
+
+The route is GET only, so a POST answers 405. The cookie is `SameSite=Lax`, so another site can only make the browser
+open the owner's own chart in a new tab. It cannot read it or frame it.
+
+A request whose `Accept` holds `text/html` is treated as a browser. When the owner check fails it gets a short HTML page.
+
+| Case | Browser | Other callers |
+|---|---|---|
+| No key and no session, the id is live | 401 page "Sign in to open this chart", with a Sign in button | 401 JSON, `WWW-Authenticate: Bearer` |
+| Signed in or keyed to another account | 403 page "This chart belongs to another account", with a sign-in button | 404 JSON `not_found` |
+| Unknown, malformed or expired id | 404 page "This chart has expired", links last 7 days | 404 JSON `not_found` |
+
+The pages are built by `link_page`. They use the house colours, light and dark by `prefers-color-scheme`.
+Headings are Libre Baskerville from Google Fonts, body text is the system sans. They have no script.
+Their CSP is `default-src 'none'` with inline styles and Google Fonts only, `form-action 'none'` and `frame-ancestors 'none'`.
+When Google sign-in is off, the sign-in page has no button and points to the curl line instead.
+
+The Sign in button goes to `/auth/google/login?next=/mcp/files/<id>.html`.
+`auth.safe_next` takes `next` only when the whole value matches `^/mcp/files/[A-Za-z0-9_-]{40,64}\.html$`, with `fullmatch`.
+A trailing newline fails too.
+Anything else, such as a full address, `//host`, a backslash, `..`, a query or a line break, is dropped.
+A kept value goes in the `quickviz_next` cookie, `HttpOnly`, `SameSite=Lax`, path `/auth`, 10 minutes.
+The callback checks the cookie with `safe_next` again and sends a good sign-in there with a 303. Any other result goes to `/`.
+So the return path can only ever be a chart link on the same site.
 
 The base of the address is the one the call came in on. `base_url` reads `X-Forwarded-Proto` and `Host`.
 Rows older than 7 days are deleted by `prune`, at startup and before each new row.
